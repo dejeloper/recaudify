@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
@@ -31,14 +32,15 @@ class AuthController extends Controller
             'password' => $request->password,
         ];
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (! $token = $this->guard()->attempt($credentials)) {
             return response()->json(['message' => 'Credenciales incorrectas.'], 401);
         }
 
-        $user = auth('api')->user();
+        /** @var User $user */
+        $user = $this->guard()->user();
 
         if (! $user->active) {
-            auth('api')->logout();
+            $this->guard()->logout();
 
             return response()->json(['message' => 'Usuario inactivo.'], 403);
         }
@@ -58,7 +60,8 @@ class AuthController extends Controller
 
     public function me(): JsonResponse
     {
-        $user = auth('api')->user();
+        /** @var User $user */
+        $user = $this->guard()->user();
 
         return response()->json([
             'id'          => $user->id,
@@ -72,8 +75,14 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        auth('api')->logout();
+        $this->guard()->logout();
 
         return response()->json(['message' => 'Sesión cerrada correctamente.']);
+    }
+
+    private function guard(): JWTGuard
+    {
+        /** @var JWTGuard */
+        return auth('api');
     }
 }
