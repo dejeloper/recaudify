@@ -1,92 +1,197 @@
 # Recaudify
-Sistema de gestión de cobranzas y recaudación — monorepo con backend Laravel y frontend Angular.
 
-## Plan
+## Backend (recaudify-api)
 
-### Backend (recaudify-api)
-#### Infraestructura y configuración
-- [ ] Configurar Docker (docker-compose con Laravel, MySQL, Redis)
-- [ ] Configurar variables de entorno (.env.example completo)
-- [ ] Limpiar carpetas de solo-placeholder en Laravel (gitignore ruido)
-- [ ] Instalar y configurar JWT (tymon/jwt-auth o Laravel Sanctum)
-- [ ] Instalar y configurar Spatie Permission (roles y permisos)
-- [ ] Configurar Redis para cache y sesiones
+### Infraestructura
 
-#### Base de datos
-- [ ] Migración: clientes (clients)
-- [ ] Migración: deudas (debts)
-- [ ] Migración: cobros/pagos (payments)
-- [ ] Migración: tabla de roles/permisos (Spatie)
-- [ ] Seeders: datos iniciales (roles, usuario admin)
+- [ ] Crear estructura inicial del proyecto (Laravel, PHP 8.2+).
+- [ ] Configurar conexión MySQL y convención de migraciones.
+- [ ] Configurar autenticación con Sanctum (tokens Bearer).
+- [ ] Configurar renovación y expiración de tokens (refresh).
+- [ ] Configurar CORS para el dominio de Vercel.
+- [ ] Configurar autorización por roles (policies/gates).
+- [ ] Configurar auditoría (registro de cambios y acciones críticas).
+- [ ] Configurar carga y almacenamiento de archivos.
+- [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
+- [ ] Documentar la API con Swagger/OpenAPI.
+- [ ] Configurar validación centralizada (Form Requests).
+- [ ] Configurar soft deletes en entidades de negocio.
+- [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
+- [ ] Configurar scheduler vía cron de cPanel.
+- [ ] Configurar cola con driver database + cron.
+- [ ] Crear seeders de catálogos base (estados, tipos, roles).
 
-#### Autenticación
-- [ ] Endpoint POST /api/auth/login
-- [ ] Endpoint POST /api/auth/logout
-- [ ] Endpoint POST /api/auth/refresh
-- [ ] Endpoint GET /api/auth/me
-- [ ] Middleware de autenticación JWT
+### Clientes
 
-#### Clientes
-- [ ] Modelo Client con relaciones
-- [ ] Endpoint GET /api/clients (listar)
-- [ ] Endpoint POST /api/clients (crear)
-- [ ] Endpoint GET /api/clients/{id} (ver)
-- [ ] Endpoint PUT /api/clients/{id} (actualizar)
-- [ ] Endpoint DELETE /api/clients/{id} (eliminar)
+- [ ] Modelar cliente único (identidad por documento).
+- [ ] Soportar múltiples contratos por cliente.
+- [ ] Soportar múltiples teléfonos.
+- [ ] Soportar múltiples direcciones.
+- [ ] Soportar referencias.
+- [ ] Crear cliente.
+- [ ] Editar cliente.
+- [ ] Consultar cliente (ficha 360°).
+- [ ] Buscar cliente (documento, nombre, teléfono, contrato).
+- [ ] Detectar duplicados.
+- [ ] Fusionar duplicados.
+- [ ] Asignar estado de cliente (catálogo).
 
-#### Deudas
-- [ ] Modelo Debt con relaciones (client, payments)
-- [ ] Endpoint GET /api/debts (listar con filtros)
-- [ ] Endpoint POST /api/debts (crear)
-- [ ] Endpoint GET /api/debts/{id} (ver)
-- [ ] Endpoint PUT /api/debts/{id} (actualizar)
-- [ ] Endpoint DELETE /api/debts/{id} (eliminar)
+### Contratos
 
-#### Pagos / Cobros
-- [ ] Modelo Payment con relaciones (debt, client)
-- [ ] Endpoint GET /api/payments (listar)
-- [ ] Endpoint POST /api/payments (registrar pago)
-- [ ] Endpoint GET /api/payments/{id} (ver)
-- [ ] Lógica de actualización de saldo de deuda al registrar pago
+- [ ] Romper la relación 1:1 (cliente → muchos contratos).
+- [ ] Consolidar cartera por cliente.
+- [ ] Crear contrato.
+- [ ] Consultar contrato.
+- [ ] Editar contrato.
+- [ ] Cerrar contrato.
+- [ ] Cancelar/anular contrato.
+- [ ] Asociar descripción de lo financiado.
 
-#### Roles y permisos
-- [ ] Definir roles: admin, cobrador, supervisor
-- [ ] Aplicar políticas en controladores
+### Cartera
 
-### Frontend (recaudify-web)
-#### Configuración inicial
-- [ ] Inicializar proyecto Angular
-- [ ] Configurar Angular Router
-- [ ] Configurar HttpClient con interceptor de JWT
-- [ ] Configurar entornos (environment.ts, environment.prod.ts)
+- [ ] Generar plan de pagos al crear el contrato.
+- [ ] Configurar periodicidad (semanal, quincenal, mensual).
+- [ ] Configurar número de cuotas.
+- [ ] Calcular valor de cuota.
+- [ ] Calcular saldo pendiente por contrato.
+- [ ] Calcular saldo total por cliente.
+- [ ] Recalcular saldos al registrar/anular pagos.
 
-#### Autenticación
-- [ ] Pantalla de login
-- [ ] Guard de rutas protegidas
-- [ ] Servicio de autenticación (login, logout, refresh token)
+### Cobranza
 
-#### Módulo Clientes
-- [ ] Listado de clientes con búsqueda y paginación
-- [ ] Formulario crear/editar cliente
-- [ ] Vista detalle de cliente con sus deudas
+- [ ] Registrar gestión: llamada.
+- [ ] Registrar gestión: visita.
+- [ ] Registrar acuerdo de pago.
+- [ ] Registrar promesa de pago (con fecha comprometida).
+- [ ] Registrar observación.
+- [ ] Gestionar tipos de gestión (catálogo).
+- [ ] Gestionar resultados de gestión (catálogo).
+- [ ] Consultar historial por cliente.
+- [ ] Consultar historial por contrato.
+- [ ] Consultar historial por usuario.
+- [ ] Clasificar estado de cobranza por mora: al día.
+- [ ] Clasificar estado de cobranza por mora: próximo vencimiento.
+- [ ] Clasificar estado de cobranza por mora: mora temprana.
+- [ ] Clasificar estado de cobranza por mora: mora avanzada.
+- [ ] Clasificar estado de cobranza por mora: prejurídico.
+- [ ] Clasificar estado de cobranza por mora: jurídico.
+- [ ] Generar bandeja de trabajo del cobrador.
+- [ ] Hacer seguimiento de promesas (cumplidas/incumplidas).
 
-#### Módulo Deudas
-- [ ] Listado de deudas con filtros (estado, cliente)
-- [ ] Formulario crear/editar deuda
-- [ ] Vista detalle de deuda con historial de pagos
+### Pagos
 
-#### Módulo Pagos
-- [ ] Listado de pagos
-- [ ] Formulario registrar pago
-- [ ] Confirmación y recibo de pago
+- [ ] Registrar pago.
+- [ ] Registrar abono parcial.
+- [ ] Registrar pago total.
+- [ ] Permitir pagos menores a la cuota.
+- [ ] Permitir pagos mayores a la cuota.
+- [ ] Definir regla de aplicación del pago a cuotas.
+- [ ] Actualizar saldos automáticamente.
+- [ ] Anular/reversar pago (con auditoría).
+- [ ] Generar recibo (consecutivo).
+- [ ] Adjuntar comprobantes.
+- [ ] Consultar historial de pagos por cliente y contrato.
 
-### Infraestructura general
-#### Monorepo
-- [ ] Configurar .gitignore raíz del monorepo
-- [ ] Documentar setup local en README raíz
+### Verificaciones
+
+- [ ] Registrar verificación de cliente/contrato.
+- [ ] Gestionar estados de verificación (pendiente, aprobado, rechazado).
+- [ ] Asociar evidencias a la verificación.
+- [ ] Consultar historial de verificaciones.
+
+### Documentos / evidencias
+
+- [ ] Cargar contratos escaneados.
+- [ ] Cargar fotografías.
+- [ ] Cargar comprobantes.
+- [ ] Cargar documentos adicionales.
+- [ ] Asociar al cliente.
+- [ ] Asociar al contrato.
+- [ ] Asociar a pagos.
+- [ ] Asociar a gestiones.
+- [ ] Asociar a verificaciones.
+- [ ] Validar tipo y tamaño de archivo.
+
+### Usuarios y seguridad
+
+- [ ] Crear usuarios.
+- [ ] Editar usuarios.
+- [ ] Desactivar usuarios.
+- [ ] Restaurar usuario desactivado.
+- [ ] Crear rol administrador.
+- [ ] Crear rol supervisor.
+- [ ] Crear rol verificador.
+- [ ] Crear rol vendedor.
+- [ ] Crear rol cobrador.
+- [ ] Crear rol auxiliar.
+- [ ] Definir permisos por rol sobre cada módulo.
+- [ ] Registrar accesos (login/logout).
+- [ ] Registrar cambios.
+- [ ] Registrar eliminaciones.
+- [ ] Registrar acciones críticas.
+
+### Configuración (catálogos)
+
+- [ ] Gestionar estados de clientes.
+- [ ] Gestionar estados de contratos.
+- [ ] Gestionar estados de cobranza.
+- [ ] Gestionar estados de verificación.
+- [ ] Gestionar tipos de gestión.
+- [ ] Gestionar resultados de gestión.
+- [ ] Gestionar tipos de documentos.
+- [ ] Gestionar tipos de pago.
+- [ ] Gestionar parámetros de negocio (consecutivos, días de mora).
+- [ ] Gestionar parámetros de cartera (periodicidades).
+
+## Frontend (recaudify-web)
+
+### Configuración inicial
+
+- [ ] Crear estructura inicial (Angular).
+- [ ] Configurar entorno para apuntar a la API.
+- [ ] Crear sistema de autenticación (login, token Bearer, expiración).
+- [ ] Crear sistema de navegación.
+- [ ] Crear sistema de permisos por rol.
+- [ ] Crear interceptores HTTP (token, errores, logout).
+- [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
+- [ ] Crear diseño responsive.
+
+### Pantallas
+
+- [ ] Login.
+- [ ] Ficha 360° del cliente.
+- [ ] Listado/búsqueda de clientes.
+- [ ] Crear/editar cliente.
+- [ ] Detalle de contrato + plan de pagos.
+- [ ] Registro de pagos.
+- [ ] Bandeja de cobranza / registro de gestiones.
+- [ ] Verificaciones.
+- [ ] Carga y visualización de evidencias.
+- [ ] Administración de usuarios y catálogos.
+
+## Despliegue y operación
+
+- [ ] Desplegar el front en Vercel (build, variables de entorno).
+- [ ] Desplegar la API en cPanel (document root a `public/`, `.env`, permisos de `storage/`).
+- [ ] Configurar cron de cPanel para el scheduler.
+- [ ] Definir estrategia de backups (MySQL + evidencias).
+- [ ] Definir estrategia de logs.
+- [ ] Definir monitoreo básico.
+
+## Migración de datos
+
+- [ ] Mapear el modelo viejo (1:1) al nuevo (cliente → contratos).
+- [ ] Migrar clientes (con consolidación de duplicados).
+- [ ] Migrar contratos (reasociados al cliente correcto).
+- [ ] Migrar cuotas / plan de pagos.
+- [ ] Migrar pagos.
+- [ ] Migrar evidencias.
+- [ ] Migrar usuarios.
+- [ ] Validar consistencia (totales).
+- [ ] Validar saldos (migrado = calculado).
+- [ ] Validar historial completo.
+- [ ] Validar que ningún contrato quede huérfano.
 
 ## Nuevas tareas
-- Use this format to add new tasks
 
-## Actualizado
-Actualizado por Jhonatan Guerrero el 2026-06-12 a las 15:00
+- Use this format to add new tasks
