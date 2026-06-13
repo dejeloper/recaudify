@@ -4,22 +4,22 @@
 
 ### Infraestructura
 
-- [ ] Crear estructura inicial del proyecto (Laravel, PHP 8.2+).
-- [ ] Configurar conexión MySQL y convención de migraciones.
-- [ ] Configurar autenticación con Sanctum (tokens Bearer).
-- [ ] Configurar renovación y expiración de tokens (refresh).
-- [ ] Configurar CORS para el dominio de Vercel.
-- [ ] Configurar autorización por roles (policies/gates).
+- [x] Crear estructura inicial del proyecto (Laravel, PHP 8.3+).
+- [x] Configurar conexión MySQL y convención de migraciones.
+- [x] Configurar autenticación JWT (HS256, TTL 15 min, refresh 4 h).
+- [x] Configurar renovación y expiración de tokens (refresh).
+- [x] Configurar CORS para el dominio de Vercel.
+- [x] Configurar autorización por roles (policies/gates).
 - [ ] Configurar auditoría (registro de cambios y acciones críticas).
 - [ ] Configurar carga y almacenamiento de archivos.
 - [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
-- [ ] Documentar la API con Swagger/OpenAPI.
-- [ ] Configurar validación centralizada (Form Requests).
-- [ ] Configurar soft deletes en entidades de negocio.
+- [x] Documentar la API con Swagger/OpenAPI.
+- [x] Configurar validación centralizada (Form Requests).
+- [x] Configurar soft deletes en entidades de negocio.
 - [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
 - [ ] Configurar scheduler vía cron de cPanel.
 - [ ] Configurar cola con driver database + cron.
-- [ ] Crear seeders de catálogos base (estados, tipos, roles).
+- [x] Crear seeders de catálogos base (estados, tipos, roles).
 
 ### Clientes
 
@@ -114,17 +114,17 @@
 
 ### Usuarios y seguridad
 
-- [ ] Crear usuarios.
-- [ ] Editar usuarios.
-- [ ] Desactivar usuarios.
-- [ ] Restaurar usuario desactivado.
-- [ ] Crear rol administrador.
-- [ ] Crear rol supervisor.
-- [ ] Crear rol verificador.
-- [ ] Crear rol vendedor.
-- [ ] Crear rol cobrador.
-- [ ] Crear rol auxiliar.
-- [ ] Definir permisos por rol sobre cada módulo.
+- [x] Crear usuarios.
+- [x] Editar usuarios.
+- [x] Desactivar usuarios.
+- [x] Restaurar usuario desactivado.
+- [x] Crear rol administrador.
+- [x] Crear rol supervisor.
+- [x] Crear rol verificador.
+- [x] Crear rol vendedor.
+- [x] Crear rol cobrador.
+- [x] Crear rol auxiliar.
+- [x] Definir permisos por rol sobre cada módulo.
 - [ ] Registrar accesos (login/logout).
 - [ ] Registrar cambios.
 - [ ] Registrar eliminaciones.
