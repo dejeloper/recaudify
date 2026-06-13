@@ -1,0 +1,46 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="w-full max-w-sm bg-white rounded-lg shadow p-8">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Iniciar sesión</h1>
+
+    @if (error()) {
+      <p class="mb-4 text-sm text-red-600">{{ error() }}</p>
+    }
+
+    <form (ngSubmit)="submit()" #f="ngForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading() || f.invalid"
+        class="w-full bg-blue-600 text-white rounded py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+      >
+        {{ loading() ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+    </form>
+
+    <p class="mt-4 text-sm text-gray-500 text-center">
+      ¿No tienes cuenta?
+      <a routerLink="/register" class="text-blue-600 hover:underline">Regístrate</a>
+    </p>
+  </div>
+</div>
