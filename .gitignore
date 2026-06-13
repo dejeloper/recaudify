@@ -13,3 +13,14 @@ desktop.ini
 
 # Logs
 *.log
+
+# Laravel
+recaudify-api/.env
+recaudify-api/vendor/
+recaudify-api/storage/framework/views/
+recaudify-api/storage/framework/cache/
+recaudify-api/storage/framework/sessions/
+recaudify-api/storage/logs/
+recaudify-api/storage/pail/
+recaudify-api/storage/*.key
+recaudify-api/database/database.sqlite
