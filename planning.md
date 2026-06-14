@@ -17,6 +17,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Configurar soft deletes en entidades de negocio.
 - [x] Crear seeders de catálogos base (estados, tipos, roles).
 - [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
+- [ ] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
 - [ ] Configurar auditoría (registro de cambios y acciones críticas).
 - [ ] Configurar carga y almacenamiento de archivos.
 - [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
