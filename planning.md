@@ -1,5 +1,7 @@
 # Recaudify
 
+Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración y reescritura de Católikas Cobranza (CodeIgniter 3).
+
 ## Backend (recaudify-api)
 
 ### Infraestructura
@@ -10,16 +12,16 @@
 - [x] Configurar renovación y expiración de tokens (refresh).
 - [x] Configurar CORS para el dominio de Vercel.
 - [x] Configurar autorización por roles (policies/gates).
-- [ ] Configurar auditoría (registro de cambios y acciones críticas).
-- [ ] Configurar carga y almacenamiento de archivos.
-- [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
 - [x] Documentar la API con Swagger/OpenAPI.
 - [x] Configurar validación centralizada (Form Requests).
 - [x] Configurar soft deletes en entidades de negocio.
+- [x] Crear seeders de catálogos base (estados, tipos, roles).
+- [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
+- [ ] Configurar auditoría (registro de cambios y acciones críticas).
+- [ ] Configurar carga y almacenamiento de archivos.
 - [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
 - [ ] Configurar scheduler vía cron de cPanel.
 - [ ] Configurar cola con driver database + cron.
-- [x] Crear seeders de catálogos base (estados, tipos, roles).
 
 ### Clientes
 
@@ -30,13 +32,15 @@
 - [ ] Soportar referencias.
 - [ ] Crear cliente.
 - [ ] Editar cliente.
-- [ ] Consultar cliente (ficha 360°).
 - [ ] Buscar cliente (documento, nombre, teléfono, contrato).
+- [ ] Consultar cliente (ficha 360°).
+- [ ] Historial de cliente.
+- [ ] Log de actividad por cliente.
 - [ ] Detectar duplicados.
 - [ ] Fusionar duplicados.
 - [ ] Asignar estado de cliente (catálogo).
 
-### Contratos
+### Contratos y Productos
 
 - [ ] Romper la relación 1:1 (cliente → muchos contratos).
 - [ ] Consolidar cartera por cliente.
@@ -46,6 +50,9 @@
 - [ ] Cerrar contrato.
 - [ ] Cancelar/anular contrato.
 - [ ] Asociar descripción de lo financiado.
+- [ ] Asignación de productos a clientes.
+- [ ] Cambio de tarifa.
+- [ ] Cambio de fecha de pago.
 
 ### Cartera
 
@@ -76,6 +83,9 @@
 - [ ] Clasificar estado de cobranza por mora: prejurídico.
 - [ ] Clasificar estado de cobranza por mora: jurídico.
 - [ ] Generar bandeja de trabajo del cobrador.
+- [ ] Gestión de cobros diarios.
+- [ ] Llamadas del día.
+- [ ] Rellamar cliente.
 - [ ] Hacer seguimiento de promesas (cumplidas/incumplidas).
 
 ### Pagos
@@ -91,6 +101,12 @@
 - [ ] Generar recibo (consecutivo).
 - [ ] Adjuntar comprobantes.
 - [ ] Consultar historial de pagos por cliente y contrato.
+- [ ] Listado de cobros pendientes.
+
+### Devoluciones
+
+- [ ] Registrar devolución.
+- [ ] Consultar devoluciones.
 
 ### Verificaciones
 
@@ -99,7 +115,7 @@
 - [ ] Asociar evidencias a la verificación.
 - [ ] Consultar historial de verificaciones.
 
-### Documentos / evidencias
+### Documentos y Evidencias
 
 - [ ] Cargar contratos escaneados.
 - [ ] Cargar fotografías.
@@ -112,7 +128,20 @@
 - [ ] Asociar a verificaciones.
 - [ ] Validar tipo y tamaño de archivo.
 
-### Usuarios y seguridad
+### Personal
+
+#### Cobradores
+- [ ] Crear cobrador.
+- [ ] Editar cobrador.
+- [ ] Gestión de cobrador.
+- [ ] Asignación de clientes a cobrador.
+
+#### Vendedores
+- [ ] Crear vendedor.
+- [ ] Editar vendedor.
+- [ ] Listar vendedores.
+
+### Usuarios y Seguridad
 
 - [x] Crear usuarios.
 - [x] Editar usuarios.
@@ -130,6 +159,17 @@
 - [ ] Registrar eliminaciones.
 - [ ] Registrar acciones críticas.
 
+### Reportes
+
+- [ ] Reporte de cartera / cuentas por cobrar.
+- [ ] Reporte contable / resumen financiero.
+- [ ] Reporte de ventas por período.
+
+### Importación de Datos
+
+- [ ] Importar clientes desde archivo.
+- [ ] Importar pagos desde archivo.
+
 ### Configuración (catálogos)
 
 - [ ] Gestionar estados de clientes.
@@ -139,37 +179,53 @@
 - [ ] Gestionar tipos de gestión.
 - [ ] Gestionar resultados de gestión.
 - [ ] Gestionar tipos de documentos.
+- [ ] Gestionar tipos de vivienda.
 - [ ] Gestionar tipos de pago.
+- [ ] Gestionar tarifas.
 - [ ] Gestionar parámetros de negocio (consecutivos, días de mora).
 - [ ] Gestionar parámetros de cartera (periodicidades).
+- [ ] Gestionar eventos del sistema.
+
+### Backup
+
+- [ ] Generar backup de base de datos.
+- [ ] Descargar backup.
+- [ ] Restaurar backup.
 
 ## Frontend (recaudify-web)
 
 ### Configuración inicial
 
-- [ ] Crear estructura inicial (Angular).
-- [ ] Configurar entorno para apuntar a la API.
-- [ ] Crear sistema de autenticación (login, token Bearer, expiración).
+- [x] Crear estructura inicial (Angular).
+- [x] Configurar entorno para apuntar a la API.
+- [x] Crear sistema de autenticación (login, token Bearer, expiración).
 - [ ] Crear sistema de navegación.
 - [ ] Crear sistema de permisos por rol.
-- [ ] Crear interceptores HTTP (token, errores, logout).
+- [x] Crear interceptores HTTP (token, errores, logout).
 - [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
 - [ ] Crear diseño responsive.
 
 ### Pantallas
 
-- [ ] Login.
+- [x] Login.
+- [x] Dashboard.
 - [ ] Ficha 360° del cliente.
-- [ ] Listado/búsqueda de clientes.
-- [ ] Crear/editar cliente.
+- [ ] Listado / búsqueda de clientes.
+- [ ] Crear / editar cliente.
 - [ ] Detalle de contrato + plan de pagos.
 - [ ] Registro de pagos.
+- [ ] Devoluciones.
 - [ ] Bandeja de cobranza / registro de gestiones.
+- [ ] Llamadas del día.
 - [ ] Verificaciones.
 - [ ] Carga y visualización de evidencias.
-- [ ] Administración de usuarios y catálogos.
+- [ ] Reportes (cartera, contable, ventas).
+- [ ] Importación de datos.
+- [ ] Administración de usuarios.
+- [ ] Administración de catálogos.
+- [ ] Backup.
 
-## Despliegue y operación
+## Despliegue y Operación
 
 - [ ] Desplegar el front en Vercel (build, variables de entorno).
 - [ ] Desplegar la API en cPanel (document root a `public/`, `.env`, permisos de `storage/`).
@@ -178,13 +234,14 @@
 - [ ] Definir estrategia de logs.
 - [ ] Definir monitoreo básico.
 
-## Migración de datos
+## Migración de Datos (Católikas → Recaudify)
 
 - [ ] Mapear el modelo viejo (1:1) al nuevo (cliente → contratos).
 - [ ] Migrar clientes (con consolidación de duplicados).
 - [ ] Migrar contratos (reasociados al cliente correcto).
 - [ ] Migrar cuotas / plan de pagos.
 - [ ] Migrar pagos.
+- [ ] Migrar devoluciones.
 - [ ] Migrar evidencias.
 - [ ] Migrar usuarios.
 - [ ] Validar consistencia (totales).
@@ -195,3 +252,7 @@
 ## Nuevas tareas
 
 - Use this format to add new tasks
+
+## Actualizado
+
+2026-06-14
