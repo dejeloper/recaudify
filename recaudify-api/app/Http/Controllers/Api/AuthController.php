@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -158,14 +159,7 @@ class AuthController extends Controller
         /** @var User $user */
         $user = $this->guard()->user();
 
-        return response()->json([
-            'id'          => $user->id,
-            'name'        => $user->name,
-            'username'    => $user->username,
-            'email'       => $user->email,
-            'roles'       => $user->getRoleNames(),
-            'permissions' => $user->getAllPermissions()->pluck('name'),
-        ]);
+        return new UserResource($user);
     }
 
     #[OA\Post(
