@@ -1,12 +1,13 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { tap } from 'rxjs';
-import { User } from '../models/user';
-import { ApiService } from './api.service';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {tap} from 'rxjs';
+import {lower} from '../utils/text';
+import {User} from '../models/user';
+import {ApiService} from './api.service';
 
 const TOKEN_KEY = 'auth_token';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
@@ -21,17 +22,19 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    return this.api.post<{ token: string }>('auth', 'login', { username, password }).pipe(
-      tap(({ token }) => {
+    return this.api.post<{token: string}>('auth', 'login', {username: lower(username), password}).pipe(
+      tap(({token}) => {
         localStorage.setItem(TOKEN_KEY, token);
         this._token.set(token);
       }),
     );
   }
 
-  register(name: string, email: string, password: string, password_confirmation: string) {
+  register(name: string, username: string, email: string, password: string, password_confirmation: string) {
+    const data = { name: name.trim(), username, email: lower(email) || null, password, password_confirmation };
+
     return this.api
-      .post<{ token: string }>('auth', 'register', { name, email, password, password_confirmation })
+      .post<{ token: string }>('auth', 'register', data)
       .pipe(tap(({ token }) => {
         localStorage.setItem(TOKEN_KEY, token);
         this._token.set(token);

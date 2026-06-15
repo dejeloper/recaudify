@@ -1,7 +1,14 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: T;
+}
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -54,11 +61,11 @@ export class ApiService {
 
     const safeBody = body ? sanitize(body) : undefined;
 
-    return this.http.request<T>(method, url, {
+    return this.http.request<ApiResponse<T>>(method, url, {
       headers: secureHeaders,
       params: httpParams,
       body: safeBody,
-    });
+    }).pipe(map(response => response.data));
   }
 
   get<T = unknown>(controller: string, action?: string, params?: ApiOptions['params']) {

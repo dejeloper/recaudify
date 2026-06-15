@@ -29,7 +29,7 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.error.set(err.error?.message ?? 'Usuario o contraseña incorrectos');
+        this.error.set(err.message ?? 'Usuario o contraseña incorrectos');
         this.loading.set(false);
       },
     });
