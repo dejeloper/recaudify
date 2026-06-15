@@ -18,4 +18,9 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string'],
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['username' => strtolower(trim($this->username ?? ''))]);
+    }
 }

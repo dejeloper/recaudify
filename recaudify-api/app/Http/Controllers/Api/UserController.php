@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Resources\UserResource;
+use App\Http\Responses\ApiResult;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -23,7 +25,7 @@ class UserController extends Controller
     )]
     public function index(): JsonResponse
     {
-        return response()->json(User::with('roles')->get());
+        return ApiResult::success(UserResource::collection(User::with('roles')->get()))->toResponse();
     }
 
     #[OA\Get(
@@ -38,9 +40,9 @@ class UserController extends Controller
     )]
     public function indexDisabled(): JsonResponse
     {
-        $users = User::onlyTrashed()->with('roles')->get();
-
-        return response()->json($users);
+        return ApiResult::success(
+            UserResource::collection(User::onlyTrashed()->with('roles')->get())
+        )->toResponse();
     }
 
     #[OA\Get(
@@ -56,9 +58,13 @@ class UserController extends Controller
     )]
     public function show(int $id): JsonResponse
     {
-        $user = User::with('roles', 'permissions')->findOrFail($id);
+        $user = User::with('roles', 'permissions')->find($id);
 
-        return response()->json($user);
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
+
+        return ApiResult::success(new UserResource($user))->toResponse();
     }
 
     #[OA\Get(
@@ -74,9 +80,13 @@ class UserController extends Controller
     )]
     public function showTrashed(int $id): JsonResponse
     {
-        $user = User::onlyTrashed()->with('roles')->findOrFail($id);
+        $user = User::onlyTrashed()->with('roles')->find($id);
 
-        return response()->json($user);
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
+
+        return ApiResult::success(new UserResource($user))->toResponse();
     }
 
     #[OA\Get(
@@ -96,7 +106,7 @@ class UserController extends Controller
             ->orWhere('username', 'like', "%{$name}%")
             ->get();
 
-        return response()->json($users);
+        return ApiResult::success(UserResource::collection($users))->toResponse();
     }
 
     #[OA\Post(
@@ -126,14 +136,13 @@ class UserController extends Controller
     )]
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $data = $request->safe()->except('role');
-        $user = User::create($data);
+        $user = User::create($request->safe()->except('role'));
 
         if ($request->filled('role')) {
             $user->assignRole($request->role);
         }
 
-        return response()->json($user->load('roles'), 201);
+        return ApiResult::created(new UserResource($user->load('roles', 'permissions')), 'Usuario creado correctamente.')->toResponse();
     }
 
     #[OA\Put(
@@ -162,10 +171,13 @@ class UserController extends Controller
     )]
     public function update(UpdateUserRequest $request, int $id): JsonResponse
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
 
         $data = collect($request->safe()->except('role'))
-            ->reject(fn ($value) => is_null($value) && in_array(request()->keys()[0] ?? '', ['password']))
             ->filter(fn ($value, $key) => $key !== 'password' || ! empty($value))
             ->toArray();
 
@@ -175,7 +187,7 @@ class UserController extends Controller
             $user->syncRoles(array_filter([$request->role]));
         }
 
-        return response()->json($user->load('roles'));
+        return ApiResult::success(new UserResource($user->load('roles', 'permissions')), 'Usuario actualizado correctamente.')->toResponse();
     }
 
     #[OA\Delete(
@@ -191,10 +203,15 @@ class UserController extends Controller
     )]
     public function destroy(int $id): JsonResponse
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
+
         $user->delete();
 
-        return response()->json(['message' => 'Usuario desactivado correctamente.']);
+        return ApiResult::empty('Usuario desactivado correctamente.')->toResponse();
     }
 
     #[OA\Post(
@@ -210,10 +227,15 @@ class UserController extends Controller
     )]
     public function restore(int $id): JsonResponse
     {
-        $user = User::onlyTrashed()->findOrFail($id);
+        $user = User::onlyTrashed()->find($id);
+
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
+
         $user->restore();
 
-        return response()->json(['message' => 'Usuario restaurado correctamente.']);
+        return ApiResult::empty('Usuario restaurado correctamente.')->toResponse();
     }
 
     #[OA\Post(
@@ -245,7 +267,11 @@ class UserController extends Controller
             'assign'        => ['required', 'boolean'],
         ]);
 
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+
+        if (! $user) {
+            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
+        }
 
         if (request()->boolean('assign')) {
             $user->givePermissionTo(request()->permissions);
@@ -255,9 +281,9 @@ class UserController extends Controller
             $message = 'Permisos revocados correctamente.';
         }
 
-        return response()->json([
-            'message'     => $message,
-            'permissions' => $user->fresh()->getAllPermissions()->pluck('name'),
-        ]);
+        return ApiResult::success(
+            $user->fresh()->getAllPermissions()->pluck('name'),
+            $message
+        )->toResponse();
     }
 }

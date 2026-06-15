@@ -15,9 +15,14 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name'     => ['required', 'string', 'max:100'],
-            'username' => ['required', 'string', 'max:50', 'unique:users,username', 'regex:/^[a-zA-Z0-9._-]+$/'],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username', 'regex:/^[a-z0-9._-]+$/'],
             'email'    => ['nullable', 'email', 'max:150'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['username' => strtolower(trim($this->username ?? ''))]);
     }
 }

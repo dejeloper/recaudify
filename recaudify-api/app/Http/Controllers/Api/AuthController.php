@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Responses\ApiResult;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -31,20 +32,7 @@ class AuthController extends Controller
             )
         ),
         responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Usuario registrado correctamente',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'Usuario registrado correctamente.'),
-                        new OA\Property(property: 'user', type: 'object', properties: [
-                            new OA\Property(property: 'id',       type: 'integer', example: 1),
-                            new OA\Property(property: 'name',     type: 'string',  example: 'Juan Pérez'),
-                            new OA\Property(property: 'username', type: 'string',  example: 'jperez'),
-                        ]),
-                    ]
-                )
-            ),
+            new OA\Response(response: 201, description: 'Usuario registrado correctamente'),
             new OA\Response(response: 422, description: 'Error de validación'),
         ]
     )]
@@ -52,14 +40,11 @@ class AuthController extends Controller
     {
         $user = User::create($request->validated());
 
-        return response()->json([
-            'message' => 'Usuario registrado correctamente.',
-            'user'    => [
-                'id'       => $user->id,
-                'name'     => $user->name,
-                'username' => $user->username,
-            ],
-        ], 201);
+        return ApiResult::created([
+            'id'       => $user->id,
+            'name'     => $user->name,
+            'username' => $user->username,
+        ], 'Usuario registrado correctamente.')->toResponse();
     }
 
     #[OA\Post(
@@ -77,23 +62,7 @@ class AuthController extends Controller
             )
         ),
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Login exitoso',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'token',      type: 'string',  example: 'eyJ0eXAiOiJKV1Qi...'),
-                        new OA\Property(property: 'token_type', type: 'string',  example: 'bearer'),
-                        new OA\Property(property: 'expires_in', type: 'integer', example: 900),
-                        new OA\Property(property: 'user', type: 'object', properties: [
-                            new OA\Property(property: 'id',       type: 'integer', example: 1),
-                            new OA\Property(property: 'name',     type: 'string',  example: 'Administrador'),
-                            new OA\Property(property: 'username', type: 'string',  example: 'admin'),
-                            new OA\Property(property: 'role',     type: 'string',  example: 'administrador'),
-                        ]),
-                    ]
-                )
-            ),
+            new OA\Response(response: 200, description: 'Login exitoso'),
             new OA\Response(response: 401, description: 'Credenciales incorrectas'),
             new OA\Response(response: 403, description: 'Usuario inactivo'),
         ]
@@ -106,7 +75,7 @@ class AuthController extends Controller
         ];
 
         if (! $token = $this->guard()->attempt($credentials)) {
-            return response()->json(['message' => 'Credenciales incorrectas.'], 401);
+            return ApiResult::unauthorized('Credenciales incorrectas.')->toResponse();
         }
 
         /** @var User $user */
@@ -115,10 +84,10 @@ class AuthController extends Controller
         if (! $user->active) {
             $this->guard()->logout();
 
-            return response()->json(['message' => 'Usuario inactivo.'], 403);
+            return ApiResult::forbidden('Usuario inactivo.')->toResponse();
         }
 
-        return response()->json([
+        return ApiResult::success([
             'token'      => $token,
             'token_type' => 'bearer',
             'expires_in' => config('jwt.ttl') * 60,
@@ -128,7 +97,7 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'role'     => $user->getRoleNames()->first(),
             ],
-        ]);
+        ], 'Sesión iniciada correctamente.')->toResponse();
     }
 
     #[OA\Get(
@@ -137,20 +106,7 @@ class AuthController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Auth'],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Datos del usuario autenticado',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'id',          type: 'integer', example: 1),
-                        new OA\Property(property: 'name',        type: 'string',  example: 'Administrador'),
-                        new OA\Property(property: 'username',    type: 'string',  example: 'admin'),
-                        new OA\Property(property: 'email',       type: 'string',  nullable: true, example: null),
-                        new OA\Property(property: 'roles',       type: 'array',   items: new OA\Items(type: 'string', example: 'administrador')),
-                        new OA\Property(property: 'permissions', type: 'array',   items: new OA\Items(type: 'string', example: 'clientes.ver')),
-                    ]
-                )
-            ),
+            new OA\Response(response: 200, description: 'Datos del usuario autenticado'),
             new OA\Response(response: 401, description: 'No autenticado'),
         ]
     )]
@@ -159,7 +115,7 @@ class AuthController extends Controller
         /** @var User $user */
         $user = $this->guard()->user();
 
-        return new UserResource($user);
+        return ApiResult::success(new UserResource($user))->toResponse();
     }
 
     #[OA\Post(
@@ -168,15 +124,7 @@ class AuthController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Auth'],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Sesión cerrada correctamente',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'Sesión cerrada correctamente.'),
-                    ]
-                )
-            ),
+            new OA\Response(response: 200, description: 'Sesión cerrada correctamente'),
             new OA\Response(response: 401, description: 'No autenticado'),
         ]
     )]
@@ -184,7 +132,7 @@ class AuthController extends Controller
     {
         $this->guard()->logout();
 
-        return response()->json(['message' => 'Sesión cerrada correctamente.']);
+        return ApiResult::empty('Sesión cerrada correctamente.')->toResponse();
     }
 
     private function guard(): JWTGuard
