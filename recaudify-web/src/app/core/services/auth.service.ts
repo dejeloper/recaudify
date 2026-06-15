@@ -1,9 +1,9 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {tap} from 'rxjs';
-import {lower} from '../utils/text';
-import {User} from '../models/user';
-import {ApiService} from './api.service';
+import { lower } from '@core/utils/text';
+import { User } from '@core/models/user';
+import { ApiService } from '@core/services/api.service';
 
 const TOKEN_KEY = 'auth_token';
 

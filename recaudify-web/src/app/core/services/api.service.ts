@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 interface ApiResponse<T> {
   success: boolean;

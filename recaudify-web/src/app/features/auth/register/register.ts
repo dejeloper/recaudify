@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { lower } from '../../../core/utils/text';
-import { AuthService } from '../../../core/services/auth.service';
+import { lower } from '@core/utils/text';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-register',
