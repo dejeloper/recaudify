@@ -63,37 +63,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Usuario registrado correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Usuario registrado correctamente."
-                                        },
-                                        "user": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Juan Pérez"
-                                                },
-                                                "username": {
-                                                    "type": "string",
-                                                    "example": "jperez"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Usuario registrado correctamente"
                     },
                     "422": {
                         "description": "Error de validación"
@@ -135,49 +105,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Login exitoso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "example": "eyJ0eXAiOiJKV1Qi..."
-                                        },
-                                        "token_type": {
-                                            "type": "string",
-                                            "example": "bearer"
-                                        },
-                                        "expires_in": {
-                                            "type": "integer",
-                                            "example": 900
-                                        },
-                                        "user": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Administrador"
-                                                },
-                                                "username": {
-                                                    "type": "string",
-                                                    "example": "admin"
-                                                },
-                                                "role": {
-                                                    "type": "string",
-                                                    "example": "administrador"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Login exitoso"
                     },
                     "401": {
                         "description": "Credenciales incorrectas"
@@ -197,47 +125,7 @@
                 "operationId": "b5de204f5e452ef51327c691aa99e77c",
                 "responses": {
                     "200": {
-                        "description": "Datos del usuario autenticado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": 1
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "Administrador"
-                                        },
-                                        "username": {
-                                            "type": "string",
-                                            "example": "admin"
-                                        },
-                                        "email": {
-                                            "type": "string",
-                                            "example": null,
-                                            "nullable": true
-                                        },
-                                        "roles": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string",
-                                                "example": "administrador"
-                                            }
-                                        },
-                                        "permissions": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string",
-                                                "example": "clientes.ver"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Datos del usuario autenticado"
                     },
                     "401": {
                         "description": "No autenticado"
@@ -259,20 +147,7 @@
                 "operationId": "df9bdc6c7a6d9f20b983526b2ec0f698",
                 "responses": {
                     "200": {
-                        "description": "Sesión cerrada correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Sesión cerrada correctamente."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Sesión cerrada correctamente"
                     },
                     "401": {
                         "description": "No autenticado"
