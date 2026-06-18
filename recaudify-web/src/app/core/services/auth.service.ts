@@ -1,59 +1,71 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {Router} from '@angular/router';
-import {tap} from 'rxjs';
-import { lower } from '@core/utils/text';
-import { User } from '@core/models/user';
-import { ApiService } from '@core/services/api.service';
-
-const TOKEN_KEY = 'auth_token';
+import {catchError, finalize, Observable, of, shareReplay, switchMap, tap} from 'rxjs';
+import {lower} from '@core/utils/text';
+import {ApiError} from '@core/models/api-error';
+import {User} from '@core/models/user';
+import {ApiService} from '@core/services/api.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
 
-  private readonly _token = signal<string | null>(localStorage.getItem(TOKEN_KEY));
-
   readonly currentUser = signal<User | null>(null);
-  readonly isAuthenticated = computed(() => !!this._token());
+  readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
-  get token(): string | null {
-    return this._token();
-  }
+  private refreshRequest$: Observable<unknown> | null = null;
 
-  login(username: string, password: string) {
-    const data = { username: lower(username), password };
-
-    return this.api.post<{ token: string }>('auth', 'login', data).pipe(
-      tap(({ token }) => {
-        localStorage.setItem(TOKEN_KEY, token);
-        this._token.set(token);
+  checkAuth() {
+    return this.api.get<User>('auth', 'me').pipe(
+      tap(user => this.currentUser.set(user)),
+      catchError((err: ApiError) => {
+        if (err.statusCode === 401) {
+          return this.api.post('auth', 'refresh').pipe(
+            switchMap(() => this.api.get<User>('auth', 'me')),
+            tap(user => this.currentUser.set(user as User)),
+            catchError(() => {
+              this.currentUser.set(null);
+              return of(null);
+            }),
+          );
+        }
+        this.currentUser.set(null);
+        return of(null);
       }),
     );
   }
 
-  register(name: string, username: string, email: string, password: string, password_confirmation: string) {
-    const data = { name: name.trim(), username, email: lower(email) || null, password, password_confirmation };
-
-    return this.api
-      .post<{ token: string }>('auth', 'register', data)
-      .pipe(tap(({ token }) => {
-        localStorage.setItem(TOKEN_KEY, token);
-        this._token.set(token);
-      }));
+  login(username: string, password: string) {
+    const data = {username: lower(username), password};
+    return this.api.post('auth', 'login', data).pipe(
+      switchMap(() => this.me()),
+    );
   }
 
   me() {
     return this.api.get<User>('auth', 'me').pipe(
-      tap((user) => this.currentUser.set(user)),
+      tap(user => this.currentUser.set(user)),
     );
+  }
+
+  refresh() {
+    if (!this.refreshRequest$) {
+      this.refreshRequest$ = this.api.post('auth', 'refresh').pipe(
+        shareReplay(1),
+        finalize(() => (this.refreshRequest$ = null)),
+      );
+    }
+    return this.refreshRequest$;
+  }
+
+  clearSession() {
+    this.currentUser.set(null);
   }
 
   logout() {
     return this.api.post('auth', 'logout').pipe(
       tap(() => {
-        localStorage.removeItem(TOKEN_KEY);
-        this._token.set(null);
         this.currentUser.set(null);
         this.router.navigate(['/login']);
       }),

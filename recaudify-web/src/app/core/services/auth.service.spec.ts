@@ -1,22 +1,22 @@
-import { provideZonelessChangeDetection } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { ApiService } from '@core/services/api.service';
-import { AuthService } from '@core/services/auth.service';
+import {provideZonelessChangeDetection} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {Router} from '@angular/router';
+import {of} from 'rxjs';
+import {ApiService} from '@core/services/api.service';
+import {AuthService} from '@core/services/auth.service';
 
 const TOKEN = 'fake-jwt-token';
 
 function setup() {
-  const apiMock = { post: vi.fn(), get: vi.fn() };
-  const routerMock = { navigate: vi.fn() };
+  const apiMock = {post: vi.fn(), get: vi.fn()};
+  const routerMock = {navigate: vi.fn()};
 
   TestBed.configureTestingModule({
     providers: [
       provideZonelessChangeDetection(),
       AuthService,
-      { provide: ApiService, useValue: apiMock },
-      { provide: Router, useValue: routerMock },
+      {provide: ApiService, useValue: apiMock},
+      {provide: Router, useValue: routerMock},
     ],
   });
 
@@ -32,14 +32,14 @@ describe('AuthService', () => {
 
   describe('initial state', () => {
     it('is not authenticated when no token in localStorage', () => {
-      const { service } = setup();
+      const {service} = setup();
       expect(service.isAuthenticated()).toBe(false);
       expect(service.token).toBeNull();
     });
 
     it('is authenticated when token exists in localStorage', () => {
       localStorage.setItem('auth_token', TOKEN);
-      const { service } = setup();
+      const {service} = setup();
       expect(service.isAuthenticated()).toBe(true);
       expect(service.token).toBe(TOKEN);
     });
@@ -47,8 +47,8 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('stores token and sets isAuthenticated on success', () => {
-      const { service, api } = setup();
-      api.post.mockReturnValue(of({ token: TOKEN }));
+      const {service, api} = setup();
+      api.post.mockReturnValue(of({token: TOKEN}));
 
       service.login('admin', 'password').subscribe();
 
@@ -58,41 +58,19 @@ describe('AuthService', () => {
     });
 
     it('normalizes username to lowercase before sending', () => {
-      const { service, api } = setup();
-      api.post.mockReturnValue(of({ token: TOKEN }));
+      const {service, api} = setup();
+      api.post.mockReturnValue(of({token: TOKEN}));
 
       service.login('ADMIN', 'password').subscribe();
 
-      expect(api.post).toHaveBeenCalledWith('auth', 'login', { username: 'admin', password: 'password' });
-    });
-  });
-
-  describe('register', () => {
-    it('stores token and sets isAuthenticated on success', () => {
-      const { service, api } = setup();
-      api.post.mockReturnValue(of({ token: TOKEN }));
-
-      service.register('Juan', 'juan.perez', 'juan@test.com', 'password', 'password').subscribe();
-
-      expect(service.isAuthenticated()).toBe(true);
-      expect(localStorage.getItem('auth_token')).toBe(TOKEN);
-    });
-
-    it('sends null email when empty string', () => {
-      const { service, api } = setup();
-      api.post.mockReturnValue(of({ token: TOKEN }));
-
-      service.register('Juan', 'juan', '', 'password', 'password').subscribe();
-
-      const body = api.post.mock.calls[0][2];
-      expect(body.email).toBeNull();
+      expect(api.post).toHaveBeenCalledWith('auth', 'login', {username: 'admin', password: 'password'});
     });
   });
 
   describe('logout', () => {
     it('clears token and navigates to /login', () => {
       localStorage.setItem('auth_token', TOKEN);
-      const { service, api, router } = setup();
+      const {service, api, router} = setup();
       api.post.mockReturnValue(of(undefined));
 
       service.logout().subscribe();
@@ -106,8 +84,8 @@ describe('AuthService', () => {
 
   describe('me', () => {
     it('sets currentUser on success', () => {
-      const { service, api } = setup();
-      const user = { id: 1, name: 'Juan', username: 'juan', email: null, roles: [], permissions: [] };
+      const {service, api} = setup();
+      const user = {id: 1, name: 'Juan', username: 'juan', email: null, roles: [], permissions: []};
       api.get.mockReturnValue(of(user));
 
       service.me().subscribe();

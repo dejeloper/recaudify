@@ -1,11 +1,5 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { AuthService } from '@core/services/auth.service';
+import {HttpInterceptorFn} from '@angular/common/http';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = inject(AuthService).token;
-
-  if (!token) return next(req);
-
-  return next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
-};
+// Cookie HTTP-only enviada automáticamente por el navegador con withCredentials: true.
+// Este interceptor ya no inyecta el header Authorization.
+export const authInterceptor: HttpInterceptorFn = (req, next) => next(req);

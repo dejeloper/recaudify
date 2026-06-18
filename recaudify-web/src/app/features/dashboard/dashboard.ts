@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '@core/services/auth.service';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './dashboard.html'
 })
 export class Dashboard implements OnInit {
   private readonly authService = inject(AuthService);

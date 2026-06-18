@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { environment } from '@env/environment';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {map, Observable} from 'rxjs';
+import {environment} from '@env/environment';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -29,7 +29,7 @@ function sanitize(obj: Record<string, unknown>): Record<string, unknown> {
   );
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class ApiService {
   private http = inject(HttpClient);
 
@@ -65,26 +65,27 @@ export class ApiService {
       headers: secureHeaders,
       params: httpParams,
       body: safeBody,
+      withCredentials: true,
     }).pipe(map(response => response.data));
   }
 
   get<T = unknown>(controller: string, action?: string, params?: ApiOptions['params']) {
-    return this.request<T>({ controller, action, method: 'GET', params });
+    return this.request<T>({controller, action, method: 'GET', params});
   }
 
   post<T = unknown>(controller: string, action?: string, body?: ApiOptions['body']) {
-    return this.request<T>({ controller, action, method: 'POST', body });
+    return this.request<T>({controller, action, method: 'POST', body});
   }
 
   put<T = unknown>(controller: string, action?: string, body?: ApiOptions['body']) {
-    return this.request<T>({ controller, action, method: 'PUT', body });
+    return this.request<T>({controller, action, method: 'PUT', body});
   }
 
   patch<T = unknown>(controller: string, action?: string, body?: ApiOptions['body']) {
-    return this.request<T>({ controller, action, method: 'PATCH', body });
+    return this.request<T>({controller, action, method: 'PATCH', body});
   }
 
   delete<T = unknown>(controller: string, action?: string) {
-    return this.request<T>({ controller, action, method: 'DELETE' });
+    return this.request<T>({controller, action, method: 'DELETE'});
   }
 }
