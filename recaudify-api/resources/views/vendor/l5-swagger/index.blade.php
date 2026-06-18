@@ -158,6 +158,7 @@
             deepLinking: true,
             filter: {!! config('l5-swagger.defaults.ui.display.filter') ? 'true' : 'false' !!},
             persistAuthorization: "{!! config('l5-swagger.defaults.ui.authorization.persist_authorization') ? 'true' : 'false' !!}",
+            withCredentials: true,
 
         })
 

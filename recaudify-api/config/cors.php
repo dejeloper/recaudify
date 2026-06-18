@@ -3,7 +3,7 @@
 return [
     'paths' => ['api/*'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:4200'),
@@ -13,11 +13,11 @@ return [
         '#^https://.*\.vercel\.app$#',
     ],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'Accept', 'X-Requested-With', 'Authorization'],
 
     'exposed_headers' => [],
 
-    'max_age' => 0,
+    'max_age' => 7200,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 ];

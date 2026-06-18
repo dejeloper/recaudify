@@ -18,7 +18,7 @@
                     "Auth"
                 ],
                 "summary": "Registrar usuario",
-                "operationId": "c7bb21a0d87049e161b8e4c9b0d909f2",
+                "operationId": "e177feb0b097c9a77e3e1761ecf52708",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -77,7 +77,7 @@
                     "Auth"
                 ],
                 "summary": "Iniciar sesión",
-                "operationId": "dd51a484b7fa0f97c7680fdbde14cf5f",
+                "operationId": "f73e7629dfbd9e09e5999fb5b2020f43",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -122,7 +122,7 @@
                     "Auth"
                 ],
                 "summary": "Obtener usuario autenticado",
-                "operationId": "b5de204f5e452ef51327c691aa99e77c",
+                "operationId": "352bc0c5fb5c8efcd9e602e7f350be48",
                 "responses": {
                     "200": {
                         "description": "Datos del usuario autenticado"
@@ -134,6 +134,34 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Renovar token de sesión",
+                "operationId": "1a9e0f060a4c1ea5c323e3109cab4dff",
+                "responses": {
+                    "200": {
+                        "description": "Token renovado"
+                    },
+                    "401": {
+                        "description": "Sesión expirada o inválida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -144,7 +172,7 @@
                     "Auth"
                 ],
                 "summary": "Cerrar sesión",
-                "operationId": "df9bdc6c7a6d9f20b983526b2ec0f698",
+                "operationId": "5dd852a24127d2fed98599955e3cd51c",
                 "responses": {
                     "200": {
                         "description": "Sesión cerrada correctamente"
@@ -156,6 +184,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -166,7 +197,7 @@
                     "Permisos"
                 ],
                 "summary": "Listar permisos",
-                "operationId": "a49af5d462a91e9996aa5342b6de4ddd",
+                "operationId": "c48ce0f60f698a129de6de995abee71b",
                 "responses": {
                     "200": {
                         "description": "Lista de permisos"
@@ -183,7 +214,7 @@
                     "Permisos"
                 ],
                 "summary": "Crear permiso",
-                "operationId": "6ef531e33f8fca9c42d3e8fcaf30d5b4",
+                "operationId": "4a60ed1628e396462d8dcb3a65eb78ee",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -224,7 +255,7 @@
                     "Permisos"
                 ],
                 "summary": "Obtener permiso por ID",
-                "operationId": "16db55c19d22dca89994e416d7dd28be",
+                "operationId": "f770751a51987f283e4b28ecc35922c2",
                 "parameters": [
                     {
                         "name": "id",
@@ -254,7 +285,7 @@
                     "Permisos"
                 ],
                 "summary": "Actualizar permiso",
-                "operationId": "c5094a50888fb3f3f1254fea3140241a",
+                "operationId": "1da43c549f8e6afd1ac3230ff528aca7",
                 "parameters": [
                     {
                         "name": "id",
@@ -299,7 +330,7 @@
                     "Permisos"
                 ],
                 "summary": "Eliminar permiso",
-                "operationId": "d0a14d107d6e379b9b3b5207f5c76e8e",
+                "operationId": "4a51b32977cd036f7e674bd665d05740",
                 "parameters": [
                     {
                         "name": "id",
@@ -331,7 +362,7 @@
                     "Roles"
                 ],
                 "summary": "Listar roles con sus permisos",
-                "operationId": "ca86f0a206144dfbd695b749b4b28f9d",
+                "operationId": "ec3e2bad90f17645ad891774d06a127d",
                 "responses": {
                     "200": {
                         "description": "Lista de roles"
@@ -348,7 +379,7 @@
                     "Roles"
                 ],
                 "summary": "Crear rol",
-                "operationId": "341b8b162b61267c7bd187500aea5bc4",
+                "operationId": "225caea1d42392f1b90d86e3053c470d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -396,7 +427,7 @@
                     "Roles"
                 ],
                 "summary": "Obtener rol por ID",
-                "operationId": "15c404caf238f1861c81f68205d328e5",
+                "operationId": "1a1fe470a1cf8e3862b36bd2f1ffba94",
                 "parameters": [
                     {
                         "name": "id",
@@ -426,7 +457,7 @@
                     "Roles"
                 ],
                 "summary": "Actualizar rol",
-                "operationId": "c73ab816ae8fb7c34a995d37ba577082",
+                "operationId": "cedc4cebd581195564961004b09a94b2",
                 "parameters": [
                     {
                         "name": "id",
@@ -478,7 +509,7 @@
                     "Roles"
                 ],
                 "summary": "Eliminar rol",
-                "operationId": "ffa6ef115d86b00cc6c54a6210019f9c",
+                "operationId": "3a056e285398ef9458f4beb1e7d9d68f",
                 "parameters": [
                     {
                         "name": "id",
@@ -510,7 +541,7 @@
                     "Usuarios"
                 ],
                 "summary": "Listar usuarios activos",
-                "operationId": "566aed8efb436ca506e0ef51a032ecd9",
+                "operationId": "615595d89ec5af928e2a7b2bf76079b4",
                 "responses": {
                     "200": {
                         "description": "Lista de usuarios activos"
@@ -530,7 +561,7 @@
                     "Usuarios"
                 ],
                 "summary": "Crear usuario",
-                "operationId": "be551c1d694a01c164966f58bfa77013",
+                "operationId": "62ba21842fff6320b2a967462dff0b9e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -602,7 +633,7 @@
                     "Usuarios"
                 ],
                 "summary": "Listar usuarios desactivados (soft delete)",
-                "operationId": "7ee9650b83e0a487965509bd2f23f40c",
+                "operationId": "ac3480a129a667fa2d105285a11baef5",
                 "responses": {
                     "200": {
                         "description": "Lista de usuarios desactivados"
@@ -624,7 +655,7 @@
                     "Usuarios"
                 ],
                 "summary": "Obtener usuario por ID",
-                "operationId": "6f51bd5fa2dddcd25e44cfa53dcbd10a",
+                "operationId": "a4d064c27229c91e693ac2b6d4adaa81",
                 "parameters": [
                     {
                         "name": "id",
@@ -654,7 +685,7 @@
                     "Usuarios"
                 ],
                 "summary": "Actualizar usuario",
-                "operationId": "070e37fc9aff78ae73860751bc990ed3",
+                "operationId": "e830dffcafd6030e1481928a6c491436",
                 "parameters": [
                     {
                         "name": "id",
@@ -724,7 +755,7 @@
                     "Usuarios"
                 ],
                 "summary": "Desactivar usuario (soft delete)",
-                "operationId": "0b4133ed462528a5e648b88ead11e929",
+                "operationId": "5aa98d7be69f046dfa1a42c950d22108",
                 "parameters": [
                     {
                         "name": "id",
@@ -756,7 +787,7 @@
                     "Usuarios"
                 ],
                 "summary": "Obtener usuario eliminado por ID",
-                "operationId": "1cada78f23a0dce17d0305c242776530",
+                "operationId": "acffae361928890db419030b7dcf26af",
                 "parameters": [
                     {
                         "name": "id",
@@ -788,7 +819,7 @@
                     "Usuarios"
                 ],
                 "summary": "Buscar usuarios por nombre",
-                "operationId": "2d2a5147d3ef598da71f24f36e8d7ae9",
+                "operationId": "d73be801ab26eb79f26ea5bfd7a80844",
                 "parameters": [
                     {
                         "name": "name",
@@ -817,7 +848,7 @@
                     "Usuarios"
                 ],
                 "summary": "Restaurar usuario desactivado",
-                "operationId": "80acd9f038d503c88285d9539faf6809",
+                "operationId": "5727350529e316908a284edf60c94edd",
                 "parameters": [
                     {
                         "name": "id",
@@ -849,7 +880,7 @@
                     "Usuarios"
                 ],
                 "summary": "Asignar o revocar permisos directos a un usuario",
-                "operationId": "a76f64ca47acc028798407cc98558212",
+                "operationId": "544afe5e3d87b3f1d250703f2dad7457",
                 "parameters": [
                     {
                         "name": "id",
@@ -911,6 +942,11 @@
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
                 "description": "Ingresa el token JWT obtenido en /api/auth/login"
+            },
+            "cookieAuth": {
+                "type": "apiKey",
+                "name": "token",
+                "in": "cookie"
             }
         }
     },
