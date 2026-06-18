@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {AuthService} from '@core/services/auth.service';
@@ -8,7 +8,7 @@ import {AuthService} from '@core/services/auth.service';
   imports: [FormsModule],
   templateUrl: './login.html'
 })
-export class Login {
+export class Login implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -17,6 +17,11 @@ export class Login {
   protected showPassword = false;
   protected readonly error = signal('');
   protected readonly loading = signal(false);
+
+  ngOnInit(): void {
+    this.username = 'admin';
+    this.password = 'admin1234';
+  }
 
   submit() {
     this.error.set('');
