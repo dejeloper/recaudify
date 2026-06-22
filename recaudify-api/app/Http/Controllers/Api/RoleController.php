@@ -2,67 +2,73 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
+use App\Http\Responses\ApiResult;
 use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 class RoleController extends ApiController
 {
     public function index(): JsonResponse
     {
-        return response()->json(Role::where('guard_name', 'api')->with('permissions')->get());
+        $roles = Role::where('guard_name', 'api')->with('permissions')->orderBy('name')->get();
+
+        return ApiResult::success($roles)->toResponse();
     }
 
     public function show(int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->with('permissions')->findOrFail($id);
+        $role = Role::where('guard_name', 'api')->with('permissions')->find($id);
 
-        return response()->json($role);
+        if (! $role) {
+            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        }
+
+        return ApiResult::success($role)->toResponse();
     }
 
-    public function store(): JsonResponse
+    public function store(StoreRoleRequest $request): JsonResponse
     {
-        request()->validate([
-            'name'          => ['required', 'string', 'unique:roles,name'],
-            'permissions'   => ['array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-        ]);
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'api']);
 
-        $role = Role::create(['name' => request()->name, 'guard_name' => 'api']);
-
-        if (request()->filled('permissions')) {
-            $role->syncPermissions(request()->permissions);
+        if ($request->filled('permissions')) {
+            $role->syncPermissions($request->permissions);
         }
 
-        return response()->json($role->load('permissions'), 201);
+        return ApiResult::created($role->load('permissions'), 'Rol creado correctamente.')->toResponse();
     }
 
-    public function update(int $id): JsonResponse
+    public function update(UpdateRoleRequest $request, int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->findOrFail($id);
+        $role = Role::where('guard_name', 'api')->find($id);
 
-        request()->validate([
-            'name'          => ['sometimes', 'string', 'unique:roles,name,' . $id],
-            'permissions'   => ['array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-        ]);
-
-        if (request()->filled('name')) {
-            $role->update(['name' => request()->name]);
+        if (! $role) {
+            return ApiResult::notFound('Rol no encontrado.')->toResponse();
         }
 
-        if (request()->has('permissions')) {
-            $role->syncPermissions(request()->permissions);
+        if ($request->filled('name')) {
+            $role->update(['name' => $request->name]);
         }
 
-        return response()->json($role->load('permissions'));
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->permissions);
+        }
+
+        return ApiResult::success($role->load('permissions'), 'Rol actualizado correctamente.')->toResponse();
     }
 
     public function destroy(int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->findOrFail($id);
+        $role = Role::where('guard_name', 'api')->find($id);
+
+        if (! $role) {
+            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        }
+
         $role->syncPermissions([]);
         $role->delete();
 
-        return response()->json(['message' => 'Rol eliminado correctamente.']);
+        return ApiResult::empty('Rol eliminado correctamente.')->toResponse();
     }
 }

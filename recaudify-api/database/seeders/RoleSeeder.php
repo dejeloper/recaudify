@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use App\Models\Permission;
+use App\Models\Role;
 
 class RoleSeeder extends Seeder
 {
@@ -58,7 +59,7 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $roleName => $permissions) {
-            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'api']);
+            $role = Role::firstOrCreate(['name' => $roleName]);
 
             if ($permissions !== null) {
                 $role->syncPermissions($permissions);
@@ -66,9 +67,7 @@ class RoleSeeder extends Seeder
         }
 
         // Administrador gets every permission
-        $administrador = Role::findByName('administrador', 'api');
-        $administrador->syncPermissions(
-            \Spatie\Permission\Models\Permission::where('guard_name', 'api')->pluck('name')->toArray()
-        );
+        $administrador = Role::findByName('administrador');
+        $administrador->syncPermissions(Permission::pluck('name')->toArray());
     }
 }

@@ -9,21 +9,24 @@ class RoleDocs
     #[OA\Get(
         path: '/api/roles',
         summary: 'Listar roles con sus permisos',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Roles'],
-        responses: [new OA\Response(response: 200, description: 'Lista de roles')]
+        responses: [
+            new OA\Response(response: 200, description: 'Lista de roles con sus permisos'),
+            new OA\Response(response: 403, description: 'Sin permisos'),
+        ]
     )]
     public function index(): void {}
 
     #[OA\Get(
         path: '/api/roles/{id}',
         summary: 'Obtener rol por ID',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Roles'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Rol encontrado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 404, description: 'Rol no encontrado'),
         ]
     )]
     public function show(): void {}
@@ -31,7 +34,7 @@ class RoleDocs
     #[OA\Post(
         path: '/api/roles',
         summary: 'Crear rol',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Roles'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -44,7 +47,7 @@ class RoleDocs
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: 'Rol creado'),
+            new OA\Response(response: 201, description: 'Rol creado correctamente'),
             new OA\Response(response: 422, description: 'Error de validación'),
         ]
     )]
@@ -53,7 +56,7 @@ class RoleDocs
     #[OA\Put(
         path: '/api/roles/{id}',
         summary: 'Actualizar rol',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Roles'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(
@@ -65,8 +68,9 @@ class RoleDocs
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: 'Rol actualizado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 200, description: 'Rol actualizado correctamente'),
+            new OA\Response(response: 404, description: 'Rol no encontrado'),
+            new OA\Response(response: 422, description: 'Error de validación'),
         ]
     )]
     public function update(): void {}
@@ -74,12 +78,12 @@ class RoleDocs
     #[OA\Delete(
         path: '/api/roles/{id}',
         summary: 'Eliminar rol',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Roles'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
-            new OA\Response(response: 200, description: 'Rol eliminado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 200, description: 'Rol eliminado correctamente'),
+            new OA\Response(response: 404, description: 'Rol no encontrado'),
         ]
     )]
     public function destroy(): void {}

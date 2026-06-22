@@ -9,7 +9,7 @@ class PermissionDocs
     #[OA\Get(
         path: '/api/permissions',
         summary: 'Listar permisos',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Permisos'],
         responses: [new OA\Response(response: 200, description: 'Lista de permisos')]
     )]
@@ -18,12 +18,12 @@ class PermissionDocs
     #[OA\Get(
         path: '/api/permissions/{id}',
         summary: 'Obtener permiso por ID',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Permisos'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Permiso encontrado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 404, description: 'Permiso no encontrado'),
         ]
     )]
     public function show(): void {}
@@ -31,7 +31,7 @@ class PermissionDocs
     #[OA\Post(
         path: '/api/permissions',
         summary: 'Crear permiso',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Permisos'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -41,7 +41,7 @@ class PermissionDocs
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: 'Permiso creado'),
+            new OA\Response(response: 201, description: 'Permiso creado correctamente'),
             new OA\Response(response: 422, description: 'Error de validación'),
         ]
     )]
@@ -50,7 +50,7 @@ class PermissionDocs
     #[OA\Put(
         path: '/api/permissions/{id}',
         summary: 'Actualizar permiso',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Permisos'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(
@@ -59,8 +59,9 @@ class PermissionDocs
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: 'Permiso actualizado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 200, description: 'Permiso actualizado correctamente'),
+            new OA\Response(response: 404, description: 'Permiso no encontrado'),
+            new OA\Response(response: 422, description: 'Error de validación'),
         ]
     )]
     public function update(): void {}
@@ -68,12 +69,12 @@ class PermissionDocs
     #[OA\Delete(
         path: '/api/permissions/{id}',
         summary: 'Eliminar permiso',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Permisos'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
-            new OA\Response(response: 200, description: 'Permiso eliminado'),
-            new OA\Response(response: 404, description: 'No encontrado'),
+            new OA\Response(response: 200, description: 'Permiso eliminado correctamente'),
+            new OA\Response(response: 404, description: 'Permiso no encontrado'),
         ]
     )]
     public function destroy(): void {}

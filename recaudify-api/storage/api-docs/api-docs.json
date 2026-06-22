@@ -206,6 +206,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -236,7 +239,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Permiso creado"
+                        "description": "Permiso creado correctamente"
                     },
                     "422": {
                         "description": "Error de validación"
@@ -245,6 +248,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -271,12 +277,15 @@
                         "description": "Permiso encontrado"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Permiso no encontrado"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -313,15 +322,21 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Permiso actualizado"
+                        "description": "Permiso actualizado correctamente"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Permiso no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -343,15 +358,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Permiso eliminado"
+                        "description": "Permiso eliminado correctamente"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Permiso no encontrado"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -365,12 +383,18 @@
                 "operationId": "ec3e2bad90f17645ad891774d06a127d",
                 "responses": {
                     "200": {
-                        "description": "Lista de roles"
+                        "description": "Lista de roles con sus permisos"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -408,7 +432,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Rol creado"
+                        "description": "Rol creado correctamente"
                     },
                     "422": {
                         "description": "Error de validación"
@@ -417,6 +441,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -443,12 +470,15 @@
                         "description": "Rol encontrado"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Rol no encontrado"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -492,15 +522,21 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Rol actualizado"
+                        "description": "Rol actualizado correctamente"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Rol no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -522,15 +558,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Rol eliminado"
+                        "description": "Rol eliminado correctamente"
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Rol no encontrado"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
