@@ -1,0 +1,5 @@
+.agents/
+.claude/
+.playwright/
+.playwright-cli/
+*.spec.ts
