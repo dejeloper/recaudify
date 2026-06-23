@@ -58,6 +58,18 @@ export const routes: Routes = [
             path: 'schedules/:userId',
             loadComponent: () => import('./features/admin/schedules/user-schedules/user-schedules').then((m) => m.UserSchedules),
           },
+          {
+            path: 'parameters',
+            loadComponent: () => import('./features/admin/parameters/parameters').then((m) => m.Parameters),
+          },
+          {
+            path: 'parameters/new',
+            loadComponent: () => import('./features/admin/parameters/parameter-form/parameter-form').then((m) => m.ParameterForm),
+          },
+          {
+            path: 'parameters/:id/edit',
+            loadComponent: () => import('./features/admin/parameters/parameter-form/parameter-form').then((m) => m.ParameterForm),
+          },
         ],
       },
     ],
