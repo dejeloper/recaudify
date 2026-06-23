@@ -7,6 +7,7 @@ import { Spinner } from '@core/components/spinner/spinner';
 import { Schedule } from '@core/models/schedule';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
+import { ParametersService } from '@core/services/parameters.service';
 import { SchedulesService } from '@core/services/schedules.service';
 import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
@@ -31,6 +32,7 @@ export class UserSchedules implements OnInit {
 
   private readonly usersService = inject(UsersService);
   private readonly schedulesService = inject(SchedulesService);
+  private readonly parametersService = inject(ParametersService);
   private readonly authService = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -39,6 +41,7 @@ export class UserSchedules implements OnInit {
   protected readonly user = signal<User | null>(null);
   protected readonly schedules = signal<Schedule[]>([]);
   protected readonly loading = signal(true);
+  protected readonly showStatusEnabled = signal(false);
 
   protected readonly canCreate = computed(() => this.authService.hasPermission('horarios.crear'));
   protected readonly canEdit = computed(() => this.authService.hasPermission('horarios.editar'));
@@ -66,6 +69,15 @@ export class UserSchedules implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (user) => this.user.set(user) });
     this.loadSchedules(id);
+    this.parametersService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (params) => {
+          const param = params.find((p) => p.key === 'shift-status');
+          this.showStatusEnabled.set(param?.value === 'true');
+        },
+      });
   }
 
   protected formatTime(time: string): string {
@@ -114,7 +126,7 @@ export class UserSchedules implements OnInit {
         day_of_week: dayId,
         start_time: this.addStart,
         end_time: this.addEnd,
-        show_status: this.addShowStatus,
+        show_status: this.showStatusEnabled() && this.addShowStatus,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -151,7 +163,7 @@ export class UserSchedules implements OnInit {
       .update(id, {
         start_time: this.editStart,
         end_time: this.editEnd,
-        show_status: this.editShowStatus,
+        show_status: this.showStatusEnabled() && this.editShowStatus,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

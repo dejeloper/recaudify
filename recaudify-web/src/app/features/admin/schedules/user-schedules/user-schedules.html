@@ -61,7 +61,7 @@
                       class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
                     />
                   </div>
-                  <div class="flex items-center gap-3">
+                  @if (showStatusEnabled()) {
                     <label
                       class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none"
                     >
@@ -72,7 +72,7 @@
                       />
                       Visible
                     </label>
-                  </div>
+                  }
                   <div class="flex items-center gap-2">
                     <button
                       (click)="saveEdit()"
@@ -103,18 +103,20 @@
                     <span class="text-sm text-gray-700 font-mono tracking-tight">
                       {{ formatTime(entry.start_time) }} — {{ formatTime(entry.end_time) }}
                     </span>
-                    @if (entry.show_status) {
-                      <span
-                        class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
-                      >
-                        Visible
-                      </span>
-                    } @else {
-                      <span
-                        class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"
-                      >
-                        Oculta
-                      </span>
+                    @if (showStatusEnabled()) {
+                      @if (entry.show_status) {
+                        <span
+                          class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+                        >
+                          Visible
+                        </span>
+                      } @else {
+                        <span
+                          class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"
+                        >
+                          Oculta
+                        </span>
+                      }
                     }
                   </div>
                   <div class="flex items-center gap-1">
@@ -155,7 +157,7 @@
                     class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
                   />
                 </div>
-                <div class="flex items-center gap-3">
+                @if (showStatusEnabled()) {
                   <label
                     class="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none"
                   >
@@ -166,7 +168,7 @@
                     />
                     Visible
                   </label>
-                </div>
+                }
                 <div class="flex items-center gap-2">
                   <button
                     (click)="saveAdd()"
@@ -183,7 +185,7 @@
             <!-- Empty state for day -->
             @if (schedulesForDay(day.id).length === 0 && addingDay() !== day.id) {
               <div class="px-5 py-3">
-                <span class="text-sm text-gray-400">Sin horario — acceso libre todo el día.</span>
+                <span class="text-sm text-gray-400">Sin horario — acceso bloqueado.</span>
               </div>
             }
           </div>
