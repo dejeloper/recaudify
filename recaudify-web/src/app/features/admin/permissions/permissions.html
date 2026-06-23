@@ -45,13 +45,10 @@
   </div>
 
   <!-- Active permissions table -->
-  @if (loading()) {
-    <div class="space-y-2">
-      @for (_ of [1, 2, 3, 4, 5]; track $index) {
-        <div class="h-12 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
-      }
-    </div>
-  } @else if (permissions().length === 0) {
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+  @if (permissions().length === 0) {
     <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
       <p class="text-sm text-gray-400">No hay permisos creados.</p>
       <a
@@ -130,13 +127,10 @@
         Permisos eliminados
       </h2>
 
-      @if (loadingTrashed()) {
-        <div class="space-y-2">
-          @for (_ of [1, 2, 3]; track $index) {
-            <div class="h-12 rounded-lg bg-amber-50 border border-amber-200 animate-pulse"></div>
-          }
-        </div>
-      } @else if (trashed().length === 0) {
+      <app-spinner [show]="loadingTrashed()" />
+
+      @if (!loadingTrashed()) {
+      @if (trashed().length === 0) {
         <div
           class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
         >
@@ -194,6 +188,8 @@
           </div>
         </div>
       }
+      }
     </div>
   }
+}
 </div>

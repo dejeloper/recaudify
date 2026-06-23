@@ -41,13 +41,9 @@
     }
   </div>
 
-  @if (loading()) {
-    <div class="space-y-3 max-w-2xl mx-auto">
-      @for (_ of [1, 2, 3, 4, 5, 6, 7]; track $index) {
-        <div class="h-16 rounded-xl bg-white border border-gray-200 animate-pulse"></div>
-      }
-    </div>
-  } @else {
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
     <div class="space-y-2 max-w-2xl mx-auto">
       @for (day of days; track day.id) {
         <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">

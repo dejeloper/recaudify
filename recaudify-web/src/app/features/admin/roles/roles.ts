@@ -3,12 +3,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
+import { Spinner } from '@core/components/spinner/spinner';
 import { Role } from '@core/models/role';
 import { RolesService } from '@core/services/roles.service';
 
 @Component({
   selector: 'app-roles',
-  imports: [RouterLink, BtnDirective, TableDirective],
+  imports: [RouterLink, BtnDirective, TableDirective, Spinner],
   templateUrl: './roles.html',
 })
 export class Roles implements OnInit {

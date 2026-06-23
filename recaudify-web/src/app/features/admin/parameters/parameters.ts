@@ -3,12 +3,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
+import { Spinner } from '@core/components/spinner/spinner';
 import { Parameter } from '@core/models/parameter';
 import { ParametersService } from '@core/services/parameters.service';
 
 @Component({
   selector: 'app-parameters',
-  imports: [RouterLink, BtnDirective, TableDirective],
+  imports: [RouterLink, BtnDirective, TableDirective, Spinner],
   templateUrl: './parameters.html',
 })
 export class Parameters implements OnInit {

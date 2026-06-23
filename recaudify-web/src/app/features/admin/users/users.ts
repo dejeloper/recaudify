@@ -3,13 +3,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
+import { Spinner } from '@core/components/spinner/spinner';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
 import { UsersService } from '@core/services/users.service';
 
 @Component({
   selector: 'app-users',
-  imports: [RouterLink, BtnDirective, TableDirective],
+  imports: [RouterLink, BtnDirective, TableDirective, Spinner],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {

@@ -45,24 +45,21 @@
     </div>
   </div>
 
-  @if (loading()) {
-    <div class="space-y-2">
-      @for (_ of [1, 2, 3, 4, 5]; track $index) {
-        <div class="h-14 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
-      }
-    </div>
-  } @else if (users().length === 0) {
-    <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
-      <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
-      @if (canCreate()) {
-        <a
-          routerLink="/admin/users/new"
-          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
-          >Crear el primero</a
-        >
-      }
-    </div>
-  } @else {
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+    @if (users().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
+        @if (canCreate()) {
+          <a
+            routerLink="/admin/users/new"
+            class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+            >Crear el primero</a
+          >
+        }
+      </div>
+    } @else {
     <div appTable>
       <div class="overflow-x-auto">
         <table>
@@ -150,13 +147,10 @@
         Usuarios desactivados
       </h2>
 
-      @if (loadingDisabled()) {
-        <div class="space-y-2">
-          @for (_ of [1, 2]; track $index) {
-            <div class="h-14 rounded-lg bg-amber-50 border border-amber-200 animate-pulse"></div>
-          }
-        </div>
-      } @else if (disabled().length === 0) {
+      <app-spinner [show]="loadingDisabled()" />
+
+      @if (!loadingDisabled()) {
+      @if (disabled().length === 0) {
         <div
           class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
         >
@@ -227,6 +221,8 @@
           </div>
         </div>
       }
+      }
     </div>
   }
+}
 </div>

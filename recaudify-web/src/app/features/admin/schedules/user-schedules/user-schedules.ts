@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
+import { Spinner } from '@core/components/spinner/spinner';
 import { Schedule } from '@core/models/schedule';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
@@ -21,7 +22,7 @@ const DAYS = [
 
 @Component({
   selector: 'app-user-schedules',
-  imports: [RouterLink, FormsModule, BtnDirective],
+  imports: [RouterLink, FormsModule, BtnDirective, Spinner],
   templateUrl: './user-schedules.html',
 })
 export class UserSchedules implements OnInit {

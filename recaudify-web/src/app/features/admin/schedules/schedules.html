@@ -6,13 +6,10 @@
   </div>
 
   <!-- Table -->
-  @if (loading()) {
-    <div class="space-y-2">
-      @for (_ of [1, 2, 3, 4]; track $index) {
-        <div class="h-14 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
-      }
-    </div>
-  } @else if (users().length === 0) {
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+  @if (users().length === 0) {
     <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
       <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
     </div>
@@ -61,4 +58,5 @@
       </div>
     </div>
   }
+}
 </div>
