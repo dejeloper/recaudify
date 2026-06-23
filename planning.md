@@ -209,6 +209,8 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Crear directiva estructural `*appHasPermission="'modulo.accion'"` para condicionar elementos del DOM
 - [x] Crear `permissionGuard` para proteger rutas según permiso requerido
 - [x] Ocultar ítems de navegación según permisos del usuario autenticado
+- [ ] Corregir bug NG0955: cambiar `track item.route` por `track item.label` en `app-shell.html:132` para eliminar warning de claves duplicadas en el sidebar.
+- [ ] Implementar acciones del menú de perfil de usuario: "Mi resumen", "Notificaciones" (conectar a datos reales, quitar badge hardcodeado), "Cambio de contraseña" y "Configuración".
 
 ### Pantallas
 
@@ -226,12 +228,15 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Carga y visualización de evidencias.
 - [ ] Reportes (cartera, contable, ventas).
 - [ ] Importación de datos.
-- [ ] Administración de usuarios (listar, crear, editar, desactivar, restaurar).
+- [x] Administración de usuarios (listar, crear, editar, desactivar, restaurar).
 - [ ] Asignar/revocar permisos directos a un usuario desde su pantalla de detalle.
 - [x] Administración de roles (listar, crear, editar, eliminar, asignar permisos al rol).
 - [x] Administración de permisos (listar, crear, editar, eliminar).
 - [ ] Administración de catálogos.
 - [ ] Backup.
+- [ ] CRM — Clientes: crear pantalla de listado de clientes (conectar con el módulo de Clientes del backend cuando esté listo).
+- [ ] CRM — Pedidos: crear pantalla de listado/gestión de pedidos (conectar con el módulo de Contratos/Pedidos del backend cuando esté listo).
+- [ ] Agregar campo de búsqueda en la pantalla `/admin/users` que consuma el endpoint `GET /api/users/search/{name}`.
 
 ## Despliegue y Operación
 
@@ -263,4 +268,4 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ## Actualizado
 
-2026-06-18
+2026-06-23
