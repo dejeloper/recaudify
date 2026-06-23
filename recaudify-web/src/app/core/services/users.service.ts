@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { User } from '@core/models/user';
 import { ApiService } from '@core/services/api.service';
 
-export interface UserPayload {
+export interface UserPayload extends Record<string, unknown> {
   name: string;
   username: string;
   email: string | null;
