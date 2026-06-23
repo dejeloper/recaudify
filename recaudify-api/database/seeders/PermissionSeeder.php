@@ -10,44 +10,6 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            // Clientes
-            'clientes.ver',
-            'clientes.crear',
-            'clientes.editar',
-            'clientes.eliminar',
-            'clientes.fusionar',
-
-            // Contratos
-            'contratos.ver',
-            'contratos.crear',
-            'contratos.editar',
-            'contratos.cerrar',
-            'contratos.cancelar',
-
-            // Cartera
-            'cartera.ver',
-
-            // Cobranza
-            'cobranza.ver',
-            'cobranza.registrar-gestion',
-            'cobranza.registrar-acuerdo',
-            'cobranza.ver-historial',
-
-            // Pagos
-            'pagos.ver',
-            'pagos.registrar',
-            'pagos.anular',
-
-            // Verificaciones
-            'verificaciones.ver',
-            'verificaciones.crear',
-            'verificaciones.aprobar',
-            'verificaciones.rechazar',
-
-            // Documentos
-            'documentos.ver',
-            'documentos.subir',
-
             // Usuarios
             'usuarios.ver',
             'usuarios.crear',
@@ -55,15 +17,33 @@ class PermissionSeeder extends Seeder
             'usuarios.desactivar',
             'usuarios.restaurar',
 
+            // Roles
+            'roles.ver',
+            'roles.crear',
+            'roles.editar',
+            'roles.eliminar',
+            'roles.restaurar',
+
+            // Permisos
+            'permisos.ver',
+            'permisos.crear',
+            'permisos.editar',
+            'permisos.eliminar',
+            'permisos.restaurar',
+
             // Horarios
             'horarios.ver',
             'horarios.crear',
             'horarios.editar',
             'horarios.eliminar',
+            'horarios.restaurar',
 
-            // Configuración
-            'configuracion.ver',
-            'configuracion.editar',
+            // Parámetros
+            'parametros.ver',
+            'parametros.crear',
+            'parametros.editar',
+            'parametros.eliminar',
+            'parametros.restaurar',
         ];
 
         foreach ($permissions as $permission) {

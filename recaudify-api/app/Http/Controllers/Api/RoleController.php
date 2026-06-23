@@ -72,4 +72,28 @@ class RoleController extends ApiController
 
         return ApiResult::empty('Rol eliminado correctamente.')->toResponse();
     }
+
+    public function trashed(): JsonResponse
+    {
+        $roles = Role::onlyTrashed()
+            ->where('guard_name', 'api')
+            ->with('permissions')
+            ->orderBy('name')
+            ->get();
+
+        return ApiResult::success(RoleResource::collection($roles))->toResponse();
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $role = Role::onlyTrashed()->where('guard_name', 'api')->find($id);
+
+        if (! $role) {
+            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        }
+
+        $role->restore();
+
+        return ApiResult::empty('Rol restaurado correctamente.')->toResponse();
+    }
 }

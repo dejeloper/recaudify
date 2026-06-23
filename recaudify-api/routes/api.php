@@ -35,38 +35,46 @@ Route::middleware(['auth:api', 'check.schedule'])->group(function () {
         Route::post('/{id}/permissions', [UserController::class, 'syncPermissions'])->middleware('permission:usuarios.editar');
     });
 
-    Route::prefix('roles')->middleware('role:administrador')->group(function () {
-        Route::get('/',      [RoleController::class, 'index']);
-        Route::get('/{id}',  [RoleController::class, 'show']);
-        Route::post('/',     [RoleController::class, 'store']);
-        Route::put('/{id}',  [RoleController::class, 'update']);
-        Route::delete('/{id}', [RoleController::class, 'destroy']);
+    Route::prefix('roles')->group(function () {
+        Route::get('/',              [RoleController::class, 'index'])->middleware('permission:roles.ver');
+        Route::get('/trashed',       [RoleController::class, 'trashed'])->middleware('permission:roles.ver');
+        Route::get('/{id}',          [RoleController::class, 'show'])->middleware('permission:roles.ver');
+        Route::post('/',             [RoleController::class, 'store'])->middleware('permission:roles.crear');
+        Route::put('/{id}',          [RoleController::class, 'update'])->middleware('permission:roles.editar');
+        Route::delete('/{id}',       [RoleController::class, 'destroy'])->middleware('permission:roles.eliminar');
+        Route::post('/{id}/restore', [RoleController::class, 'restore'])->middleware('permission:roles.restaurar');
     });
 
-    Route::prefix('permissions')->middleware('role:administrador')->group(function () {
-        Route::get('/',      [PermissionController::class, 'index']);
-        Route::get('/{id}',  [PermissionController::class, 'show']);
-        Route::post('/',     [PermissionController::class, 'store']);
-        Route::put('/{id}',  [PermissionController::class, 'update']);
-        Route::delete('/{id}', [PermissionController::class, 'destroy']);
+    Route::prefix('permissions')->group(function () {
+        Route::get('/',              [PermissionController::class, 'index'])->middleware('permission:permisos.ver');
+        Route::get('/trashed',       [PermissionController::class, 'trashed'])->middleware('permission:permisos.ver');
+        Route::get('/{id}',          [PermissionController::class, 'show'])->middleware('permission:permisos.ver');
+        Route::post('/',             [PermissionController::class, 'store'])->middleware('permission:permisos.crear');
+        Route::put('/{id}',          [PermissionController::class, 'update'])->middleware('permission:permisos.editar');
+        Route::delete('/{id}',       [PermissionController::class, 'destroy'])->middleware('permission:permisos.eliminar');
+        Route::post('/{id}/restore', [PermissionController::class, 'restore'])->middleware('permission:permisos.restaurar');
     });
 
     Route::prefix('users/{userId}/schedules')->group(function () {
-        Route::get('/',    [UserScheduleController::class, 'index'])->middleware('permission:horarios.ver');
-        Route::post('/',   [UserScheduleController::class, 'store'])->middleware('permission:horarios.crear');
+        Route::get('/',        [UserScheduleController::class, 'index'])->middleware('permission:horarios.ver');
+        Route::get('/trashed', [UserScheduleController::class, 'trashed'])->middleware('permission:horarios.ver');
+        Route::post('/',       [UserScheduleController::class, 'store'])->middleware('permission:horarios.crear');
     });
 
     Route::prefix('schedules')->group(function () {
-        Route::put('/{id}',    [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
-        Route::delete('/{id}', [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
+        Route::put('/{id}',      [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
+        Route::delete('/{id}',   [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
+        Route::post('/{id}/restore', [UserScheduleController::class, 'restore'])->middleware('permission:horarios.restaurar');
     });
 
-    Route::prefix('parameters')->middleware('role:administrador')->group(function () {
-        Route::get('/',      [ParameterController::class, 'index']);
-        Route::get('/{id}',  [ParameterController::class, 'show']);
-        Route::post('/',     [ParameterController::class, 'store']);
-        Route::put('/{id}',  [ParameterController::class, 'update']);
-        Route::delete('/{id}', [ParameterController::class, 'destroy']);
+    Route::prefix('parameters')->group(function () {
+        Route::get('/',          [ParameterController::class, 'index'])->middleware('permission:parametros.ver');
+        Route::get('/trashed',   [ParameterController::class, 'trashed'])->middleware('permission:parametros.ver');
+        Route::get('/{id}',      [ParameterController::class, 'show'])->middleware('permission:parametros.ver');
+        Route::post('/',         [ParameterController::class, 'store'])->middleware('permission:parametros.crear');
+        Route::put('/{id}',      [ParameterController::class, 'update'])->middleware('permission:parametros.editar');
+        Route::delete('/{id}',   [ParameterController::class, 'destroy'])->middleware('permission:parametros.eliminar');
+        Route::post('/{id}/restore', [ParameterController::class, 'restore'])->middleware('permission:parametros.restaurar');
     });
 
 });

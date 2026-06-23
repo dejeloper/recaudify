@@ -61,4 +61,24 @@ class ParameterController extends ApiController
 
         return ApiResult::empty('Parámetro eliminado correctamente.')->toResponse();
     }
+
+    public function trashed(): JsonResponse
+    {
+        $parameters = Parameter::onlyTrashed()->orderBy('key')->get();
+
+        return ApiResult::success(ParameterResource::collection($parameters))->toResponse();
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $parameter = Parameter::onlyTrashed()->find($id);
+
+        if (! $parameter) {
+            return ApiResult::notFound('Parámetro no encontrado.')->toResponse();
+        }
+
+        $parameter->restore();
+
+        return ApiResult::empty('Parámetro restaurado correctamente.')->toResponse();
+    }
 }

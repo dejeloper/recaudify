@@ -18,32 +18,11 @@ class UserSeeder extends Seeder
                 'role'     => 'administrador',
             ],
             [
-                'name'     => 'Supervisor',
-                'username' => 'supervisor',
+                'name'     => 'Coordinador',
+                'username' => 'coordinador',
                 'email'    => null,
                 'password' => 'admin1234',
-                'role'     => 'supervisor',
-            ],
-            [
-                'name'     => 'Verificador',
-                'username' => 'verificador',
-                'email'    => null,
-                'password' => 'admin1234',
-                'role'     => 'verificador',
-            ],
-            [
-                'name'     => 'Vendedor',
-                'username' => 'vendedor',
-                'email'    => null,
-                'password' => 'admin1234',
-                'role'     => 'vendedor',
-            ],
-            [
-                'name'     => 'Cobrador',
-                'username' => 'cobrador',
-                'email'    => null,
-                'password' => 'admin1234',
-                'role'     => 'cobrador',
+                'role'     => 'coordinador',
             ],
             [
                 'name'     => 'Auxiliar',
@@ -64,13 +43,6 @@ class UserSeeder extends Seeder
             );
 
             $user->assignRole($role);
-        }
-
-        // Extra random users per role for realistic dev data
-        $roles = ['supervisor', 'verificador', 'vendedor', 'cobrador', 'auxiliar'];
-
-        foreach ($roles as $role) {
-            User::factory(3)->withRole($role)->create();
         }
     }
 }

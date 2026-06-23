@@ -61,4 +61,27 @@ class PermissionController extends ApiController
 
         return ApiResult::empty('Permiso eliminado correctamente.')->toResponse();
     }
+
+    public function trashed(): JsonResponse
+    {
+        $permissions = Permission::onlyTrashed()
+            ->where('guard_name', 'api')
+            ->orderBy('name')
+            ->get();
+
+        return ApiResult::success(PermissionResource::collection($permissions))->toResponse();
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $permission = Permission::onlyTrashed()->where('guard_name', 'api')->find($id);
+
+        if (! $permission) {
+            return ApiResult::notFound('Permiso no encontrado.')->toResponse();
+        }
+
+        $permission->restore();
+
+        return ApiResult::empty('Permiso restaurado correctamente.')->toResponse();
+    }
 }

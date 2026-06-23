@@ -11,50 +11,22 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            'administrador' => null, // all permissions assigned in UserSeeder
+            'administrador' => null, // all permissions
 
-            'supervisor' => [
-                'clientes.ver', 'clientes.crear', 'clientes.editar', 'clientes.eliminar', 'clientes.fusionar',
-                'contratos.ver', 'contratos.crear', 'contratos.editar', 'contratos.cerrar', 'contratos.cancelar',
-                'cartera.ver',
-                'cobranza.ver', 'cobranza.registrar-gestion', 'cobranza.registrar-acuerdo', 'cobranza.ver-historial',
-                'pagos.ver', 'pagos.registrar', 'pagos.anular',
-                'verificaciones.ver', 'verificaciones.crear', 'verificaciones.aprobar', 'verificaciones.rechazar',
-                'documentos.ver', 'documentos.subir',
-                'usuarios.ver',
-                'configuracion.ver',
-            ],
-
-            'verificador' => [
-                'clientes.ver',
-                'contratos.ver',
-                'cartera.ver',
-                'verificaciones.ver', 'verificaciones.crear', 'verificaciones.aprobar', 'verificaciones.rechazar',
-                'documentos.ver', 'documentos.subir',
-            ],
-
-            'vendedor' => [
-                'clientes.ver', 'clientes.crear', 'clientes.editar',
-                'contratos.ver', 'contratos.crear', 'contratos.editar',
-                'cartera.ver',
-                'documentos.ver', 'documentos.subir',
-            ],
-
-            'cobrador' => [
-                'clientes.ver',
-                'contratos.ver',
-                'cartera.ver',
-                'cobranza.ver', 'cobranza.registrar-gestion', 'cobranza.registrar-acuerdo', 'cobranza.ver-historial',
-                'pagos.ver', 'pagos.registrar',
-                'documentos.ver', 'documentos.subir',
+            'coordinador' => [
+                'usuarios.ver', 'usuarios.crear', 'usuarios.editar',
+                'roles.ver',
+                'permisos.ver',
+                'horarios.ver', 'horarios.crear', 'horarios.editar',
+                'parametros.ver', 'parametros.crear', 'parametros.editar',
             ],
 
             'auxiliar' => [
-                'clientes.ver',
-                'contratos.ver',
-                'cartera.ver',
-                'pagos.ver',
-                'documentos.ver',
+                'usuarios.ver',
+                'roles.ver',
+                'permisos.ver',
+                'horarios.ver',
+                'parametros.ver',
             ],
         ];
 
@@ -66,7 +38,6 @@ class RoleSeeder extends Seeder
             }
         }
 
-        // Administrador gets every permission
         $administrador = Role::findByName('administrador');
         $administrador->syncPermissions(Permission::pluck('name')->toArray());
     }
