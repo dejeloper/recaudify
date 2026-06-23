@@ -18,6 +18,10 @@ export class AppShell {
     this.currentUser()?.roles.includes('administrador') ?? false
   );
 
+  protected hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
+  }
+
   protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
 
