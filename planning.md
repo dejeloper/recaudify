@@ -201,7 +201,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Configurar entorno para apuntar a la API.
 - [x] Crear sistema de autenticación (login, token Bearer, expiración).
 - [x] Crear sistema de navegación.
-- [ ] Crear sistema de permisos por rol.
+- [x] Crear sistema de permisos por rol.
 - [x] Crear interceptores HTTP (token, errores, logout).
 - [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
 - [x] Crear diseño responsive.
