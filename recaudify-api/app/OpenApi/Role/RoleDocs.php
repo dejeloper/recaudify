@@ -87,4 +87,29 @@ class RoleDocs
         ]
     )]
     public function destroy(): void {}
+
+    #[OA\Get(
+        path: '/api/roles/trashed',
+        summary: 'Listar roles eliminados',
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
+        tags: ['Roles'],
+        responses: [
+            new OA\Response(response: 200, description: 'Lista de roles en papelera'),
+            new OA\Response(response: 403, description: 'Sin permisos'),
+        ]
+    )]
+    public function trashed(): void {}
+
+    #[OA\Post(
+        path: '/api/roles/{id}/restore',
+        summary: 'Restaurar rol eliminado',
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
+        tags: ['Roles'],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [
+            new OA\Response(response: 200, description: 'Rol restaurado correctamente'),
+            new OA\Response(response: 404, description: 'Rol no encontrado en papelera'),
+        ]
+    )]
+    public function restore(): void {}
 }

@@ -9,7 +9,7 @@ class UserDocs
     #[OA\Get(
         path: '/api/users',
         summary: 'Listar usuarios activos',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         responses: [
             new OA\Response(response: 200, description: 'Lista de usuarios activos'),
@@ -21,7 +21,7 @@ class UserDocs
     #[OA\Get(
         path: '/api/users/disabled',
         summary: 'Listar usuarios desactivados (soft delete)',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         responses: [
             new OA\Response(response: 200, description: 'Lista de usuarios desactivados'),
@@ -33,7 +33,7 @@ class UserDocs
     #[OA\Get(
         path: '/api/users/{id}',
         summary: 'Obtener usuario por ID',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
@@ -46,7 +46,7 @@ class UserDocs
     #[OA\Get(
         path: '/api/users/trashed/{id}',
         summary: 'Obtener usuario eliminado por ID',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
@@ -59,7 +59,7 @@ class UserDocs
     #[OA\Get(
         path: '/api/users/search/{name}',
         summary: 'Buscar usuarios por nombre',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'name', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         responses: [
@@ -71,7 +71,7 @@ class UserDocs
     #[OA\Post(
         path: '/api/users',
         summary: 'Crear usuario',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -98,7 +98,7 @@ class UserDocs
     #[OA\Put(
         path: '/api/users/{id}',
         summary: 'Actualizar usuario',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(
@@ -124,7 +124,7 @@ class UserDocs
     #[OA\Delete(
         path: '/api/users/{id}',
         summary: 'Desactivar usuario (soft delete)',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
@@ -137,7 +137,7 @@ class UserDocs
     #[OA\Post(
         path: '/api/users/{id}/restore',
         summary: 'Restaurar usuario desactivado',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
@@ -150,7 +150,7 @@ class UserDocs
     #[OA\Post(
         path: '/api/users/{id}/permissions',
         summary: 'Asignar o revocar permisos directos a un usuario',
-        security: [['bearerAuth' => []]],
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
         tags: ['Usuarios'],
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(

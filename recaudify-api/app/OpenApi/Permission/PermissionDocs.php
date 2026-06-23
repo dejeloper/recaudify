@@ -79,4 +79,29 @@ class PermissionDocs
         ]
     )]
     public function destroy(): void {}
+
+    #[OA\Get(
+        path: '/api/permissions/trashed',
+        summary: 'Listar permisos eliminados',
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
+        tags: ['Permisos'],
+        responses: [
+            new OA\Response(response: 200, description: 'Lista de permisos en papelera'),
+            new OA\Response(response: 403, description: 'Sin permisos'),
+        ]
+    )]
+    public function trashed(): void {}
+
+    #[OA\Post(
+        path: '/api/permissions/{id}/restore',
+        summary: 'Restaurar permiso eliminado',
+        security: [['bearerAuth' => []], ['cookieAuth' => []]],
+        tags: ['Permisos'],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [
+            new OA\Response(response: 200, description: 'Permiso restaurado correctamente'),
+            new OA\Response(response: 404, description: 'Permiso no encontrado en papelera'),
+        ]
+    )]
+    public function restore(): void {}
 }

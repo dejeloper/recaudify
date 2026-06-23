@@ -191,6 +191,282 @@
                 ]
             }
         },
+        "/api/parameters": {
+            "get": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Listar parámetros",
+                "operationId": "01836dabd6d9f5b8915baa8c3df5841d",
+                "responses": {
+                    "200": {
+                        "description": "Lista de parámetros del sistema"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Crear parámetro",
+                "operationId": "72e820304ebef1757ef7a1b9305d34ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "example": "max_intentos_login",
+                                        "maxLength": 100
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "example": "5",
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Número máximo de intentos de login fallidos",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Parámetro creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/parameters/trashed": {
+            "get": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Listar parámetros eliminados",
+                "operationId": "7c1347fbe7784d6e4ba9135f07cb68dd",
+                "responses": {
+                    "200": {
+                        "description": "Lista de parámetros en papelera"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/parameters/{id}": {
+            "get": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Obtener parámetro por ID",
+                "operationId": "57fb9c2562e8f5eb8fea017239f10eb4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parámetro encontrado"
+                    },
+                    "404": {
+                        "description": "Parámetro no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Actualizar parámetro",
+                "operationId": "159493039c4b6c1238c90a0ad75f0d67",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "example": "max_intentos_login",
+                                        "maxLength": 100
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "example": "10",
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Número máximo de intentos de login fallidos",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Parámetro actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Parámetro no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Eliminar parámetro",
+                "operationId": "feb620437d27ff3941c4f0a911bc3ee1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parámetro eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Parámetro no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/parameters/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Parámetros"
+                ],
+                "summary": "Restaurar parámetro eliminado",
+                "operationId": "761b457f0098bbfa8df4c06da101b0a7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parámetro restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Parámetro no encontrado en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
         "/api/permissions": {
             "get": {
                 "tags": [
@@ -369,6 +645,66 @@
                     },
                     "404": {
                         "description": "Permiso no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/permissions/trashed": {
+            "get": {
+                "tags": [
+                    "Permisos"
+                ],
+                "summary": "Listar permisos eliminados",
+                "operationId": "56e38615b6f32cee81df0d70b4f03e3d",
+                "responses": {
+                    "200": {
+                        "description": "Lista de permisos en papelera"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/permissions/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Permisos"
+                ],
+                "summary": "Restaurar permiso eliminado",
+                "operationId": "dc2c8fcb20230a0e2d7a10fe2015d9e3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Permiso restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Permiso no encontrado en papelera"
                     }
                 },
                 "security": [
@@ -581,6 +917,345 @@
                 ]
             }
         },
+        "/api/roles/trashed": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Listar roles eliminados",
+                "operationId": "f8c7642e8faf961cc2bb3c60397bfb1c",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles en papelera"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/roles/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Restaurar rol eliminado",
+                "operationId": "3cab390e6341ac25b56f2e99d686c5dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{userId}/schedules": {
+            "get": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Listar horarios de un usuario",
+                "operationId": "c891ae0c9dba57f5eef3b2d7685ce52a",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Horarios activos del usuario"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Crear horario para un usuario",
+                "operationId": "67558ef7c0d2d54e1ed4658ec1e469c5",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "day_of_week",
+                                    "start_time",
+                                    "end_time"
+                                ],
+                                "properties": {
+                                    "day_of_week": {
+                                        "description": "0 = domingo, 1 = lunes, …, 6 = sábado",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "maximum": 6,
+                                        "minimum": 0
+                                    },
+                                    "start_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "08:00"
+                                    },
+                                    "end_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "17:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Horario creado correctamente"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    },
+                    "409": {
+                        "description": "Ya existe un horario para ese día"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{userId}/schedules/trashed": {
+            "get": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Listar horarios eliminados de un usuario",
+                "operationId": "74d43099501ab93ae13ec262538160d4",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Horarios en papelera del usuario"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/schedules/{id}": {
+            "put": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Actualizar horario",
+                "operationId": "f2edaa2b140da70bd2e9bb1eef927d64",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "day_of_week": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "maximum": 6,
+                                        "minimum": 0
+                                    },
+                                    "start_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "09:00"
+                                    },
+                                    "end_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "18:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Horario actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Horario no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Eliminar horario",
+                "operationId": "28268edb9f9232da1ab00042dbc55561",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Horario eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Horario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/schedules/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Horarios"
+                ],
+                "summary": "Restaurar horario eliminado",
+                "operationId": "5a8eaa66c109f5e0821ca896c4a1fb7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Horario restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Horario no encontrado en papelera"
+                    },
+                    "409": {
+                        "description": "Ya existe un horario activo para ese día"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
         "/api/users": {
             "get": {
                 "tags": [
@@ -599,6 +1274,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -669,6 +1347,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -691,6 +1372,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -723,6 +1407,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -793,6 +1480,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             },
@@ -823,6 +1513,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -855,6 +1548,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -884,6 +1580,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -916,6 +1615,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -976,6 +1678,9 @@
                 "security": [
                     {
                         "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
                     }
                 ]
             }
@@ -999,19 +1704,27 @@
     "tags": [
         {
             "name": "Auth",
-            "description": "Auth"
-        },
-        {
-            "name": "Permisos",
-            "description": "Permisos"
+            "description": "Autenticación basada en JWT (HS256).\n\n- `POST /auth/login` devuelve un `access_token` (TTL 15 min) y un `refresh_token` (TTL 4 h).\n- Adjuntar el token en cada request: `Authorization: Bearer <token>`.\n- Antes de que expire, renovarlo con `POST /auth/refresh` usando el refresh token.\n- `POST /auth/logout` invalida ambos tokens en el servidor."
         },
         {
             "name": "Roles",
-            "description": "Roles"
+            "description": "Un **rol** es un perfil de acceso que agrupa permisos (ej. `administrador`, `cobrador`).\nCada usuario tiene un rol principal que determina qué puede hacer en el sistema.\n\nLos roles admiten soft delete: se pueden eliminar y restaurar sin perder su historial."
+        },
+        {
+            "name": "Permisos",
+            "description": "Un **permiso** representa una acción concreta sobre un módulo, con el formato `modulo.accion`\n(ej. `clientes.ver`, `clientes.exportar`).\n\nLos permisos se asignan a roles. También se pueden asignar permisos adicionales directamente\na un usuario para casos puntuales, sin cambiar su rol."
         },
         {
             "name": "Usuarios",
-            "description": "Usuarios"
+            "description": "Gestión de cuentas de acceso al sistema.\n\nDesactivar un usuario (`DELETE /users/{id}`) aplica soft delete: la cuenta queda inactiva\npero recuperable. El login queda bloqueado hasta que se restaure.\n\nVer también: **Horarios** para restringir en qué franjas horarias puede iniciar sesión cada usuario."
+        },
+        {
+            "name": "Horarios",
+            "description": "Restricciones de acceso por día y franja horaria para cada usuario.\n\nSi un usuario tiene horarios definidos, el middleware `check.schedule` bloquea cualquier\nrequest fuera de esas franjas con 403. Si no tiene horarios, el acceso es libre.\n\n- Los horarios se crean bajo `POST /users/{userId}/schedules`.\n- Las mutaciones individuales (editar, eliminar, restaurar) usan `PUT/DELETE/POST /schedules/{id}`.\n- Al restaurar, se valida que no exista ya un horario activo para el mismo día (409)."
+        },
+        {
+            "name": "Parámetros",
+            "description": "Configuración general del sistema almacenada como pares clave/valor (ej. `max_intentos_login = 5`).\n\nSolo accesible por usuarios con permisos del scope `parametros.*`. Admite soft delete."
         }
     ]
 }
