@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
@@ -58,6 +59,14 @@ Route::middleware(['auth:api', 'check.schedule'])->group(function () {
     Route::prefix('schedules')->group(function () {
         Route::put('/{id}',    [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
         Route::delete('/{id}', [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
+    });
+
+    Route::prefix('parameters')->middleware('role:administrador')->group(function () {
+        Route::get('/',      [ParameterController::class, 'index']);
+        Route::get('/{id}',  [ParameterController::class, 'show']);
+        Route::post('/',     [ParameterController::class, 'store']);
+        Route::put('/{id}',  [ParameterController::class, 'update']);
+        Route::delete('/{id}', [ParameterController::class, 'destroy']);
     });
 
 });
