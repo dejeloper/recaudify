@@ -1,5 +1,58 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Toast, ToastService, ToastType } from '@core/services/toast.service';
+
+export type ToastPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type ToastSize = 'sm' | 'md' | 'lg';
+
+/**
+ * Position grid:
+ *  1 | 2 | 3   ← top
+ *  4 | 5 | 6   ← middle
+ *  7 | 8 | 9   ← bottom
+ */
+const POSITION_CLASSES: Record<ToastPosition, string> = {
+  1: 'top-5 left-5',
+  2: 'top-5 left-1/2 -translate-x-1/2',
+  3: 'top-5 right-5',
+  4: 'top-1/2 -translate-y-1/2 left-5',
+  5: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+  6: 'top-1/2 -translate-y-1/2 right-5',
+  7: 'bottom-5 left-5',
+  8: 'bottom-5 left-1/2 -translate-x-1/2',
+  9: 'bottom-5 right-5',
+};
+
+interface SizeStyle {
+  container: string;
+  card: string;
+  icon: string;
+  closeIcon: string;
+  text: string;
+}
+
+const SIZE_STYLES: Record<ToastSize, SizeStyle> = {
+  sm: {
+    container: 'w-72',
+    card: 'px-3.5 py-2.5 gap-2.5',
+    icon: 'h-4 w-4',
+    closeIcon: 'h-3.5 w-3.5',
+    text: 'text-xs',
+  },
+  md: {
+    container: 'w-80',
+    card: 'px-4 py-3 gap-3',
+    icon: 'h-4 w-4',
+    closeIcon: 'h-4 w-4',
+    text: 'text-sm',
+  },
+  lg: {
+    container: 'w-96',
+    card: 'px-5 py-3.5 gap-3',
+    icon: 'h-5 w-5',
+    closeIcon: 'h-4 w-4',
+    text: 'text-sm',
+  },
+};
 
 const STYLES: Record<ToastType, { wrapper: string; icon: string; path: string }> = {
   success: {
@@ -27,15 +80,18 @@ const STYLES: Record<ToastType, { wrapper: string; icon: string; path: string }>
 @Component({
   selector: 'app-toast',
   template: `
-    <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 w-80 pointer-events-none">
+    <div
+      class="fixed z-50 flex flex-col gap-2 pointer-events-none"
+      [class]="positionClass() + ' ' + sizeStyle().container"
+    >
       @for (toast of toastService.toasts(); track toast.id) {
         <div
-          class="flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg pointer-events-auto"
-          [class]="style(toast).wrapper"
+          class="flex items-start rounded-xl border shadow-lg pointer-events-auto"
+          [class]="style(toast).wrapper + ' ' + sizeStyle().card"
         >
           <svg
-            class="mt-0.5 h-5 w-5 shrink-0"
-            [class]="style(toast).icon"
+            class="mt-0.5 shrink-0"
+            [class]="style(toast).icon + ' ' + sizeStyle().icon"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -48,13 +104,18 @@ const STYLES: Record<ToastType, { wrapper: string; icon: string; path: string }>
             />
           </svg>
 
-          <p class="flex-1 text-sm leading-5">{{ toast.message }}</p>
+          <p class="flex-1 leading-5" [class]="sizeStyle().text">{{ toast.message }}</p>
 
           <button
             (click)="toastService.dismiss(toast.id)"
             class="shrink-0 rounded p-0.5 opacity-60 hover:opacity-100 transition-opacity"
           >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              [class]="sizeStyle().closeIcon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -70,6 +131,12 @@ const STYLES: Record<ToastType, { wrapper: string; icon: string; path: string }>
 })
 export class ToastContainer {
   protected readonly toastService = inject(ToastService);
+
+  readonly position = input<ToastPosition>(5);
+  readonly size = input<ToastSize>('sm');
+
+  protected readonly positionClass = computed(() => POSITION_CLASSES[this.position()]);
+  protected readonly sizeStyle = computed(() => SIZE_STYLES[this.size()]);
 
   protected style(toast: Toast) {
     return STYLES[toast.type];
