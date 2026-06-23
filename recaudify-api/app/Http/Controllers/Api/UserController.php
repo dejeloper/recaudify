@@ -60,7 +60,7 @@ class UserController extends ApiController
         $user = User::create($request->safe()->except('role'));
 
         if ($request->filled('role')) {
-            $user->assignRole($request->role);
+            $user->syncRoles([$request->role]);
         }
 
         return ApiResult::created(new UserResource($user->load('roles', 'permissions')), 'Usuario creado correctamente.')->toResponse();
