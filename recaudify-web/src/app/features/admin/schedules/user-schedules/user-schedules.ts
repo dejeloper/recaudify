@@ -34,17 +34,22 @@ export class UserSchedules implements OnInit {
   protected readonly days = DAYS;
   protected readonly user = signal<User | null>(null);
   protected readonly schedules = signal<Schedule[]>([]);
+  protected readonly trashed = signal<Schedule[]>([]);
   protected readonly loading = signal(true);
+  protected readonly loadingTrashed = signal(false);
+  protected readonly showTrashed = signal(false);
 
   protected readonly canCreate = computed(() => this.authService.hasPermission('horarios.crear'));
   protected readonly canEdit = computed(() => this.authService.hasPermission('horarios.editar'));
   protected readonly canDelete = computed(() => this.authService.hasPermission('horarios.eliminar'));
+  protected readonly canRestore = computed(() => this.authService.hasPermission('horarios.restaurar'));
 
   protected readonly addingDay = signal<number | null>(null);
   protected readonly editingId = signal<number | null>(null);
   protected readonly savingAdd = signal(false);
   protected readonly savingEdit = signal(false);
   protected readonly deletingId = signal<number | null>(null);
+  protected readonly restoringId = signal<number | null>(null);
 
   protected addStart = '';
   protected addEnd = '';
@@ -63,6 +68,10 @@ export class UserSchedules implements OnInit {
     return this.schedules().filter(s => s.day_of_week === dayId);
   }
 
+  protected trashedForDay(dayId: number): Schedule[] {
+    return this.trashed().filter(s => s.day_of_week === dayId);
+  }
+
   private loadSchedules(userId: number) {
     this.loading.set(true);
     this.schedulesService.getByUser(userId)
@@ -71,6 +80,20 @@ export class UserSchedules implements OnInit {
         next: list => { this.schedules.set(list); this.loading.set(false); },
         error: () => this.loading.set(false),
       });
+  }
+
+  protected toggleTrashed() {
+    const next = !this.showTrashed();
+    this.showTrashed.set(next);
+    if (next && this.trashed().length === 0) {
+      this.loadingTrashed.set(true);
+      this.schedulesService.getTrashedByUser(Number(this.userId()))
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: list => { this.trashed.set(list); this.loadingTrashed.set(false); },
+          error: () => this.loadingTrashed.set(false),
+        });
+    }
   }
 
   protected openAdd(dayId: number) {
@@ -136,9 +159,24 @@ export class UserSchedules implements OnInit {
       .subscribe({
         next: () => {
           this.schedules.update(list => list.filter(s => s.id !== entry.id));
+          this.trashed.update(list => [entry, ...list]);
           this.deletingId.set(null);
         },
         error: () => this.deletingId.set(null),
+      });
+  }
+
+  protected restoreEntry(entry: Schedule) {
+    this.restoringId.set(entry.id);
+    this.schedulesService.restore(entry.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.trashed.update(list => list.filter(s => s.id !== entry.id));
+          this.schedules.update(list => [...list, entry]);
+          this.restoringId.set(null);
+        },
+        error: () => this.restoringId.set(null),
       });
   }
 }

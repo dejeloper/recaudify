@@ -25,4 +25,12 @@ export class ParametersService {
   delete(id: number) {
     return this.api.delete('parameters', String(id));
   }
+
+  getTrashed() {
+    return this.api.get<Parameter[]>('parameters', 'trashed');
+  }
+
+  restore(id: number) {
+    return this.api.post<void>('parameters', `${id}/restore`);
+  }
 }

@@ -1,15 +1,43 @@
 <div class="p-4 sm:p-8">
   <!-- Page header -->
-  <div class="mb-6">
-    <p class="mb-1 text-xs text-gray-400">
-      <a routerLink="/admin/schedules" class="hover:text-gray-600">Horarios</a>
-      <span class="mx-1.5">/</span>
-      {{ user()?.name ?? '...' }}
-    </p>
-    <h1 class="text-xl font-semibold text-gray-900">Horarios de {{ user()?.name ?? '...' }}</h1>
-    <p class="mt-0.5 text-sm text-gray-400">
-      Define en qué días y horarios puede acceder al sistema.
-    </p>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div>
+      <p class="mb-1 text-xs text-gray-400">
+        <a routerLink="/admin/schedules" class="hover:text-gray-600">Horarios</a>
+        <span class="mx-1.5">/</span>
+        {{ user()?.name ?? '...' }}
+      </p>
+      <h1 class="text-xl font-semibold text-gray-900">Horarios de {{ user()?.name ?? '...' }}</h1>
+      <p class="mt-0.5 text-sm text-gray-400">
+        Define en qué días y horarios puede acceder al sistema.
+      </p>
+    </div>
+    @if (canRestore()) {
+      <button
+        (click)="toggleTrashed()"
+        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors sm:self-start self-stretch"
+        [class.bg-amber-50]="showTrashed()"
+        [class.border-amber-300]="showTrashed()"
+        [class.text-amber-700]="showTrashed()"
+      >
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+        {{ showTrashed() ? 'Ocultar eliminados' : 'Ver eliminados' }}
+        @if (trashed().length > 0) {
+          <span
+            class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-700"
+          >
+            {{ trashed().length }}
+          </span>
+        }
+      </button>
+    }
   </div>
 
   @if (loading()) {
@@ -49,7 +77,6 @@
             <!-- Existing entries -->
             @for (entry of schedulesForDay(day.id); track entry.id) {
               @if (editingId() === entry.id) {
-                <!-- Inline edit form -->
                 <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
                   <div class="flex items-center gap-2">
                     <input
@@ -81,7 +108,6 @@
                   </div>
                 </div>
               } @else {
-                <!-- Entry row -->
                 <div class="px-5 py-3 flex items-center justify-between">
                   <div class="flex items-center gap-2.5">
                     <svg
@@ -160,6 +186,51 @@
                   </button>
                 </div>
               </div>
+            }
+
+            <!-- Deleted entries (shown when toggle is active) -->
+            @if (showTrashed()) {
+              @if (loadingTrashed()) {
+                <div class="px-5 py-3">
+                  <div class="h-6 rounded bg-amber-100 animate-pulse w-32"></div>
+                </div>
+              } @else {
+                @for (entry of trashedForDay(day.id); track entry.id) {
+                  <div class="px-5 py-3 flex items-center justify-between bg-amber-50/50">
+                    <div class="flex items-center gap-2.5">
+                      <svg
+                        class="w-4 h-4 text-amber-400 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                      <span class="text-sm text-gray-400 font-mono tracking-tight line-through">
+                        {{ entry.start_time }} — {{ entry.end_time }}
+                      </span>
+                    </div>
+                    @if (canRestore()) {
+                      <button
+                        (click)="restoreEntry(entry)"
+                        [disabled]="restoringId() === entry.id"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 hover:text-amber-900 disabled:opacity-50 transition-colors"
+                      >
+                        @if (restoringId() === entry.id) {
+                          Restaurando...
+                        } @else {
+                          Restaurar
+                        }
+                      </button>
+                    }
+                  </div>
+                }
+              }
             }
 
             <!-- Empty state for day -->

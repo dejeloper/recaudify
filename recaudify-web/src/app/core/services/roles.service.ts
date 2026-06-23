@@ -25,4 +25,12 @@ export class RolesService {
   delete(id: number) {
     return this.api.delete('roles', String(id));
   }
+
+  getTrashed() {
+    return this.api.get<Role[]>('roles', 'trashed');
+  }
+
+  restore(id: number) {
+    return this.api.post<void>('roles', `${id}/restore`);
+  }
 }

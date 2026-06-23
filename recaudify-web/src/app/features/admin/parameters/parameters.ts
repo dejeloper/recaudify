@@ -14,8 +14,12 @@ export class Parameters implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly parameters = signal<Parameter[]>([]);
+  protected readonly trashed = signal<Parameter[]>([]);
   protected readonly loading = signal(true);
+  protected readonly loadingTrashed = signal(false);
   protected readonly deletingId = signal<number | null>(null);
+  protected readonly restoringId = signal<number | null>(null);
+  protected readonly showTrashed = signal(false);
 
   ngOnInit() {
     this.parametersService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -24,15 +28,41 @@ export class Parameters implements OnInit {
     });
   }
 
+  protected toggleTrashed() {
+    const next = !this.showTrashed();
+    this.showTrashed.set(next);
+    if (next && this.trashed().length === 0) {
+      this.loadingTrashed.set(true);
+      this.parametersService.getTrashed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: list => { this.trashed.set(list); this.loadingTrashed.set(false); },
+        error: () => this.loadingTrashed.set(false),
+      });
+    }
+  }
+
   protected delete(parameter: Parameter) {
-    if (!confirm(`¿Eliminar el parámetro "${parameter.key}"? Esta acción no se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar el parámetro "${parameter.key}"?`)) return;
     this.deletingId.set(parameter.id);
     this.parametersService.delete(parameter.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
+        const removed = this.parameters().find(p => p.id === parameter.id)!;
         this.parameters.update(list => list.filter(p => p.id !== parameter.id));
+        this.trashed.update(list => [removed, ...list]);
         this.deletingId.set(null);
       },
       error: () => this.deletingId.set(null),
+    });
+  }
+
+  protected restore(parameter: Parameter) {
+    this.restoringId.set(parameter.id);
+    this.parametersService.restore(parameter.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.trashed.update(list => list.filter(p => p.id !== parameter.id));
+        this.parameters.update(list => [...list, parameter].sort((a, b) => a.key.localeCompare(b.key)));
+        this.restoringId.set(null);
+      },
+      error: () => this.restoringId.set(null),
     });
   }
 }

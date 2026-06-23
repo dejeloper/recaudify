@@ -37,4 +37,20 @@ export class SchedulesService {
       method: 'DELETE',
     });
   }
+
+  getTrashedByUser(userId: number) {
+    return this.api.request<Schedule[]>({
+      controller: `users/${userId}/schedules`,
+      action: 'trashed',
+      method: 'GET',
+    });
+  }
+
+  restore(id: number) {
+    return this.api.request<void>({
+      controller: 'schedules',
+      action: `${id}/restore`,
+      method: 'POST',
+    });
+  }
 }

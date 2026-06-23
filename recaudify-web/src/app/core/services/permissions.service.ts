@@ -25,4 +25,12 @@ export class PermissionsService {
   delete(id: number) {
     return this.api.delete('permissions', String(id));
   }
+
+  getTrashed() {
+    return this.api.get<Permission[]>('permissions', 'trashed');
+  }
+
+  restore(id: number) {
+    return this.api.post<void>('permissions', `${id}/restore`);
+  }
 }
