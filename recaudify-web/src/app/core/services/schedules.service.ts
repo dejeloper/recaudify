@@ -13,7 +13,10 @@ export class SchedulesService {
     });
   }
 
-  create(userId: number, data: { day_of_week: number; start_time: string; end_time: string }) {
+  create(
+    userId: number,
+    data: { day_of_week: number; start_time: string; end_time: string; show_status?: boolean },
+  ) {
     return this.api.request<Schedule>({
       controller: `users/${userId}/schedules`,
       method: 'POST',
@@ -21,7 +24,7 @@ export class SchedulesService {
     });
   }
 
-  update(id: number, data: { start_time: string; end_time: string }) {
+  update(id: number, data: { start_time: string; end_time: string; show_status?: boolean }) {
     return this.api.request<Schedule>({
       controller: 'schedules',
       action: String(id),
@@ -35,22 +38,6 @@ export class SchedulesService {
       controller: 'schedules',
       action: String(id),
       method: 'DELETE',
-    });
-  }
-
-  getTrashedByUser(userId: number) {
-    return this.api.request<Schedule[]>({
-      controller: `users/${userId}/schedules`,
-      action: 'trashed',
-      method: 'GET',
-    });
-  }
-
-  restore(id: number) {
-    return this.api.request<void>({
-      controller: 'schedules',
-      action: `${id}/restore`,
-      method: 'POST',
     });
   }
 }

@@ -66,7 +66,7 @@ export class AuthService {
   expireSession() {
     this.currentUser.set(null);
     this.api.post('auth', 'logout').subscribe();
-  } 
+  }
 
   logout() {
     return this.api.post('auth', 'logout').pipe(
