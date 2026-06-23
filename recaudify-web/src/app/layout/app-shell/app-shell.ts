@@ -100,9 +100,10 @@ export class AppShell {
 
   protected readonly navGroups = NAV_GROUPS;
   protected readonly currentUser = this.authService.currentUser;
-  protected readonly isAdmin = computed(
-    () => this.currentUser()?.roles.includes('administrador') ?? false,
-  );
+  protected readonly isAdmin = computed(() => {
+    const roles = this.currentUser()?.roles ?? [];
+    return roles.includes('administrador') || roles.includes('superadmin');
+  });
 
   protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);

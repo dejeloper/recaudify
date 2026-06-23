@@ -73,6 +73,13 @@ export class UserSchedules implements OnInit {
     this.loadSchedules(id);
   }
 
+  protected formatTime(time: string): string {
+    const [h, m] = time.split(':').map(Number);
+    const period = h >= 12 ? 'PM' : 'AM';
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, '0')} ${period}`;
+  }
+
   protected schedulesForDay(dayId: number): Schedule[] {
     return this.schedules().filter((s) => s.day_of_week === dayId);
   }
@@ -183,7 +190,7 @@ export class UserSchedules implements OnInit {
 
   protected deleteEntry(entry: Schedule) {
     if (
-      !confirm(`¿Eliminar el horario ${entry.start_time}–${entry.end_time} del ${entry.day_name}?`)
+      !confirm(`¿Eliminar el horario ${this.formatTime(entry.start_time)}–${this.formatTime(entry.end_time)} del ${entry.day_name}?`)
     )
       return;
     this.deletingId.set(entry.id);

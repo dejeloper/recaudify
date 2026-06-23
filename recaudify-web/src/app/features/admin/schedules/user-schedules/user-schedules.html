@@ -116,7 +116,7 @@
                       />
                     </svg>
                     <span class="text-sm text-gray-700 font-mono tracking-tight">
-                      {{ entry.start_time }} — {{ entry.end_time }}
+                      {{ formatTime(entry.start_time) }} — {{ formatTime(entry.end_time) }}
                     </span>
                   </div>
                   <div class="flex items-center gap-1">
@@ -194,7 +194,7 @@
                         />
                       </svg>
                       <span class="text-sm text-gray-400 font-mono tracking-tight line-through">
-                        {{ entry.start_time }} — {{ entry.end_time }}
+                        {{ formatTime(entry.start_time) }} — {{ formatTime(entry.end_time) }}
                       </span>
                     </div>
                     @if (canRestore()) {

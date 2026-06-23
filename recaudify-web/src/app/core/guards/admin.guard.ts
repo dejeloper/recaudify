@@ -6,7 +6,8 @@ export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (auth.currentUser()?.roles.includes('administrador')) return true;
+  const roles = auth.currentUser()?.roles ?? [];
+  if (roles.includes('administrador') || roles.includes('superadmin')) return true;
 
   return router.createUrlTree(['/dashboard']);
 };
