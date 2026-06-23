@@ -1,4 +1,4 @@
-<div class="flex h-screen bg-gray-50 overflow-hidden">
+<div class="flex h-screen bg-stone-50 overflow-hidden">
   @if (userMenuOpen()) {
     <div
       class="fixed inset-0 z-40"
@@ -22,7 +22,7 @@
 
   <!-- Mobile header -->
   <div
-    class="fixed top-0 left-0 right-0 z-20 flex h-14 items-center gap-3 border-b border-gray-200 bg-white px-4 lg:hidden"
+    class="fixed top-0 left-0 right-0 z-20 flex h-14 items-center gap-3 border-b border-stone-200 bg-stone-50 px-4 lg:hidden"
   >
     <button
       (click)="toggleSidebar()"
@@ -62,11 +62,11 @@
 
   <!-- Sidebar -->
   <aside
-    class="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 fixed lg:static inset-y-0 left-0 z-40 lg:z-auto -translate-x-full lg:translate-x-0"
+    class="flex w-56 shrink-0 flex-col border-r border-stone-200 bg-stone-50 transition-transform duration-200 fixed lg:static inset-y-0 left-0 z-40 lg:z-auto -translate-x-full lg:translate-x-0"
     [class.translate-x-0]="sidebarOpen()"
   >
     <!-- Logo (desktop only) -->
-    <div class="hidden lg:flex h-14 items-center gap-2.5 border-b border-gray-100 px-5">
+    <div class="hidden lg:flex h-14 items-center gap-2.5 border-b border-stone-100 px-5">
       <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900">
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -167,7 +167,7 @@
     </nav>
 
     <!-- User -->
-    <div class="relative border-t border-gray-100 p-3">
+    <div class="relative border-t border-stone-100 p-3">
       <!-- Dropdown menu (opens upward) -->
       @if (userMenuOpen()) {
         <div

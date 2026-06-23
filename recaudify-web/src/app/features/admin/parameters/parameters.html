@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
         (click)="toggleTrashed()"
-        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        class="btn-secondary"
         [class.bg-amber-50]="showTrashed()"
         [class.border-amber-300]="showTrashed()"
         [class.text-amber-700]="showTrashed()"
@@ -29,10 +29,7 @@
           </span>
         }
       </button>
-      <a
-        routerLink="/admin/parameters/new"
-        class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
-      >
+      <a routerLink="/admin/parameters/new" class="btn-primary">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -66,19 +63,19 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-gray-100 bg-gray-50">
+            <tr class="border-b border-stone-200 bg-stone-100">
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Clave
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Valor
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Descripción
               </th>
@@ -99,15 +96,13 @@
                 </td>
                 <td class="px-5 py-3.5 text-right">
                   <div class="flex items-center justify-end gap-1">
-                    <a
-                      [routerLink]="['/admin/parameters', param.id, 'edit']"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                    <a [routerLink]="['/admin/parameters', param.id, 'edit']" class="btn-table-edit"
                       >Editar</a
                     >
                     <button
                       (click)="delete(param)"
                       [disabled]="deletingId() === param.id"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50"
+                      class="btn-table-danger"
                     >
                       @if (deletingId() === param.id) {
                         Eliminando...
@@ -194,7 +189,7 @@
                       <button
                         (click)="restore(param)"
                         [disabled]="restoringId() === param.id"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 hover:text-amber-900 transition-colors disabled:opacity-50"
+                        class="btn-table-restore"
                       >
                         @if (restoringId() === param.id) {
                           Restaurando...

@@ -62,16 +62,11 @@
       </div>
 
       <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 py-2">
-        <a
-          routerLink="/admin/parameters"
-          class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          Cancelar
-        </a>
+        <a routerLink="/admin/parameters" class="btn-secondary"> Cancelar </a>
         <button
           (click)="save()"
           [disabled]="saving() || !formKey.trim() || !formValue.trim()"
-          class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {{ saving() ? 'Guardando...' : 'Guardar' }}
         </button>

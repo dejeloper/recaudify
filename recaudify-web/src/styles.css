@@ -1,1 +1,23 @@
 @import 'tailwindcss';
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-200 transition-colors;
+  }
+
+  .btn-table-edit {
+    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors;
+  }
+
+  .btn-table-danger {
+    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50;
+  }
+
+  .btn-table-restore {
+    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
+  }
+}

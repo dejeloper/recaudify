@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
         (click)="toggleDisabled()"
-        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        class="btn-secondary"
         [class.bg-amber-50]="showDisabled()"
         [class.border-amber-300]="showDisabled()"
         [class.text-amber-700]="showDisabled()"
@@ -30,10 +30,7 @@
         }
       </button>
       @if (canCreate()) {
-        <a
-          routerLink="/admin/users/new"
-          class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
-        >
+        <a routerLink="/admin/users/new" class="btn-primary">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -70,24 +67,24 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-gray-100 bg-gray-50">
+            <tr class="border-b border-stone-200 bg-stone-100">
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Usuario
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Nombre de usuario
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Email
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Rol
               </th>
@@ -127,9 +124,7 @@
                 <td class="px-5 py-3.5 text-right">
                   <div class="flex items-center justify-end gap-1">
                     @if (canEdit()) {
-                      <a
-                        [routerLink]="['/admin/users', user.id, 'edit']"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                      <a [routerLink]="['/admin/users', user.id, 'edit']" class="btn-table-edit"
                         >Editar</a
                       >
                     }
@@ -137,7 +132,7 @@
                       <button
                         (click)="delete(user)"
                         [disabled]="deletingId() === user.id"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50"
+                        class="btn-table-danger"
                       >
                         @if (deletingId() === user.id) {
                           Desactivando...
@@ -247,7 +242,7 @@
                         <button
                           (click)="restore(user)"
                           [disabled]="restoringId() === user.id"
-                          class="rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 hover:text-amber-900 transition-colors disabled:opacity-50"
+                          class="btn-table-restore"
                         >
                           @if (restoringId() === user.id) {
                             Activando...

@@ -21,19 +21,19 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-gray-100 bg-gray-50">
+            <tr class="border-b border-stone-200 bg-stone-100">
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Nombre
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Usuario
               </th>
               <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
               >
                 Rol
               </th>
@@ -62,10 +62,7 @@
                   </span>
                 </td>
                 <td class="px-5 py-3.5 text-right">
-                  <a
-                    [routerLink]="['/admin/schedules', user.id]"
-                    class="rounded-md px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-                  >
+                  <a [routerLink]="['/admin/schedules', user.id]" class="btn-table-edit">
                     Gestionar horarios
                   </a>
                 </td>
