@@ -1,12 +1,19 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, switchMap, throwError } from 'rxjs';
-import { ApiError } from '@core/models/api-error';
-import { AuthService } from '@core/services/auth.service';
+import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
+import {inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {catchError, switchMap, throwError} from 'rxjs';
+import {ApiError} from '@core/models/api-error';
+import {AuthService} from '@core/services/auth.service';
+import {ToastService} from '@core/services/toast.service';
+
+const SCHEDULE_MESSAGES = [
+  'Acceso fuera del horario permitido.',
+  'No tiene horario de acceso asignado.',
+];
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
+  const toast = inject(ToastService);
   const router = inject(Router);
 
   return next(req).pipe(
@@ -27,6 +34,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 }) as ApiError,
             );
           }),
+        );
+      }
+
+      if (err.status === 403 && SCHEDULE_MESSAGES.includes(err.error?.message)) {
+        const name = auth.currentUser()?.name ?? 'usuario';
+        auth.expireSession();
+        toast.error(`Se acabó tu tiempo laboral, ${name}. Intenta ingresar en tu próximo horario.`);
+        router.navigate(['/login']);
+        return throwError(
+          () => ({message: err.error?.message, statusCode: 403}) as ApiError,
         );
       }
 
