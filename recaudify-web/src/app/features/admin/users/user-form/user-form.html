@@ -123,13 +123,13 @@
       </div>
 
       <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 py-2">
-        <a routerLink="/admin/users" class="btn-secondary"> Cancelar </a>
+        <a routerLink="/admin/users" appBtn="secondary"> Cancelar </a>
         <button
           (click)="save()"
           [disabled]="
             saving() || !formName.trim() || !formUsername.trim() || (!isEdit() && !formPassword)
           "
-          class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          appBtn="primary"
         >
           {{ saving() ? 'Guardando...' : 'Guardar' }}
         </button>

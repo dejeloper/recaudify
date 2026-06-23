@@ -1,12 +1,13 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { User } from '@core/models/user';
 import { UsersService } from '@core/services/users.service';
 
 @Component({
   selector: 'app-schedules',
-  imports: [RouterLink],
+  imports: [RouterLink, BtnDirective],
   templateUrl: './schedules.html',
 })
 export class Schedules implements OnInit {

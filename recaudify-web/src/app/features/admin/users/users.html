@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
         (click)="toggleDisabled()"
-        class="btn-secondary"
+        appBtn="secondary"
         [class.bg-amber-50]="showDisabled()"
         [class.border-amber-300]="showDisabled()"
         [class.text-amber-700]="showDisabled()"
@@ -30,7 +30,7 @@
         }
       </button>
       @if (canCreate()) {
-        <a routerLink="/admin/users/new" class="btn-primary">
+        <a routerLink="/admin/users/new" appBtn="primary">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -124,7 +124,7 @@
                 <td class="px-5 py-3.5 text-right">
                   <div class="flex items-center justify-end gap-1">
                     @if (canEdit()) {
-                      <a [routerLink]="['/admin/users', user.id, 'edit']" class="btn-table-edit"
+                      <a [routerLink]="['/admin/users', user.id, 'edit']" appBtn="table-edit"
                         >Editar</a
                       >
                     }
@@ -132,7 +132,7 @@
                       <button
                         (click)="delete(user)"
                         [disabled]="deletingId() === user.id"
-                        class="btn-table-danger"
+                        appBtn="table-danger"
                       >
                         @if (deletingId() === user.id) {
                           Desactivando...
@@ -242,7 +242,7 @@
                         <button
                           (click)="restore(user)"
                           [disabled]="restoringId() === user.id"
-                          class="btn-table-restore"
+                          appBtn="table-restore"
                         >
                           @if (restoringId() === user.id) {
                             Activando...

@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
         (click)="toggleTrashed()"
-        class="btn-secondary"
+        appBtn="secondary"
         [class.bg-amber-50]="showTrashed()"
         [class.border-amber-300]="showTrashed()"
         [class.text-amber-700]="showTrashed()"
@@ -29,7 +29,7 @@
           </span>
         }
       </button>
-      <a routerLink="/admin/parameters/new" class="btn-primary">
+      <a routerLink="/admin/parameters/new" appBtn="primary">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -96,13 +96,13 @@
                 </td>
                 <td class="px-5 py-3.5 text-right">
                   <div class="flex items-center justify-end gap-1">
-                    <a [routerLink]="['/admin/parameters', param.id, 'edit']" class="btn-table-edit"
+                    <a [routerLink]="['/admin/parameters', param.id, 'edit']" appBtn="table-edit"
                       >Editar</a
                     >
                     <button
                       (click)="delete(param)"
                       [disabled]="deletingId() === param.id"
-                      class="btn-table-danger"
+                      appBtn="table-danger"
                     >
                       @if (deletingId() === param.id) {
                         Eliminando...
@@ -189,7 +189,7 @@
                       <button
                         (click)="restore(param)"
                         [disabled]="restoringId() === param.id"
-                        class="btn-table-restore"
+                        appBtn="table-restore"
                       >
                         @if (restoringId() === param.id) {
                           Restaurando...

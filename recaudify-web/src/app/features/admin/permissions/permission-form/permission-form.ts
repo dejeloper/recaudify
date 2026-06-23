@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { PermissionsService } from '@core/services/permissions.service';
 
@@ -9,7 +10,7 @@ const NAME_PATTERN = /^[a-z_]+\.[a-z_-]+$/;
 
 @Component({
   selector: 'app-permission-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, BtnDirective],
   templateUrl: './permission-form.html',
 })
 export class PermissionForm implements OnInit {

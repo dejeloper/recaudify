@@ -2,12 +2,13 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { ParametersService } from '@core/services/parameters.service';
 
 @Component({
   selector: 'app-parameter-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, BtnDirective],
   templateUrl: './parameter-form.html',
 })
 export class ParameterForm implements OnInit {

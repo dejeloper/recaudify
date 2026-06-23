@@ -1,12 +1,13 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { Permission } from '@core/models/permission';
 import { PermissionsService } from '@core/services/permissions.service';
 
 @Component({
   selector: 'app-permissions',
-  imports: [RouterLink],
+  imports: [RouterLink, BtnDirective],
   templateUrl: './permissions.html',
 })
 export class Permissions implements OnInit {

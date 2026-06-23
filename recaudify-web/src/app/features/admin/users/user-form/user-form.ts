@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { Role } from '@core/models/role';
 import { RolesService } from '@core/services/roles.service';
@@ -9,7 +10,7 @@ import { UsersService } from '@core/services/users.service';
 
 @Component({
   selector: 'app-user-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, BtnDirective],
   templateUrl: './user-form.html',
 })
 export class UserForm implements OnInit {

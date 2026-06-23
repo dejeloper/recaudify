@@ -1,13 +1,14 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
 import { UsersService } from '@core/services/users.service';
 
 @Component({
   selector: 'app-users',
-  imports: [RouterLink],
+  imports: [RouterLink, BtnDirective],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {

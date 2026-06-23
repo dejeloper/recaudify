@@ -8,7 +8,7 @@
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
         (click)="toggleTrashed()"
-        class="btn-secondary"
+        appBtn="secondary"
         [class.bg-amber-50]="showTrashed()"
         [class.border-amber-300]="showTrashed()"
         [class.text-amber-700]="showTrashed()"
@@ -30,7 +30,7 @@
           </span>
         }
       </button>
-      <a routerLink="/admin/permissions/new" class="btn-primary">
+      <a routerLink="/admin/permissions/new" appBtn="primary">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -102,16 +102,13 @@
                   <td class="px-5 py-3 font-mono text-xs text-gray-400">{{ perm.name }}</td>
                   <td class="px-5 py-3 text-right">
                     <div class="flex items-center justify-end gap-1">
-                      <a
-                        [routerLink]="['/admin/permissions', perm.id, 'edit']"
-                        class="btn-table-edit"
-                      >
+                      <a [routerLink]="['/admin/permissions', perm.id, 'edit']" appBtn="table-edit">
                         Editar
                       </a>
                       <button
                         (click)="delete(perm)"
                         [disabled]="deletingId() === perm.id"
-                        class="btn-table-danger"
+                        appBtn="table-danger"
                       >
                         @if (deletingId() === perm.id) {
                           Eliminando...
@@ -204,7 +201,7 @@
                         <button
                           (click)="restore(perm)"
                           [disabled]="restoringId() === perm.id"
-                          class="btn-table-restore"
+                          appBtn="table-restore"
                         >
                           @if (restoringId() === perm.id) {
                             Restaurando...

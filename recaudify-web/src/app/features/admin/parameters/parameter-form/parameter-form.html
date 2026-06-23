@@ -62,11 +62,11 @@
       </div>
 
       <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 py-2">
-        <a routerLink="/admin/parameters" class="btn-secondary"> Cancelar </a>
+        <a routerLink="/admin/parameters" appBtn="secondary"> Cancelar </a>
         <button
           (click)="save()"
           [disabled]="saving() || !formKey.trim() || !formValue.trim()"
-          class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          appBtn="primary"
         >
           {{ saving() ? 'Guardando...' : 'Guardar' }}
         </button>

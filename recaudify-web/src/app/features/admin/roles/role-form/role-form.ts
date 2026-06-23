@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { Permission } from '@core/models/permission';
 import { PermissionsService } from '@core/services/permissions.service';
@@ -9,7 +10,7 @@ import { RolesService } from '@core/services/roles.service';
 
 @Component({
   selector: 'app-role-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, BtnDirective],
   templateUrl: './role-form.html',
 })
 export class RoleForm implements OnInit {
