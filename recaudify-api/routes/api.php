@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -18,7 +19,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'check.schedule'])->group(function () {
 
     Route::prefix('users')->group(function () {
         Route::get('/',                  [UserController::class, 'index'])->middleware('permission:usuarios.ver');
@@ -47,6 +48,16 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/',     [PermissionController::class, 'store']);
         Route::put('/{id}',  [PermissionController::class, 'update']);
         Route::delete('/{id}', [PermissionController::class, 'destroy']);
+    });
+
+    Route::prefix('users/{userId}/schedules')->group(function () {
+        Route::get('/',    [UserScheduleController::class, 'index'])->middleware('permission:horarios.ver');
+        Route::post('/',   [UserScheduleController::class, 'store'])->middleware('permission:horarios.crear');
+    });
+
+    Route::prefix('schedules')->group(function () {
+        Route::put('/{id}',    [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
+        Route::delete('/{id}', [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
     });
 
 });

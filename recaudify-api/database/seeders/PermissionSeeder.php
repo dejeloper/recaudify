@@ -55,6 +55,12 @@ class PermissionSeeder extends Seeder
             'usuarios.desactivar',
             'usuarios.restaurar',
 
+            // Horarios
+            'horarios.ver',
+            'horarios.crear',
+            'horarios.editar',
+            'horarios.eliminar',
+
             // Configuración
             'configuracion.ver',
             'configuracion.editar',
