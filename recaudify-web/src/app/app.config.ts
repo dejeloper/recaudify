@@ -5,12 +5,12 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {provideHttpClient, withInterceptors} from '@angular/common/http';
-import {provideRouter, withComponentInputBinding} from '@angular/router';
-import {firstValueFrom} from 'rxjs';
-import {routes} from './app.routes';
-import {errorInterceptor} from './core/interceptors/error.interceptor';
-import {AuthService} from './core/services/auth.service';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { routes } from './app.routes';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { AuthService } from './core/services/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [

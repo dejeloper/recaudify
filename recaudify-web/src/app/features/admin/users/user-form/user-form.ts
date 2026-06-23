@@ -36,9 +36,12 @@ export class UserForm implements OnInit {
   protected readonly isEdit = computed(() => !!this.id());
 
   ngOnInit() {
-    this.rolesService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: roles => this.roles.set(roles),
-    });
+    this.rolesService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (roles) => this.roles.set(roles),
+      });
 
     const id = this.id();
     if (!id) {
@@ -46,19 +49,22 @@ export class UserForm implements OnInit {
       return;
     }
 
-    this.usersService.getById(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: user => {
-        this.formName = user.name;
-        this.formUsername = user.username;
-        this.formEmail = user.email ?? '';
-        this.formRole = user.roles[0] ?? '';
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudo cargar el usuario.');
-        this.loading.set(false);
-      },
-    });
+    this.usersService
+      .getById(+id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (user) => {
+          this.formName = user.name;
+          this.formUsername = user.username;
+          this.formEmail = user.email ?? '';
+          this.formRole = user.roles[0] ?? '';
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar el usuario.');
+          this.loading.set(false);
+        },
+      });
   }
 
   protected save() {
@@ -74,15 +80,21 @@ export class UserForm implements OnInit {
       username: this.formUsername.trim(),
       email: this.formEmail.trim() || null,
       role: this.formRole || null,
-      ...(this.formPassword ? {
-        password: this.formPassword,
-        password_confirmation: this.formPasswordConfirmation,
-      } : {}),
+      ...(this.formPassword
+        ? {
+            password: this.formPassword,
+            password_confirmation: this.formPasswordConfirmation,
+          }
+        : {}),
     };
 
     const req$ = id
       ? this.usersService.update(+id, payload)
-      : this.usersService.create({ ...payload, password: this.formPassword, password_confirmation: this.formPasswordConfirmation });
+      : this.usersService.create({
+          ...payload,
+          password: this.formPassword,
+          password_confirmation: this.formPasswordConfirmation,
+        });
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this.router.navigate(['/admin/users']),

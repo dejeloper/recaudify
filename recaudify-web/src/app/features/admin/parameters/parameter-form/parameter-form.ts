@@ -35,18 +35,21 @@ export class ParameterForm implements OnInit {
       return;
     }
 
-    this.parametersService.getById(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: param => {
-        this.formKey = param.key;
-        this.formValue = param.value;
-        this.formDescription = param.description ?? '';
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudo cargar el parámetro.');
-        this.loading.set(false);
-      },
-    });
+    this.parametersService
+      .getById(+id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (param) => {
+          this.formKey = param.key;
+          this.formValue = param.value;
+          this.formDescription = param.description ?? '';
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar el parámetro.');
+          this.loading.set(false);
+        },
+      });
   }
 
   protected save() {

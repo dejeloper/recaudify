@@ -34,16 +34,19 @@ export class PermissionForm implements OnInit {
     if (!id) return;
 
     this.loading.set(true);
-    this.permissionsService.getById(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: perm => {
-        this.formName = perm.name;
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudo cargar el permiso.');
-        this.loading.set(false);
-      },
-    });
+    this.permissionsService
+      .getById(+id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (perm) => {
+          this.formName = perm.name;
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar el permiso.');
+          this.loading.set(false);
+        },
+      });
   }
 
   protected save() {

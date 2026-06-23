@@ -24,10 +24,16 @@ export class Parameters implements OnInit {
   protected readonly showTrashed = signal(false);
 
   ngOnInit() {
-    this.parametersService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: parameters => { this.parameters.set(parameters); this.loading.set(false); },
-      error: () => this.loading.set(false),
-    });
+    this.parametersService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (parameters) => {
+          this.parameters.set(parameters);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   protected toggleTrashed() {
@@ -35,36 +41,50 @@ export class Parameters implements OnInit {
     this.showTrashed.set(next);
     if (next && this.trashed().length === 0) {
       this.loadingTrashed.set(true);
-      this.parametersService.getTrashed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: list => { this.trashed.set(list); this.loadingTrashed.set(false); },
-        error: () => this.loadingTrashed.set(false),
-      });
+      this.parametersService
+        .getTrashed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (list) => {
+            this.trashed.set(list);
+            this.loadingTrashed.set(false);
+          },
+          error: () => this.loadingTrashed.set(false),
+        });
     }
   }
 
   protected delete(parameter: Parameter) {
     if (!confirm(`¿Eliminar el parámetro "${parameter.key}"?`)) return;
     this.deletingId.set(parameter.id);
-    this.parametersService.delete(parameter.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const removed = this.parameters().find(p => p.id === parameter.id)!;
-        this.parameters.update(list => list.filter(p => p.id !== parameter.id));
-        this.trashed.update(list => [removed, ...list]);
-        this.deletingId.set(null);
-      },
-      error: () => this.deletingId.set(null),
-    });
+    this.parametersService
+      .delete(parameter.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const removed = this.parameters().find((p) => p.id === parameter.id)!;
+          this.parameters.update((list) => list.filter((p) => p.id !== parameter.id));
+          this.trashed.update((list) => [removed, ...list]);
+          this.deletingId.set(null);
+        },
+        error: () => this.deletingId.set(null),
+      });
   }
 
   protected restore(parameter: Parameter) {
     this.restoringId.set(parameter.id);
-    this.parametersService.restore(parameter.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.trashed.update(list => list.filter(p => p.id !== parameter.id));
-        this.parameters.update(list => [...list, parameter].sort((a, b) => a.key.localeCompare(b.key)));
-        this.restoringId.set(null);
-      },
-      error: () => this.restoringId.set(null),
-    });
+    this.parametersService
+      .restore(parameter.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.trashed.update((list) => list.filter((p) => p.id !== parameter.id));
+          this.parameters.update((list) =>
+            [...list, parameter].sort((a, b) => a.key.localeCompare(b.key)),
+          );
+          this.restoringId.set(null);
+        },
+        error: () => this.restoringId.set(null),
+      });
   }
 }

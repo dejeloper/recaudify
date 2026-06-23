@@ -1,9 +1,9 @@
-import {Routes} from '@angular/router';
-import {authGuard, guestGuard} from './core/guards/auth.guard';
-import {adminGuard} from './core/guards/admin.guard';
+import { Routes } from '@angular/router';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
-  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
@@ -24,7 +24,10 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+            loadComponent: () =>
+              import('./features/admin/admin-dashboard/admin-dashboard').then(
+                (m) => m.AdminDashboard,
+              ),
           },
           {
             path: 'users',
@@ -32,11 +35,13 @@ export const routes: Routes = [
           },
           {
             path: 'users/new',
-            loadComponent: () => import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
+            loadComponent: () =>
+              import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
           },
           {
             path: 'users/:id/edit',
-            loadComponent: () => import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
+            loadComponent: () =>
+              import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
           },
           {
             path: 'roles',
@@ -44,47 +49,67 @@ export const routes: Routes = [
           },
           {
             path: 'roles/new',
-            loadComponent: () => import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
+            loadComponent: () =>
+              import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
           },
           {
             path: 'roles/:id/edit',
-            loadComponent: () => import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
+            loadComponent: () =>
+              import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
           },
           {
             path: 'permissions',
-            loadComponent: () => import('./features/admin/permissions/permissions').then((m) => m.Permissions),
+            loadComponent: () =>
+              import('./features/admin/permissions/permissions').then((m) => m.Permissions),
           },
           {
             path: 'permissions/new',
-            loadComponent: () => import('./features/admin/permissions/permission-form/permission-form').then((m) => m.PermissionForm),
+            loadComponent: () =>
+              import('./features/admin/permissions/permission-form/permission-form').then(
+                (m) => m.PermissionForm,
+              ),
           },
           {
             path: 'permissions/:id/edit',
-            loadComponent: () => import('./features/admin/permissions/permission-form/permission-form').then((m) => m.PermissionForm),
+            loadComponent: () =>
+              import('./features/admin/permissions/permission-form/permission-form').then(
+                (m) => m.PermissionForm,
+              ),
           },
           {
             path: 'schedules',
-            loadComponent: () => import('./features/admin/schedules/schedules').then((m) => m.Schedules),
+            loadComponent: () =>
+              import('./features/admin/schedules/schedules').then((m) => m.Schedules),
           },
           {
             path: 'schedules/:userId',
-            loadComponent: () => import('./features/admin/schedules/user-schedules/user-schedules').then((m) => m.UserSchedules),
+            loadComponent: () =>
+              import('./features/admin/schedules/user-schedules/user-schedules').then(
+                (m) => m.UserSchedules,
+              ),
           },
           {
             path: 'parameters',
-            loadComponent: () => import('./features/admin/parameters/parameters').then((m) => m.Parameters),
+            loadComponent: () =>
+              import('./features/admin/parameters/parameters').then((m) => m.Parameters),
           },
           {
             path: 'parameters/new',
-            loadComponent: () => import('./features/admin/parameters/parameter-form/parameter-form').then((m) => m.ParameterForm),
+            loadComponent: () =>
+              import('./features/admin/parameters/parameter-form/parameter-form').then(
+                (m) => m.ParameterForm,
+              ),
           },
           {
             path: 'parameters/:id/edit',
-            loadComponent: () => import('./features/admin/parameters/parameter-form/parameter-form').then((m) => m.ParameterForm),
+            loadComponent: () =>
+              import('./features/admin/parameters/parameter-form/parameter-form').then(
+                (m) => m.ParameterForm,
+              ),
           },
         ],
       },
     ],
   },
-  {path: '**', redirectTo: 'dashboard'},
+  { path: '**', redirectTo: 'dashboard' },
 ];

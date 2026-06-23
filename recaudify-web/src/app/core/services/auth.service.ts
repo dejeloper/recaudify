@@ -1,12 +1,12 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {Router} from '@angular/router';
-import {catchError, finalize, Observable, of, shareReplay, switchMap, tap} from 'rxjs';
-import {lower} from '@core/utils/text';
-import {ApiError} from '@core/models/api-error';
-import {User} from '@core/models/user';
-import {ApiService} from '@core/services/api.service';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, finalize, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { lower } from '@core/utils/text';
+import { ApiError } from '@core/models/api-error';
+import { User } from '@core/models/user';
+import { ApiService } from '@core/services/api.service';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
@@ -22,12 +22,12 @@ export class AuthService {
 
   checkAuth() {
     return this.api.get<User>('auth', 'me').pipe(
-      tap(user => this.currentUser.set(user)),
+      tap((user) => this.currentUser.set(user)),
       catchError((err: ApiError) => {
         if (err.statusCode === 401) {
           return this.api.post('auth', 'refresh').pipe(
             switchMap(() => this.api.get<User>('auth', 'me')),
-            tap(user => this.currentUser.set(user as User)),
+            tap((user) => this.currentUser.set(user as User)),
             catchError(() => {
               this.currentUser.set(null);
               return of(null);
@@ -41,16 +41,12 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    const data = {username: lower(username), password};
-    return this.api.post('auth', 'login', data).pipe(
-      switchMap(() => this.me()),
-    );
+    const data = { username: lower(username), password };
+    return this.api.post('auth', 'login', data).pipe(switchMap(() => this.me()));
   }
 
   me() {
-    return this.api.get<User>('auth', 'me').pipe(
-      tap(user => this.currentUser.set(user)),
-    );
+    return this.api.get<User>('auth', 'me').pipe(tap((user) => this.currentUser.set(user)));
   }
 
   refresh() {

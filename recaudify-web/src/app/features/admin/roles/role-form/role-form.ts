@@ -42,25 +42,31 @@ export class RoleForm implements OnInit {
   });
 
   ngOnInit() {
-    this.permissionsService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: perms => {
-        this.allPermissions.set(perms);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.permissionsService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (perms) => {
+          this.allPermissions.set(perms);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
 
     const id = this.id();
     if (!id) return;
 
     this.loading.set(true);
-    this.rolesService.getById(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: role => {
-        this.formName = role.name;
-        this.selected.set(new Set(role.permissions.map(p => p.name)));
-      },
-      error: () => this.error.set('No se pudo cargar el rol.'),
-    });
+    this.rolesService
+      .getById(+id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (role) => {
+          this.formName = role.name;
+          this.selected.set(new Set(role.permissions.map((p) => p.name)));
+        },
+        error: () => this.error.set('No se pudo cargar el rol.'),
+      });
   }
 
   protected toggle(permName: string) {
@@ -75,12 +81,12 @@ export class RoleForm implements OnInit {
 
   protected toggleAll(perms: string[], checked: boolean) {
     const s = new Set(this.selected());
-    perms.forEach(p => checked ? s.add(p) : s.delete(p));
+    perms.forEach((p) => (checked ? s.add(p) : s.delete(p)));
     this.selected.set(s);
   }
 
   protected allChecked(perms: string[]) {
-    return perms.every(p => this.selected().has(p));
+    return perms.every((p) => this.selected().has(p));
   }
 
   protected actionLabel(perm: string) {

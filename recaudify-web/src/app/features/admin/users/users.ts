@@ -27,14 +27,24 @@ export class Users implements OnInit {
 
   protected readonly canCreate = computed(() => this.authService.hasPermission('usuarios.crear'));
   protected readonly canEdit = computed(() => this.authService.hasPermission('usuarios.editar'));
-  protected readonly canDelete = computed(() => this.authService.hasPermission('usuarios.desactivar'));
-  protected readonly canRestore = computed(() => this.authService.hasPermission('usuarios.restaurar'));
+  protected readonly canDelete = computed(() =>
+    this.authService.hasPermission('usuarios.desactivar'),
+  );
+  protected readonly canRestore = computed(() =>
+    this.authService.hasPermission('usuarios.restaurar'),
+  );
 
   ngOnInit() {
-    this.usersService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: users => { this.users.set(users); this.loading.set(false); },
-      error: () => this.loading.set(false),
-    });
+    this.usersService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (users) => {
+          this.users.set(users);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   protected toggleDisabled() {
@@ -42,37 +52,49 @@ export class Users implements OnInit {
     this.showDisabled.set(next);
     if (next && this.disabled().length === 0) {
       this.loadingDisabled.set(true);
-      this.usersService.getDisabled().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: list => { this.disabled.set(list); this.loadingDisabled.set(false); },
-        error: () => this.loadingDisabled.set(false),
-      });
+      this.usersService
+        .getDisabled()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (list) => {
+            this.disabled.set(list);
+            this.loadingDisabled.set(false);
+          },
+          error: () => this.loadingDisabled.set(false),
+        });
     }
   }
 
   protected delete(user: User) {
     if (!confirm(`¿Desactivar al usuario "${user.name}"?`)) return;
     this.deletingId.set(user.id);
-    this.usersService.delete(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const removed = this.users().find(u => u.id === user.id)!;
-        this.users.update(list => list.filter(u => u.id !== user.id));
-        this.disabled.update(list => [removed, ...list]);
-        this.deletingId.set(null);
-      },
-      error: () => this.deletingId.set(null),
-    });
+    this.usersService
+      .delete(user.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const removed = this.users().find((u) => u.id === user.id)!;
+          this.users.update((list) => list.filter((u) => u.id !== user.id));
+          this.disabled.update((list) => [removed, ...list]);
+          this.deletingId.set(null);
+        },
+        error: () => this.deletingId.set(null),
+      });
   }
 
   protected restore(user: User) {
     this.restoringId.set(user.id);
-    this.usersService.restore(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.disabled.update(list => list.filter(u => u.id !== user.id));
-        this.users.update(list => [...list, user].sort((a, b) => a.name.localeCompare(b.name)));
-        this.restoringId.set(null);
-      },
-      error: () => this.restoringId.set(null),
-    });
+    this.usersService
+      .restore(user.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.disabled.update((list) => list.filter((u) => u.id !== user.id));
+          this.users.update((list) => [...list, user].sort((a, b) => a.name.localeCompare(b.name)));
+          this.restoringId.set(null);
+        },
+        error: () => this.restoringId.set(null),
+      });
   }
 
   protected roleLabel(user: User): string {

@@ -1,11 +1,11 @@
-import {Component, computed, inject} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {AuthService} from '@core/services/auth.service';
+import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   imports: [RouterLink],
-  templateUrl: './admin-dashboard.html'
+  templateUrl: './admin-dashboard.html',
 })
 export class AdminDashboard {
   private readonly auth = inject(AuthService);

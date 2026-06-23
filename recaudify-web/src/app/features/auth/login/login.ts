@@ -1,12 +1,12 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
-import {AuthService} from '@core/services/auth.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   imports: [FormsModule],
-  templateUrl: './login.html'
+  templateUrl: './login.html',
 })
 export class Login implements OnInit {
   private readonly auth = inject(AuthService);

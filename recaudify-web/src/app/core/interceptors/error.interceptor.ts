@@ -1,9 +1,9 @@
-import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
-import {inject} from '@angular/core';
-import {Router} from '@angular/router';
-import {catchError, switchMap, throwError} from 'rxjs';
-import {ApiError} from '@core/models/api-error';
-import {AuthService} from '@core/services/auth.service';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { ApiError } from '@core/models/api-error';
+import { AuthService } from '@core/services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
@@ -19,10 +19,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           catchError(() => {
             auth.clearSession();
             router.navigate(['/login']);
-            return throwError(() => ({
-              message: 'Sesión expirada. Inicie sesión nuevamente.',
-              statusCode: 401,
-            } as ApiError));
+            return throwError(
+              () =>
+                ({
+                  message: 'Sesión expirada. Inicie sesión nuevamente.',
+                  statusCode: 401,
+                }) as ApiError,
+            );
           }),
         );
       }

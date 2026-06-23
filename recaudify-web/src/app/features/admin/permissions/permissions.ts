@@ -48,10 +48,16 @@ export class Permissions implements OnInit {
   });
 
   ngOnInit() {
-    this.permissionsService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: perms => { this.permissions.set(perms); this.loading.set(false); },
-      error: () => this.loading.set(false),
-    });
+    this.permissionsService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (perms) => {
+          this.permissions.set(perms);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   protected toggleTrashed() {
@@ -59,37 +65,51 @@ export class Permissions implements OnInit {
     this.showTrashed.set(next);
     if (next && this.trashed().length === 0) {
       this.loadingTrashed.set(true);
-      this.permissionsService.getTrashed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: list => { this.trashed.set(list); this.loadingTrashed.set(false); },
-        error: () => this.loadingTrashed.set(false),
-      });
+      this.permissionsService
+        .getTrashed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (list) => {
+            this.trashed.set(list);
+            this.loadingTrashed.set(false);
+          },
+          error: () => this.loadingTrashed.set(false),
+        });
     }
   }
 
   protected delete(permission: Permission) {
     if (!confirm(`¿Eliminar el permiso "${permission.name}"?`)) return;
     this.deletingId.set(permission.id);
-    this.permissionsService.delete(permission.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const removed = this.permissions().find(p => p.id === permission.id)!;
-        this.permissions.update(list => list.filter(p => p.id !== permission.id));
-        this.trashed.update(list => [removed, ...list]);
-        this.deletingId.set(null);
-      },
-      error: () => this.deletingId.set(null),
-    });
+    this.permissionsService
+      .delete(permission.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const removed = this.permissions().find((p) => p.id === permission.id)!;
+          this.permissions.update((list) => list.filter((p) => p.id !== permission.id));
+          this.trashed.update((list) => [removed, ...list]);
+          this.deletingId.set(null);
+        },
+        error: () => this.deletingId.set(null),
+      });
   }
 
   protected restore(permission: Permission) {
     this.restoringId.set(permission.id);
-    this.permissionsService.restore(permission.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.trashed.update(list => list.filter(p => p.id !== permission.id));
-        this.permissions.update(list => [...list, permission].sort((a, b) => a.name.localeCompare(b.name)));
-        this.restoringId.set(null);
-      },
-      error: () => this.restoringId.set(null),
-    });
+    this.permissionsService
+      .restore(permission.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.trashed.update((list) => list.filter((p) => p.id !== permission.id));
+          this.permissions.update((list) =>
+            [...list, permission].sort((a, b) => a.name.localeCompare(b.name)),
+          );
+          this.restoringId.set(null);
+        },
+        error: () => this.restoringId.set(null),
+      });
   }
 
   protected actionLabel(name: string) {

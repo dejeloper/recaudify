@@ -24,10 +24,16 @@ export class Roles implements OnInit {
   protected readonly showTrashed = signal(false);
 
   ngOnInit() {
-    this.rolesService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: roles => { this.roles.set(roles); this.loading.set(false); },
-      error: () => this.loading.set(false),
-    });
+    this.rolesService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (roles) => {
+          this.roles.set(roles);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   protected toggleTrashed() {
@@ -35,36 +41,48 @@ export class Roles implements OnInit {
     this.showTrashed.set(next);
     if (next && this.trashed().length === 0) {
       this.loadingTrashed.set(true);
-      this.rolesService.getTrashed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: list => { this.trashed.set(list); this.loadingTrashed.set(false); },
-        error: () => this.loadingTrashed.set(false),
-      });
+      this.rolesService
+        .getTrashed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (list) => {
+            this.trashed.set(list);
+            this.loadingTrashed.set(false);
+          },
+          error: () => this.loadingTrashed.set(false),
+        });
     }
   }
 
   protected delete(role: Role) {
     if (!confirm(`¿Eliminar el rol "${role.name}"?`)) return;
     this.deletingId.set(role.id);
-    this.rolesService.delete(role.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const removed = this.roles().find(r => r.id === role.id)!;
-        this.roles.update(list => list.filter(r => r.id !== role.id));
-        this.trashed.update(list => [removed, ...list]);
-        this.deletingId.set(null);
-      },
-      error: () => this.deletingId.set(null),
-    });
+    this.rolesService
+      .delete(role.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const removed = this.roles().find((r) => r.id === role.id)!;
+          this.roles.update((list) => list.filter((r) => r.id !== role.id));
+          this.trashed.update((list) => [removed, ...list]);
+          this.deletingId.set(null);
+        },
+        error: () => this.deletingId.set(null),
+      });
   }
 
   protected restore(role: Role) {
     this.restoringId.set(role.id);
-    this.rolesService.restore(role.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.trashed.update(list => list.filter(r => r.id !== role.id));
-        this.roles.update(list => [...list, role].sort((a, b) => a.name.localeCompare(b.name)));
-        this.restoringId.set(null);
-      },
-      error: () => this.restoringId.set(null),
-    });
+    this.rolesService
+      .restore(role.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.trashed.update((list) => list.filter((r) => r.id !== role.id));
+          this.roles.update((list) => [...list, role].sort((a, b) => a.name.localeCompare(b.name)));
+          this.restoringId.set(null);
+        },
+        error: () => this.restoringId.set(null),
+      });
   }
 }

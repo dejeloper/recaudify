@@ -19,10 +19,14 @@ export class Schedules implements OnInit {
   protected readonly loading = signal(true);
 
   ngOnInit() {
-    this.usersService.getAll()
+    this.usersService
+      .getAll()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: users => { this.users.set(users); this.loading.set(false); },
+        next: (users) => {
+          this.users.set(users);
+          this.loading.set(false);
+        },
         error: () => this.loading.set(false),
       });
   }
