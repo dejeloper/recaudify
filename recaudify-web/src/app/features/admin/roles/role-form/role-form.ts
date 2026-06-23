@@ -7,6 +7,7 @@ import { ApiError } from '@core/models/api-error';
 import { Permission } from '@core/models/permission';
 import { PermissionsService } from '@core/services/permissions.service';
 import { RolesService } from '@core/services/roles.service';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-role-form',
@@ -17,6 +18,7 @@ export class RoleForm implements OnInit {
   private readonly rolesService = inject(RolesService);
   private readonly permissionsService = inject(PermissionsService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input<string>();
@@ -108,9 +110,14 @@ export class RoleForm implements OnInit {
       : this.rolesService.create(name, permissions);
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/admin/roles']),
+      next: () => {
+        this.toast.success(this.isEdit() ? 'Rol actualizado.' : 'Rol creado.');
+        this.router.navigate(['/admin/roles']);
+      },
       error: (err: ApiError) => {
-        this.error.set(err.message ?? 'Error al guardar el rol.');
+        const msg = err.message ?? 'Error al guardar el rol.';
+        this.error.set(msg);
+        this.toast.error(msg);
         this.saving.set(false);
       },
     });

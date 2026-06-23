@@ -5,7 +5,8 @@ import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Parameter } from '@core/models/parameter';
-import { ParametersService } from '@core/services/parameters.service';
+import { ParametersService } from '@core/services/parameters.service'; 
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-parameters',
@@ -14,6 +15,7 @@ import { ParametersService } from '@core/services/parameters.service';
 })
 export class Parameters implements OnInit {
   private readonly parametersService = inject(ParametersService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly parameters = signal<Parameter[]>([]);
@@ -67,8 +69,12 @@ export class Parameters implements OnInit {
           this.parameters.update((list) => list.filter((p) => p.id !== parameter.id));
           this.trashed.update((list) => [removed, ...list]);
           this.deletingId.set(null);
+          this.toast.success(`Parámetro "${parameter.key}" eliminado.`);
         },
-        error: () => this.deletingId.set(null),
+        error: () => {
+          this.deletingId.set(null);
+          this.toast.error('No se pudo eliminar el parámetro.');
+        },
       });
   }
 
@@ -84,8 +90,12 @@ export class Parameters implements OnInit {
             [...list, parameter].sort((a, b) => a.key.localeCompare(b.key)),
           );
           this.restoringId.set(null);
+          this.toast.success(`Parámetro "${parameter.key}" restaurado.`);
         },
-        error: () => this.restoringId.set(null),
+        error: () => {
+          this.restoringId.set(null);
+          this.toast.error('No se pudo restaurar el parámetro.');
+        },
       });
   }
 }

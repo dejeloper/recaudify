@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { ParametersService } from '@core/services/parameters.service';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-parameter-form',
@@ -14,6 +15,7 @@ import { ParametersService } from '@core/services/parameters.service';
 export class ParameterForm implements OnInit {
   private readonly parametersService = inject(ParametersService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input<string>();
@@ -67,9 +69,14 @@ export class ParameterForm implements OnInit {
       : this.parametersService.create(key, value, description);
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/admin/parameters']),
+      next: () => {
+        this.toast.success(this.isEdit() ? 'Parámetro actualizado.' : 'Parámetro creado.');
+        this.router.navigate(['/admin/parameters']);
+      },
       error: (err: ApiError) => {
-        this.error.set(err.message ?? 'Error al guardar el parámetro.');
+        const msg = err.message ?? 'Error al guardar el parámetro.';
+        this.error.set(msg);
+        this.toast.error(msg);
         this.saving.set(false);
       },
     });

@@ -6,6 +6,7 @@ import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
 
 @Component({
@@ -16,6 +17,7 @@ import { UsersService } from '@core/services/users.service';
 export class Users implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly users = signal<User[]>([]);
@@ -78,8 +80,12 @@ export class Users implements OnInit {
           this.users.update((list) => list.filter((u) => u.id !== user.id));
           this.disabled.update((list) => [removed, ...list]);
           this.deletingId.set(null);
+          this.toast.success(`Usuario "${user.name}" desactivado.`);
         },
-        error: () => this.deletingId.set(null),
+        error: () => {
+          this.deletingId.set(null);
+          this.toast.error('No se pudo desactivar el usuario.');
+        },
       });
   }
 
@@ -93,8 +99,12 @@ export class Users implements OnInit {
           this.disabled.update((list) => list.filter((u) => u.id !== user.id));
           this.users.update((list) => [...list, user].sort((a, b) => a.name.localeCompare(b.name)));
           this.restoringId.set(null);
+          this.toast.success(`Usuario "${user.name}" activado.`);
         },
-        error: () => this.restoringId.set(null),
+        error: () => {
+          this.restoringId.set(null);
+          this.toast.error('No se pudo activar el usuario.');
+        },
       });
   }
 

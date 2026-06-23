@@ -6,6 +6,7 @@ import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { Role } from '@core/models/role';
 import { RolesService } from '@core/services/roles.service';
+import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class UserForm implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly rolesService = inject(RolesService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input<string>();
@@ -97,9 +99,14 @@ export class UserForm implements OnInit {
         });
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/admin/users']),
+      next: () => {
+        this.toast.success(this.isEdit() ? 'Usuario actualizado.' : 'Usuario creado.');
+        this.router.navigate(['/admin/users']);
+      },
       error: (err: ApiError) => {
-        this.error.set(err.message ?? 'Error al guardar el usuario.');
+        const msg = err.message ?? 'Error al guardar el usuario.';
+        this.error.set(msg);
+        this.toast.error(msg);
         this.saving.set(false);
       },
     });

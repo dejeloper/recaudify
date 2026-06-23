@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/models/api-error';
 import { PermissionsService } from '@core/services/permissions.service';
+import { ToastService } from '@core/services/toast.service';
 
 const NAME_PATTERN = /^[a-z_]+\.[a-z_-]+$/;
 
@@ -16,6 +17,7 @@ const NAME_PATTERN = /^[a-z_]+\.[a-z_-]+$/;
 export class PermissionForm implements OnInit {
   private readonly permissionsService = inject(PermissionsService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input<string>();
@@ -65,9 +67,14 @@ export class PermissionForm implements OnInit {
       : this.permissionsService.create(name);
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/admin/permissions']),
+      next: () => {
+        this.toast.success(this.isEdit() ? 'Permiso actualizado.' : 'Permiso creado.');
+        this.router.navigate(['/admin/permissions']);
+      },
       error: (err: ApiError) => {
-        this.error.set(err.message ?? 'Error al guardar el permiso.');
+        const msg = err.message ?? 'Error al guardar el permiso.';
+        this.error.set(msg);
+        this.toast.error(msg);
         this.saving.set(false);
       },
     });

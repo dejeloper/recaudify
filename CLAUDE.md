@@ -85,6 +85,20 @@ pnpm add <pkg>      # Install a dependency
 <app-spinner [show]="loading()" label="Cargando usuarios..." />
 ```
 
+- `ToastContainer` (`core/components/toast/toast.ts`) — selector `app-toast`. Mounted once in `app.html`. Never import directly in pages. Use `ToastService` (`core/services/toast.service.ts`) to trigger toasts from anywhere. Types: `success`, `error`, `warning`, `info`. Default duration: 5 s. Toasts auto-dismiss and can be closed manually.
+
+```typescript
+private readonly toast = inject(ToastService);
+
+this.toast.success('Usuario creado correctamente.');
+this.toast.error('No se pudo guardar. Intente nuevamente.');
+this.toast.warning('El rol no tiene permisos asignados.');
+this.toast.info('Recuerda guardar los cambios.');
+
+// custom duration (ms), 0 = never auto-dismiss
+this.toast.success('Importación completada.', 8000);
+```
+
 **Conventions:**
 
 - `inject()` only — no constructor injection.

@@ -8,6 +8,7 @@ import { Schedule } from '@core/models/schedule';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
 import { SchedulesService } from '@core/services/schedules.service';
+import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
 
 const DAYS = [
@@ -31,6 +32,7 @@ export class UserSchedules implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly schedulesService = inject(SchedulesService);
   private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly days = DAYS;
@@ -138,8 +140,12 @@ export class UserSchedules implements OnInit {
           this.schedules.update((list) => [...list, created]);
           this.addingDay.set(null);
           this.savingAdd.set(false);
+          this.toast.success('Horario agregado.');
         },
-        error: () => this.savingAdd.set(false),
+        error: () => {
+          this.savingAdd.set(false);
+          this.toast.error('No se pudo agregar el horario.');
+        },
       });
   }
 
@@ -166,8 +172,12 @@ export class UserSchedules implements OnInit {
           this.schedules.update((list) => list.map((s) => (s.id === updated.id ? updated : s)));
           this.editingId.set(null);
           this.savingEdit.set(false);
+          this.toast.success('Horario actualizado.');
         },
-        error: () => this.savingEdit.set(false),
+        error: () => {
+          this.savingEdit.set(false);
+          this.toast.error('No se pudo actualizar el horario.');
+        },
       });
   }
 
@@ -185,8 +195,12 @@ export class UserSchedules implements OnInit {
           this.schedules.update((list) => list.filter((s) => s.id !== entry.id));
           this.trashed.update((list) => [entry, ...list]);
           this.deletingId.set(null);
+          this.toast.success('Horario eliminado.');
         },
-        error: () => this.deletingId.set(null),
+        error: () => {
+          this.deletingId.set(null);
+          this.toast.error('No se pudo eliminar el horario.');
+        },
       });
   }
 
@@ -200,8 +214,12 @@ export class UserSchedules implements OnInit {
           this.trashed.update((list) => list.filter((s) => s.id !== entry.id));
           this.schedules.update((list) => [...list, entry]);
           this.restoringId.set(null);
+          this.toast.success('Horario restaurado.');
         },
-        error: () => this.restoringId.set(null),
+        error: () => {
+          this.restoringId.set(null);
+          this.toast.error('No se pudo restaurar el horario.');
+        },
       });
   }
 }

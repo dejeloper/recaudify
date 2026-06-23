@@ -6,6 +6,7 @@ import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Role } from '@core/models/role';
 import { RolesService } from '@core/services/roles.service';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-roles',
@@ -14,6 +15,7 @@ import { RolesService } from '@core/services/roles.service';
 })
 export class Roles implements OnInit {
   private readonly rolesService = inject(RolesService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly roles = signal<Role[]>([]);
@@ -67,8 +69,12 @@ export class Roles implements OnInit {
           this.roles.update((list) => list.filter((r) => r.id !== role.id));
           this.trashed.update((list) => [removed, ...list]);
           this.deletingId.set(null);
+          this.toast.success(`Rol "${role.name}" eliminado.`);
         },
-        error: () => this.deletingId.set(null),
+        error: () => {
+          this.deletingId.set(null);
+          this.toast.error('No se pudo eliminar el rol.');
+        },
       });
   }
 
@@ -82,8 +88,12 @@ export class Roles implements OnInit {
           this.trashed.update((list) => list.filter((r) => r.id !== role.id));
           this.roles.update((list) => [...list, role].sort((a, b) => a.name.localeCompare(b.name)));
           this.restoringId.set(null);
+          this.toast.success(`Rol "${role.name}" restaurado.`);
         },
-        error: () => this.restoringId.set(null),
+        error: () => {
+          this.restoringId.set(null);
+          this.toast.error('No se pudo restaurar el rol.');
+        },
       });
   }
 }

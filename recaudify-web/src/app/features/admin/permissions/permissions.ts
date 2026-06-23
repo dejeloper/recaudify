@@ -6,6 +6,7 @@ import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Permission } from '@core/models/permission';
 import { PermissionsService } from '@core/services/permissions.service';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-permissions',
@@ -14,6 +15,7 @@ import { PermissionsService } from '@core/services/permissions.service';
 })
 export class Permissions implements OnInit {
   private readonly permissionsService = inject(PermissionsService);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly permissions = signal<Permission[]>([]);
@@ -91,8 +93,12 @@ export class Permissions implements OnInit {
           this.permissions.update((list) => list.filter((p) => p.id !== permission.id));
           this.trashed.update((list) => [removed, ...list]);
           this.deletingId.set(null);
+          this.toast.success(`Permiso "${permission.name}" eliminado.`);
         },
-        error: () => this.deletingId.set(null),
+        error: () => {
+          this.deletingId.set(null);
+          this.toast.error('No se pudo eliminar el permiso.');
+        },
       });
   }
 
@@ -108,8 +114,12 @@ export class Permissions implements OnInit {
             [...list, permission].sort((a, b) => a.name.localeCompare(b.name)),
           );
           this.restoringId.set(null);
+          this.toast.success(`Permiso "${permission.name}" restaurado.`);
         },
-        error: () => this.restoringId.set(null),
+        error: () => {
+          this.restoringId.set(null);
+          this.toast.error('No se pudo restaurar el permiso.');
+        },
       });
   }
 
