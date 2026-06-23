@@ -20,6 +20,7 @@ class UserScheduleResource extends JsonResource
             'day_name'    => self::DAY_NAMES[$this->day_of_week],
             'start_time'  => substr($this->start_time, 0, 5),
             'end_time'    => substr($this->end_time, 0, 5),
+            'show_status' => $this->show_status,
         ];
     }
 }

@@ -17,7 +17,7 @@ class UserScheduleSeeder extends Seeder
             for ($day = 0; $day <= 6; $day++) {
                 UserSchedule::firstOrCreate(
                     ['user_id' => $user->id, 'day_of_week' => $day],
-                    ['start_time' => '00:00:00', 'end_time' => '23:59:00']
+                    ['start_time' => '00:00:00', 'end_time' => '23:59:00', 'show_status' => true]
                 );
             }
         }

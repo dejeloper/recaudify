@@ -56,15 +56,13 @@ Route::middleware(['auth:api', 'check.schedule'])->group(function () {
     });
 
     Route::prefix('users/{userId}/schedules')->group(function () {
-        Route::get('/',        [UserScheduleController::class, 'index'])->middleware('permission:horarios.ver');
-        Route::get('/trashed', [UserScheduleController::class, 'trashed'])->middleware('permission:horarios.ver');
-        Route::post('/',       [UserScheduleController::class, 'store'])->middleware('permission:horarios.crear');
+        Route::get('/',  [UserScheduleController::class, 'index'])->middleware('permission:horarios.ver');
+        Route::post('/', [UserScheduleController::class, 'store'])->middleware('permission:horarios.crear');
     });
 
     Route::prefix('schedules')->group(function () {
-        Route::put('/{id}',      [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
-        Route::delete('/{id}',   [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
-        Route::post('/{id}/restore', [UserScheduleController::class, 'restore'])->middleware('permission:horarios.restaurar');
+        Route::put('/{id}',    [UserScheduleController::class, 'update'])->middleware('permission:horarios.editar');
+        Route::delete('/{id}', [UserScheduleController::class, 'destroy'])->middleware('permission:horarios.eliminar');
     });
 
     Route::prefix('parameters')->group(function () {

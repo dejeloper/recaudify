@@ -71,41 +71,4 @@ class UserScheduleController extends ApiController
 
         return ApiResult::empty('Horario eliminado correctamente.')->toResponse();
     }
-
-    public function trashed(int $userId): JsonResponse
-    {
-        $user = User::find($userId);
-
-        if (! $user) {
-            return ApiResult::notFound('Usuario no encontrado.')->toResponse();
-        }
-
-        $schedules = UserSchedule::onlyTrashed()
-            ->where('user_id', $userId)
-            ->orderBy('day_of_week')
-            ->get();
-
-        return ApiResult::success(UserScheduleResource::collection($schedules))->toResponse();
-    }
-
-    public function restore(int $id): JsonResponse
-    {
-        $schedule = UserSchedule::onlyTrashed()->find($id);
-
-        if (! $schedule) {
-            return ApiResult::notFound('Horario no encontrado.')->toResponse();
-        }
-
-        $conflict = UserSchedule::where('user_id', $schedule->user_id)
-            ->where('day_of_week', $schedule->day_of_week)
-            ->exists();
-
-        if ($conflict) {
-            return ApiResult::failure('Ya existe un horario activo para ese día.', 409)->toResponse();
-        }
-
-        $schedule->restore();
-
-        return ApiResult::empty('Horario restaurado correctamente.')->toResponse();
-    }
 }

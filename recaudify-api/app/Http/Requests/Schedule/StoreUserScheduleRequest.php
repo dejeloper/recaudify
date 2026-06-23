@@ -19,6 +19,7 @@ class StoreUserScheduleRequest extends FormRequest
             'day_of_week' => ['required', 'integer', 'min:0', 'max:6'],
             'start_time'  => ['required', 'date_format:H:i'],
             'end_time'    => ['required', 'date_format:H:i', 'after:start_time'],
+            'show_status' => ['sometimes', 'boolean'],
         ];
     }
 

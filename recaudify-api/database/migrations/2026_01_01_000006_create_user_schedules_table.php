@@ -14,10 +14,10 @@ return new class extends Migration
             $table->tinyInteger('day_of_week')->unsigned()->comment('0=Domingo, 6=Sábado');
             $table->time('start_time');
             $table->time('end_time');
+            $table->boolean('show_status')->default(true);
             $table->timestamps();
-            $table->softDeletes();
 
-            $table->unique(['user_id', 'day_of_week', 'deleted_at']);
+            $table->unique(['user_id', 'day_of_week']);
         });
     }
 
