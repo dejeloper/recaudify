@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Permission\StorePermissionRequest;
+use App\Http\Requests\Permission\UpdatePermissionRequest;
+use App\Http\Resources\PermissionResource;
 use App\Http\Responses\ApiResult;
-use Illuminate\Http\JsonResponse;
 use App\Models\Permission;
+use Illuminate\Http\JsonResponse;
 
 class PermissionController extends ApiController
 {
@@ -12,7 +15,7 @@ class PermissionController extends ApiController
     {
         $permissions = Permission::where('guard_name', 'api')->orderBy('name')->get();
 
-        return ApiResult::success($permissions)->toResponse();
+        return ApiResult::success(PermissionResource::collection($permissions))->toResponse();
     }
 
     public function show(int $id): JsonResponse
@@ -23,21 +26,17 @@ class PermissionController extends ApiController
             return ApiResult::notFound('Permiso no encontrado.')->toResponse();
         }
 
-        return ApiResult::success($permission)->toResponse();
+        return ApiResult::success(new PermissionResource($permission))->toResponse();
     }
 
-    public function store(): JsonResponse
+    public function store(StorePermissionRequest $request): JsonResponse
     {
-        request()->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name', 'regex:/^[a-z_]+\.[a-z_]+$/'],
-        ]);
+        $permission = Permission::create(['name' => $request->name, 'guard_name' => 'api']);
 
-        $permission = Permission::create(['name' => request()->name, 'guard_name' => 'api']);
-
-        return ApiResult::created($permission, 'Permiso creado correctamente.')->toResponse();
+        return ApiResult::created(new PermissionResource($permission), 'Permiso creado correctamente.')->toResponse();
     }
 
-    public function update(int $id): JsonResponse
+    public function update(UpdatePermissionRequest $request, int $id): JsonResponse
     {
         $permission = Permission::where('guard_name', 'api')->find($id);
 
@@ -45,13 +44,9 @@ class PermissionController extends ApiController
             return ApiResult::notFound('Permiso no encontrado.')->toResponse();
         }
 
-        request()->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name,' . $id, 'regex:/^[a-z_]+\.[a-z_]+$/'],
-        ]);
+        $permission->update(['name' => $request->name]);
 
-        $permission->update(['name' => request()->name]);
-
-        return ApiResult::success($permission, 'Permiso actualizado correctamente.')->toResponse();
+        return ApiResult::success(new PermissionResource($permission), 'Permiso actualizado correctamente.')->toResponse();
     }
 
     public function destroy(int $id): JsonResponse

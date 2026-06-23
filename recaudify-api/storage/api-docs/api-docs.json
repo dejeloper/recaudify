@@ -228,7 +228,9 @@
                                 ],
                                 "properties": {
                                     "name": {
+                                        "description": "Formato modulo.accion (minúsculas, guion bajo y guion).",
                                         "type": "string",
+                                        "pattern": "^[a-z_]+\\.[a-z_-]+$",
                                         "example": "clientes.exportar"
                                     }
                                 },
@@ -309,9 +311,14 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
                                     "name": {
+                                        "description": "Formato modulo.accion (minúsculas, guion bajo y guion).",
                                         "type": "string",
+                                        "pattern": "^[a-z_]+\\.[a-z_-]+$",
                                         "example": "clientes.exportar"
                                     }
                                 },

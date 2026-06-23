@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Responses\ApiResult;
-use Illuminate\Http\JsonResponse;
 use App\Models\Role;
+use Illuminate\Http\JsonResponse;
 
 class RoleController extends ApiController
 {
@@ -14,7 +15,7 @@ class RoleController extends ApiController
     {
         $roles = Role::where('guard_name', 'api')->with('permissions')->orderBy('name')->get();
 
-        return ApiResult::success($roles)->toResponse();
+        return ApiResult::success(RoleResource::collection($roles))->toResponse();
     }
 
     public function show(int $id): JsonResponse
@@ -25,7 +26,7 @@ class RoleController extends ApiController
             return ApiResult::notFound('Rol no encontrado.')->toResponse();
         }
 
-        return ApiResult::success($role)->toResponse();
+        return ApiResult::success(new RoleResource($role))->toResponse();
     }
 
     public function store(StoreRoleRequest $request): JsonResponse
@@ -36,7 +37,7 @@ class RoleController extends ApiController
             $role->syncPermissions($request->permissions);
         }
 
-        return ApiResult::created($role->load('permissions'), 'Rol creado correctamente.')->toResponse();
+        return ApiResult::created(new RoleResource($role->load('permissions')), 'Rol creado correctamente.')->toResponse();
     }
 
     public function update(UpdateRoleRequest $request, int $id): JsonResponse
@@ -55,7 +56,7 @@ class RoleController extends ApiController
             $role->syncPermissions($request->permissions);
         }
 
-        return ApiResult::success($role->load('permissions'), 'Rol actualizado correctamente.')->toResponse();
+        return ApiResult::success(new RoleResource($role->load('permissions')), 'Rol actualizado correctamente.')->toResponse();
     }
 
     public function destroy(int $id): JsonResponse

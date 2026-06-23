@@ -37,7 +37,7 @@ class PermissionDocs
             required: true,
             content: new OA\JsonContent(
                 required: ['name'],
-                properties: [new OA\Property(property: 'name', type: 'string', example: 'clientes.exportar')]
+                properties: [new OA\Property(property: 'name', type: 'string', pattern: '^[a-z_]+\.[a-z_-]+$', description: 'Formato modulo.accion (minúsculas, guion bajo y guion).', example: 'clientes.exportar')]
             )
         ),
         responses: [
@@ -55,7 +55,8 @@ class PermissionDocs
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
-                properties: [new OA\Property(property: 'name', type: 'string', example: 'clientes.exportar')]
+                required: ['name'],
+                properties: [new OA\Property(property: 'name', type: 'string', pattern: '^[a-z_]+\.[a-z_-]+$', description: 'Formato modulo.accion (minúsculas, guion bajo y guion).', example: 'clientes.exportar')]
             )
         ),
         responses: [
