@@ -20,4 +20,58 @@
   .btn-table-restore {
     @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
   }
+
+  .btn-inline-save {
+    @apply rounded-lg px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors;
+  }
+
+  .btn-inline-cancel {
+    @apply rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors;
+  }
+
+  /* Tables — default */
+  .data-table {
+    @apply rounded-xl border border-gray-200 bg-white overflow-hidden;
+  }
+  .data-table table {
+    @apply w-full text-sm;
+  }
+  .data-table thead tr {
+    @apply border-b border-stone-200 bg-stone-100;
+  }
+  .data-table th {
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600;
+  }
+  .data-table tbody {
+    @apply divide-y divide-gray-100;
+  }
+  .data-table tbody tr {
+    @apply transition-colors;
+  }
+  .data-table tbody tr:hover {
+    @apply bg-gray-50;
+  }
+
+  /* Tables — trashed */
+  .data-table-trashed {
+    @apply rounded-xl border border-amber-200 bg-amber-50/50 overflow-hidden;
+  }
+  .data-table-trashed table {
+    @apply w-full text-sm;
+  }
+  .data-table-trashed thead tr {
+    @apply border-b border-amber-200 bg-amber-50;
+  }
+  .data-table-trashed th {
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600;
+  }
+  .data-table-trashed tbody {
+    @apply divide-y divide-amber-100;
+  }
+  .data-table-trashed tbody tr {
+    @apply transition-colors;
+  }
+  .data-table-trashed tbody tr:hover {
+    @apply bg-amber-50;
+  }
 }

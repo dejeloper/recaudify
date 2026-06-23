@@ -62,33 +62,27 @@
       </a>
     </div>
   } @else {
-    <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div appTable>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table>
           <thead>
-            <tr class="border-b border-stone-200 bg-stone-100">
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+            <tr>
+              <th>
                 Módulo
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Acción
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Nombre completo
               </th>
-              <th class="px-5 py-3"></th>
+              <th></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
+          <tbody>
             @for (group of grouped(); track group.module) {
               @for (perm of group.perms; track perm.id; let first = $first) {
-                <tr class="hover:bg-gray-50 transition-colors">
+                <tr>
                   <td class="px-5 py-3 text-gray-500">
                     @if (first) {
                       <span
@@ -155,33 +149,27 @@
           <p class="text-sm text-amber-600">No hay permisos eliminados.</p>
         </div>
       } @else {
-        <div class="rounded-xl border border-amber-200 bg-amber-50/50 overflow-hidden">
+        <div appTable="trashed">
           <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table>
               <thead>
-                <tr class="border-b border-amber-200 bg-amber-50">
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                <tr>
+                  <th>
                     Módulo
                   </th>
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                  <th>
                     Acción
                   </th>
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                  <th>
                     Nombre completo
                   </th>
-                  <th class="px-5 py-3"></th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-amber-100">
+              <tbody>
                 @for (group of groupedTrashed(); track group.module) {
                   @for (perm of group.perms; track perm.id; let first = $first) {
-                    <tr class="hover:bg-amber-50 transition-colors">
+                    <tr>
                       <td class="px-5 py-3 text-gray-400">
                         @if (first) {
                           <span

@@ -2,12 +2,13 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
+import { TableDirective } from '@core/directives/table.directive';
 import { Role } from '@core/models/role';
 import { RolesService } from '@core/services/roles.service';
 
 @Component({
   selector: 'app-roles',
-  imports: [RouterLink, BtnDirective],
+  imports: [RouterLink, BtnDirective, TableDirective],
   templateUrl: './roles.html',
 })
 export class Roles implements OnInit {

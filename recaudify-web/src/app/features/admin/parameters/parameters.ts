@@ -2,12 +2,13 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
+import { TableDirective } from '@core/directives/table.directive';
 import { Parameter } from '@core/models/parameter';
 import { ParametersService } from '@core/services/parameters.service';
 
 @Component({
   selector: 'app-parameters',
-  imports: [RouterLink, BtnDirective],
+  imports: [RouterLink, BtnDirective, TableDirective],
   templateUrl: './parameters.html',
 })
 export class Parameters implements OnInit {

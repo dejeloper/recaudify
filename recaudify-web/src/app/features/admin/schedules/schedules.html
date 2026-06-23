@@ -17,32 +17,26 @@
       <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
     </div>
   } @else {
-    <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div appTable>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table>
           <thead>
-            <tr class="border-b border-stone-200 bg-stone-100">
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+            <tr>
+              <th>
                 Nombre
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Usuario
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Rol
               </th>
-              <th class="px-5 py-3"></th>
+              <th></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
+          <tbody>
             @for (user of users(); track user.id) {
-              <tr class="hover:bg-gray-50 transition-colors">
+              <tr>
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-3">
                     <div

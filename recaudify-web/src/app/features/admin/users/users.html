@@ -63,37 +63,29 @@
       }
     </div>
   } @else {
-    <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div appTable>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table>
           <thead>
-            <tr class="border-b border-stone-200 bg-stone-100">
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+            <tr>
+              <th>
                 Usuario
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Nombre de usuario
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Email
               </th>
-              <th
-                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600"
-              >
+              <th>
                 Rol
               </th>
-              <th class="px-5 py-3"></th>
+              <th></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
+          <tbody>
             @for (user of users(); track user.id) {
-              <tr class="hover:bg-gray-50 transition-colors">
+              <tr>
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-3">
                     <div
@@ -179,37 +171,29 @@
           <p class="text-sm text-amber-600">No hay usuarios desactivados.</p>
         </div>
       } @else {
-        <div class="rounded-xl border border-amber-200 bg-amber-50/50 overflow-hidden">
+        <div appTable="trashed">
           <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table>
               <thead>
-                <tr class="border-b border-amber-200 bg-amber-50">
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                <tr>
+                  <th>
                     Usuario
                   </th>
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                  <th>
                     Nombre de usuario
                   </th>
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                  <th>
                     Email
                   </th>
-                  <th
-                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
-                  >
+                  <th>
                     Rol
                   </th>
-                  <th class="px-5 py-3"></th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-amber-100">
+              <tbody>
                 @for (user of disabled(); track user.id) {
-                  <tr class="hover:bg-amber-50 transition-colors">
+                  <tr>
                     <td class="px-5 py-3.5">
                       <div class="flex items-center gap-3">
                         <div

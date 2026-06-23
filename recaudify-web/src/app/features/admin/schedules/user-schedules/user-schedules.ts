@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { Schedule } from '@core/models/schedule';
 import { User } from '@core/models/user';
 import { AuthService } from '@core/services/auth.service';
@@ -20,7 +21,7 @@ const DAYS = [
 
 @Component({
   selector: 'app-user-schedules',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, BtnDirective],
   templateUrl: './user-schedules.html',
 })
 export class UserSchedules implements OnInit {

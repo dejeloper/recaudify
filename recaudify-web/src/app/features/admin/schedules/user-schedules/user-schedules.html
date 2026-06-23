@@ -15,7 +15,8 @@
     @if (canRestore()) {
       <button
         (click)="toggleTrashed()"
-        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors sm:self-start self-stretch"
+        appBtn="secondary"
+        class="sm:self-start self-stretch"
         [class.bg-amber-50]="showTrashed()"
         [class.border-amber-300]="showTrashed()"
         [class.text-amber-700]="showTrashed()"
@@ -95,13 +96,13 @@
                     <button
                       (click)="saveEdit()"
                       [disabled]="savingEdit() || !editStart || !editEnd"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                      appBtn="inline-save"
                     >
                       {{ savingEdit() ? 'Guardando...' : 'Guardar' }}
                     </button>
                     <button
                       (click)="cancelEdit()"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors"
+                      appBtn="inline-cancel"
                     >
                       Cancelar
                     </button>
@@ -131,7 +132,7 @@
                     @if (canEdit()) {
                       <button
                         (click)="openEdit(entry)"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                        appBtn="table-edit"
                       >
                         Editar
                       </button>
@@ -140,7 +141,7 @@
                       <button
                         (click)="deleteEntry(entry)"
                         [disabled]="deletingId() === entry.id"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-50 transition-colors"
+                        appBtn="table-danger"
                       >
                         @if (deletingId() === entry.id) {
                           Eliminando...
@@ -174,13 +175,13 @@
                   <button
                     (click)="saveAdd()"
                     [disabled]="savingAdd() || !addStart || !addEnd"
-                    class="rounded-md px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                    appBtn="inline-save"
                   >
                     {{ savingAdd() ? 'Guardando...' : 'Agregar' }}
                   </button>
                   <button
                     (click)="cancelAdd()"
-                    class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors"
+                    appBtn="inline-cancel"
                   >
                     Cancelar
                   </button>
@@ -219,7 +220,7 @@
                       <button
                         (click)="restoreEntry(entry)"
                         [disabled]="restoringId() === entry.id"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 hover:text-amber-900 disabled:opacity-50 transition-colors"
+                        appBtn="table-restore"
                       >
                         @if (restoringId() === entry.id) {
                           Restaurando...

@@ -5,7 +5,9 @@ export type BtnVariant =
   | 'secondary'
   | 'table-edit'
   | 'table-danger'
-  | 'table-restore';
+  | 'table-restore'
+  | 'inline-save'
+  | 'inline-cancel';
 
 const VARIANT_CLASS: Record<BtnVariant, string> = {
   primary: 'btn-primary',
@@ -13,6 +15,8 @@ const VARIANT_CLASS: Record<BtnVariant, string> = {
   'table-edit': 'btn-table-edit',
   'table-danger': 'btn-table-danger',
   'table-restore': 'btn-table-restore',
+  'inline-save': 'btn-inline-save',
+  'inline-cancel': 'btn-inline-cancel',
 };
 
 @Directive({
