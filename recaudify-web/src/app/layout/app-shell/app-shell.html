@@ -129,7 +129,7 @@
                 [style.max-height]="openSection() === group.key ? '500px' : '0px'"
               >
                 <div class="space-y-0.5 pt-0.5">
-                  @for (item of group.items; track item.route) {
+                  @for (item of group.items; track item.label) {
                     @if (isItemVisible(item)) {
                       <a
                         (click)="closeSidebar()"
