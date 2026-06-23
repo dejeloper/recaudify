@@ -3,3 +3,4 @@
 .playwright/
 .playwright-cli/
 *.spec.ts
+api-docs.json
