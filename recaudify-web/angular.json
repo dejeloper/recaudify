@@ -11,7 +11,12 @@
   "projects": {
     "recaudify-web": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineTemplate": false,
+          "inlineStyle": false
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",

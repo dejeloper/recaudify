@@ -1,10 +1,10 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {AuthService} from '@core/services/auth.service';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.html'
+  templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {
   private readonly authService = inject(AuthService);
@@ -16,9 +16,5 @@ export class Dashboard implements OnInit {
     if (!this.currentUser()) {
       this.authService.me().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
-  }
-
-  logout() {
-    this.authService.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 }
