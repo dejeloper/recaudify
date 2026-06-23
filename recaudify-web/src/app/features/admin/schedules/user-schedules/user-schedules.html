@@ -100,12 +100,7 @@
                     >
                       {{ savingEdit() ? 'Guardando...' : 'Guardar' }}
                     </button>
-                    <button
-                      (click)="cancelEdit()"
-                      appBtn="inline-cancel"
-                    >
-                      Cancelar
-                    </button>
+                    <button (click)="cancelEdit()" appBtn="inline-cancel">Cancelar</button>
                   </div>
                 </div>
               } @else {
@@ -130,12 +125,7 @@
                   </div>
                   <div class="flex items-center gap-1">
                     @if (canEdit()) {
-                      <button
-                        (click)="openEdit(entry)"
-                        appBtn="table-edit"
-                      >
-                        Editar
-                      </button>
+                      <button (click)="openEdit(entry)" appBtn="table-edit">Editar</button>
                     }
                     @if (canDelete()) {
                       <button
@@ -179,12 +169,7 @@
                   >
                     {{ savingAdd() ? 'Guardando...' : 'Agregar' }}
                   </button>
-                  <button
-                    (click)="cancelAdd()"
-                    appBtn="inline-cancel"
-                  >
-                    Cancelar
-                  </button>
+                  <button (click)="cancelAdd()" appBtn="inline-cancel">Cancelar</button>
                 </div>
               </div>
             }
