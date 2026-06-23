@@ -16,7 +16,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Configurar validación centralizada (Form Requests).
 - [x] Configurar soft deletes en entidades de negocio.
 - [x] Crear seeders de catálogos base (estados, tipos, roles).
-- [ ] Definir formato estándar de respuestas API (recursos, paginación, errores).
+- [x] Definir formato estándar de respuestas API (recursos, paginación, errores).
 - [ ] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
 - [ ] Configurar auditoría (registro de cambios y acciones críticas).
 - [ ] Configurar carga y almacenamiento de archivos.
@@ -200,11 +200,15 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Crear estructura inicial (Angular).
 - [x] Configurar entorno para apuntar a la API.
 - [x] Crear sistema de autenticación (login, token Bearer, expiración).
-- [ ] Crear sistema de navegación.
+- [x] Crear sistema de navegación.
 - [ ] Crear sistema de permisos por rol.
 - [x] Crear interceptores HTTP (token, errores, logout).
 - [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
 - [ ] Crear diseño responsive.
+- [ ] Implementar `AuthService.can('modulo.accion')` para validar permisos desde el signal `currentUser`
+- [ ] Crear directiva estructural `*appHasPermission="'modulo.accion'"` para condicionar elementos del DOM
+- [ ] Crear `permissionGuard` para proteger rutas según permiso requerido
+- [x] Ocultar ítems de navegación según permisos del usuario autenticado
 
 ### Pantallas
 
@@ -222,7 +226,10 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Carga y visualización de evidencias.
 - [ ] Reportes (cartera, contable, ventas).
 - [ ] Importación de datos.
-- [ ] Administración de usuarios.
+- [ ] Administración de usuarios (listar, crear, editar, desactivar, restaurar).
+- [ ] Asignar/revocar permisos directos a un usuario desde su pantalla de detalle.
+- [x] Administración de roles (listar, crear, editar, eliminar, asignar permisos al rol).
+- [x] Administración de permisos (listar, crear, editar, eliminar).
 - [ ] Administración de catálogos.
 - [ ] Backup.
 
@@ -256,4 +263,4 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ## Actualizado
 
-2026-06-14
+2026-06-18
