@@ -1,4 +1,4 @@
-<div class="p-8">
+<div class="p-4 sm:p-8">
 
   <!-- Page header -->
   <div class="mb-6">
@@ -64,7 +64,7 @@
               <span class="text-xs text-gray-400">Todos</span>
             </label>
           </div>
-          <div class="grid grid-cols-2 gap-px bg-gray-100">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-px bg-gray-100">
             @for (perm of group.perms; track perm) {
             <label
               class="flex items-center gap-2.5 bg-white px-5 py-2.5 cursor-pointer select-none hover:bg-gray-50 transition-colors">
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Acciones -->
-    <div class="flex items-center justify-end gap-3 py-2">
+    <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 py-2">
       <a routerLink="/admin/roles"
         class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
         Cancelar

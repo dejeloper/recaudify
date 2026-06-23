@@ -18,7 +18,16 @@ export class AppShell {
     this.currentUser()?.roles.includes('administrador') ?? false
   );
 
+  protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
+
+  protected toggleSidebar() {
+    this.sidebarOpen.update((v: boolean) => !v);
+  }
+
+  protected closeSidebar() {
+    this.sidebarOpen.set(false);
+  }
 
   protected toggleUserMenu() {
     this.userMenuOpen.update((v: boolean) => !v);
