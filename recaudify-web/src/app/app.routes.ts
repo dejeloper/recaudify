@@ -50,6 +50,14 @@ export const routes: Routes = [
             path: 'permissions/:id/edit',
             loadComponent: () => import('./features/admin/permissions/permission-form/permission-form').then((m) => m.PermissionForm),
           },
+          {
+            path: 'schedules',
+            loadComponent: () => import('./features/admin/schedules/schedules').then((m) => m.Schedules),
+          },
+          {
+            path: 'schedules/:userId',
+            loadComponent: () => import('./features/admin/schedules/user-schedules/user-schedules').then((m) => m.UserSchedules),
+          },
         ],
       },
     ],

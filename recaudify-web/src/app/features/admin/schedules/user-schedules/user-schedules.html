@@ -1,0 +1,152 @@
+<div class="p-4 sm:p-8">
+
+  <!-- Page header -->
+  <div class="mb-6">
+    <p class="mb-1 text-xs text-gray-400">
+      <a routerLink="/admin/schedules" class="hover:text-gray-600">Horarios</a>
+      <span class="mx-1.5">/</span>
+      {{ user()?.name ?? '...' }}
+    </p>
+    <h1 class="text-xl font-semibold text-gray-900">
+      Horarios de {{ user()?.name ?? '...' }}
+    </h1>
+    <p class="mt-0.5 text-sm text-gray-400">Define en qué días y horarios puede acceder al sistema.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="space-y-3 max-w-2xl mx-auto">
+      @for (_ of [1,2,3,4,5,6,7]; track $index) {
+        <div class="h-16 rounded-xl bg-white border border-gray-200 animate-pulse"></div>
+      }
+    </div>
+  } @else {
+    <div class="space-y-2 max-w-2xl mx-auto">
+
+      @for (day of days; track day.id) {
+        <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+
+          <!-- Day header -->
+          <div class="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
+            <span class="text-sm font-semibold text-gray-700">{{ day.name }}</span>
+            @if (canCreate() && addingDay() !== day.id) {
+              <button
+                (click)="openAdd(day.id)"
+                class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Agregar
+              </button>
+            }
+          </div>
+
+          <div class="divide-y divide-gray-100">
+
+            <!-- Existing entries -->
+            @for (entry of schedulesForDay(day.id); track entry.id) {
+              @if (editingId() === entry.id) {
+                <!-- Inline edit form -->
+                <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="time"
+                      [(ngModel)]="editStart"
+                      class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow" />
+                    <span class="text-gray-400 text-sm">—</span>
+                    <input
+                      type="time"
+                      [(ngModel)]="editEnd"
+                      class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="saveEdit()"
+                      [disabled]="savingEdit() || !editStart || !editEnd"
+                      class="rounded-md px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors">
+                      {{ savingEdit() ? 'Guardando...' : 'Guardar' }}
+                    </button>
+                    <button
+                      (click)="cancelEdit()"
+                      class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors">
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <!-- Entry row -->
+                <div class="px-5 py-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-sm text-gray-700 font-mono tracking-tight">
+                      {{ entry.start_time }} — {{ entry.end_time }}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    @if (canEdit()) {
+                      <button
+                        (click)="openEdit(entry)"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                        Editar
+                      </button>
+                    }
+                    @if (canDelete()) {
+                      <button
+                        (click)="deleteEntry(entry)"
+                        [disabled]="deletingId() === entry.id"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-50 transition-colors">
+                        @if (deletingId() === entry.id) { Eliminando... } @else { Eliminar }
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            }
+
+            <!-- Add form -->
+            @if (addingDay() === day.id) {
+              <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
+                <div class="flex items-center gap-2">
+                  <input
+                    type="time"
+                    [(ngModel)]="addStart"
+                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow" />
+                  <span class="text-gray-400 text-sm">—</span>
+                  <input
+                    type="time"
+                    [(ngModel)]="addEnd"
+                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    (click)="saveAdd()"
+                    [disabled]="savingAdd() || !addStart || !addEnd"
+                    class="rounded-md px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors">
+                    {{ savingAdd() ? 'Guardando...' : 'Agregar' }}
+                  </button>
+                  <button
+                    (click)="cancelAdd()"
+                    class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Empty state for day -->
+            @if (schedulesForDay(day.id).length === 0 && addingDay() !== day.id) {
+              <div class="px-5 py-3">
+                <span class="text-sm text-gray-400">Sin horario — acceso libre todo el día.</span>
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>
