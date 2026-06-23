@@ -60,169 +60,171 @@
         }
       </div>
     } @else {
-    <div appTable>
-      <div class="overflow-x-auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Nombre de usuario</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (user of users(); track user.id) {
+      <div appTable>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
               <tr>
-                <td class="px-5 py-3.5">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700"
-                    >
-                      {{ user.name.charAt(0).toUpperCase() }}
-                    </div>
-                    <span class="font-medium text-gray-800">{{ user.name }}</span>
-                  </div>
-                </td>
-                <td class="px-5 py-3.5">
-                  <span class="font-mono text-xs text-gray-500">{{ user.username }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  <span class="text-sm text-gray-500">{{ user.email ?? '—' }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  @if (user.roles.length > 0) {
-                    <span
-                      class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
-                    >
-                      {{ roleLabel(user) }}
-                    </span>
-                  } @else {
-                    <span class="text-xs text-gray-400">Sin rol</span>
-                  }
-                </td>
-                <td class="px-5 py-3.5 text-right">
-                  <div class="flex items-center justify-end gap-1">
-                    @if (canEdit()) {
-                      <a [routerLink]="['/admin/users', user.id, 'edit']" appBtn="table-edit"
-                        >Editar</a
-                      >
-                    }
-                    @if (canDelete()) {
-                      <button
-                        (click)="delete(user)"
-                        [disabled]="deletingId() === user.id"
-                        appBtn="table-danger"
-                      >
-                        @if (deletingId() === user.id) {
-                          Desactivando...
-                        } @else {
-                          Desactivar
-                        }
-                      </button>
-                    }
-                  </div>
-                </td>
+                <th>Usuario</th>
+                <th>Nombre de usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th></th>
               </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
-
-  <!-- Disabled users -->
-  @if (showDisabled()) {
-    <div class="mt-6">
-      <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-          />
-        </svg>
-        Usuarios desactivados
-      </h2>
-
-      <app-spinner [show]="loadingDisabled()" />
-
-      @if (!loadingDisabled()) {
-      @if (disabled().length === 0) {
-        <div
-          class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
-        >
-          <p class="text-sm text-amber-600">No hay usuarios desactivados.</p>
-        </div>
-      } @else {
-        <div appTable="trashed">
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.id) {
                 <tr>
-                  <th>Usuario</th>
-                  <th>Nombre de usuario</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (user of disabled(); track user.id) {
-                  <tr>
-                    <td class="px-5 py-3.5">
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-500"
-                        >
-                          {{ user.name.charAt(0).toUpperCase() }}
-                        </div>
-                        <span class="font-medium text-gray-400 line-through">{{ user.name }}</span>
+                  <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700"
+                      >
+                        {{ user.name.charAt(0).toUpperCase() }}
                       </div>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      <span class="font-mono text-xs text-gray-400">{{ user.username }}</span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      <span class="text-sm text-gray-400">{{ user.email ?? '—' }}</span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      @if (user.roles.length > 0) {
-                        <span
-                          class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400"
+                      <span class="font-medium text-gray-800">{{ user.name }}</span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="font-mono text-xs text-gray-500">{{ user.username }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-500">{{ user.email ?? '—' }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    @if (user.roles.length > 0) {
+                      <span
+                        class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
+                      >
+                        {{ roleLabel(user) }}
+                      </span>
+                    } @else {
+                      <span class="text-xs text-gray-400">Sin rol</span>
+                    }
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      @if (canEdit()) {
+                        <a [routerLink]="['/admin/users', user.id, 'edit']" appBtn="table-edit"
+                          >Editar</a
                         >
-                          {{ roleLabel(user) }}
-                        </span>
-                      } @else {
-                        <span class="text-xs text-gray-400">Sin rol</span>
                       }
-                    </td>
-                    <td class="px-5 py-3.5 text-right">
-                      @if (canRestore()) {
+                      @if (canDelete()) {
                         <button
-                          (click)="restore(user)"
-                          [disabled]="restoringId() === user.id"
-                          appBtn="table-restore"
+                          (click)="delete(user)"
+                          [disabled]="deletingId() === user.id"
+                          appBtn="table-danger"
                         >
-                          @if (restoringId() === user.id) {
-                            Activando...
+                          @if (deletingId() === user.id) {
+                            Desactivando...
                           } @else {
-                            Activar
+                            Desactivar
                           }
                         </button>
                       }
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-      }
-      }
-    </div>
+      </div>
+    }
+
+    <!-- Disabled users -->
+    @if (showDisabled()) {
+      <div class="mt-6">
+        <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+            />
+          </svg>
+          Usuarios desactivados
+        </h2>
+
+        <app-spinner [show]="loadingDisabled()" />
+
+        @if (!loadingDisabled()) {
+          @if (disabled().length === 0) {
+            <div
+              class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+            >
+              <p class="text-sm text-amber-600">No hay usuarios desactivados.</p>
+            </div>
+          } @else {
+            <div appTable="trashed">
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>Nombre de usuario</th>
+                      <th>Email</th>
+                      <th>Rol</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (user of disabled(); track user.id) {
+                      <tr>
+                        <td class="px-5 py-3.5">
+                          <div class="flex items-center gap-3">
+                            <div
+                              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-500"
+                            >
+                              {{ user.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <span class="font-medium text-gray-400 line-through">{{
+                              user.name
+                            }}</span>
+                          </div>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="font-mono text-xs text-gray-400">{{ user.username }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-400">{{ user.email ?? '—' }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          @if (user.roles.length > 0) {
+                            <span
+                              class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400"
+                            >
+                              {{ roleLabel(user) }}
+                            </span>
+                          } @else {
+                            <span class="text-xs text-gray-400">Sin rol</span>
+                          }
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                          @if (canRestore()) {
+                            <button
+                              (click)="restore(user)"
+                              [disabled]="restoringId() === user.id"
+                              appBtn="table-restore"
+                            >
+                              @if (restoringId() === user.id) {
+                                Activando...
+                              } @else {
+                                Activar
+                              }
+                            </button>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
   }
-}
 </div>

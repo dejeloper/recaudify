@@ -46,137 +46,137 @@
   <app-spinner [show]="loading()" />
 
   @if (!loading()) {
-  @if (parameters().length === 0) {
-    <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
-      <p class="text-sm text-gray-400">No hay parámetros configurados.</p>
-      <a
-        routerLink="/admin/parameters/new"
-        class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
-        >Crear el primero</a
-      >
-    </div>
-  } @else {
-    <div appTable>
-      <div class="overflow-x-auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Clave</th>
-              <th>Valor</th>
-              <th>Descripción</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (param of parameters(); track param.id) {
-              <tr>
-                <td class="px-5 py-3.5">
-                  <span class="font-mono text-sm text-gray-800">{{ param.key }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  <span class="text-sm text-gray-600">{{ param.value }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>
-                </td>
-                <td class="px-5 py-3.5 text-right">
-                  <div class="flex items-center justify-end gap-1">
-                    <a [routerLink]="['/admin/parameters', param.id, 'edit']" appBtn="table-edit"
-                      >Editar</a
-                    >
-                    <button
-                      (click)="delete(param)"
-                      [disabled]="deletingId() === param.id"
-                      appBtn="table-danger"
-                    >
-                      @if (deletingId() === param.id) {
-                        Eliminando...
-                      } @else {
-                        Eliminar
-                      }
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
-
-  <!-- Deleted parameters -->
-  @if (showTrashed()) {
-    <div class="mt-6">
-      <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-        Parámetros eliminados
-      </h2>
-
-      <app-spinner [show]="loadingTrashed()" />
-
-      @if (!loadingTrashed()) {
-      @if (trashed().length === 0) {
-        <div
-          class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+    @if (parameters().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay parámetros configurados.</p>
+        <a
+          routerLink="/admin/parameters/new"
+          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          >Crear el primero</a
         >
-          <p class="text-sm text-amber-600">No hay parámetros eliminados.</p>
-        </div>
-      } @else {
-        <div appTable="trashed">
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
+      </div>
+    } @else {
+      <div appTable>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Clave</th>
+                <th>Valor</th>
+                <th>Descripción</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (param of parameters(); track param.id) {
                 <tr>
-                  <th>Clave</th>
-                  <th>Valor</th>
-                  <th>Descripción</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (param of trashed(); track param.id) {
-                  <tr>
-                    <td class="px-5 py-3.5">
-                      <span class="font-mono text-sm text-gray-500 line-through">{{
-                        param.key
-                      }}</span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      <span class="text-sm text-gray-400">{{ param.value }}</span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>
-                    </td>
-                    <td class="px-5 py-3.5 text-right">
-                      <button
-                        (click)="restore(param)"
-                        [disabled]="restoringId() === param.id"
-                        appBtn="table-restore"
+                  <td class="px-5 py-3.5">
+                    <span class="font-mono text-sm text-gray-800">{{ param.key }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600">{{ param.value }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      <a [routerLink]="['/admin/parameters', param.id, 'edit']" appBtn="table-edit"
+                        >Editar</a
                       >
-                        @if (restoringId() === param.id) {
-                          Restaurando...
+                      <button
+                        (click)="delete(param)"
+                        [disabled]="deletingId() === param.id"
+                        appBtn="table-danger"
+                      >
+                        @if (deletingId() === param.id) {
+                          Eliminando...
                         } @else {
-                          Restaurar
+                          Eliminar
                         }
                       </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-      }
-      }
-    </div>
+      </div>
+    }
+
+    <!-- Deleted parameters -->
+    @if (showTrashed()) {
+      <div class="mt-6">
+        <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Parámetros eliminados
+        </h2>
+
+        <app-spinner [show]="loadingTrashed()" />
+
+        @if (!loadingTrashed()) {
+          @if (trashed().length === 0) {
+            <div
+              class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+            >
+              <p class="text-sm text-amber-600">No hay parámetros eliminados.</p>
+            </div>
+          } @else {
+            <div appTable="trashed">
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Clave</th>
+                      <th>Valor</th>
+                      <th>Descripción</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (param of trashed(); track param.id) {
+                      <tr>
+                        <td class="px-5 py-3.5">
+                          <span class="font-mono text-sm text-gray-500 line-through">{{
+                            param.key
+                          }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-400">{{ param.value }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                          <button
+                            (click)="restore(param)"
+                            [disabled]="restoringId() === param.id"
+                            appBtn="table-restore"
+                          >
+                            @if (restoringId() === param.id) {
+                              Restaurando...
+                            } @else {
+                              Restaurar
+                            }
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
   }
-}
 </div>

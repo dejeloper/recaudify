@@ -48,148 +48,153 @@
   <app-spinner [show]="loading()" />
 
   @if (!loading()) {
-  @if (permissions().length === 0) {
-    <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
-      <p class="text-sm text-gray-400">No hay permisos creados.</p>
-      <a
-        routerLink="/admin/permissions/new"
-        class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
-      >
-        Crear el primero
-      </a>
-    </div>
-  } @else {
-    <div appTable>
-      <div class="overflow-x-auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Módulo</th>
-              <th>Acción</th>
-              <th>Nombre completo</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (group of grouped(); track group.module) {
-              @for (perm of group.perms; track perm.id; let first = $first) {
-                <tr>
-                  <td class="px-5 py-3 text-gray-500">
-                    @if (first) {
-                      <span
-                        class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
-                      >
-                        {{ group.module }}
-                      </span>
-                    }
-                  </td>
-                  <td class="px-5 py-3 font-medium text-gray-800">{{ actionLabel(perm.name) }}</td>
-                  <td class="px-5 py-3 font-mono text-xs text-gray-400">{{ perm.name }}</td>
-                  <td class="px-5 py-3 text-right">
-                    <div class="flex items-center justify-end gap-1">
-                      <a [routerLink]="['/admin/permissions', perm.id, 'edit']" appBtn="table-edit">
-                        Editar
-                      </a>
-                      <button
-                        (click)="delete(perm)"
-                        [disabled]="deletingId() === perm.id"
-                        appBtn="table-danger"
-                      >
-                        @if (deletingId() === perm.id) {
-                          Eliminando...
-                        } @else {
-                          Eliminar
-                        }
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
-
-  <!-- Deleted permissions -->
-  @if (showTrashed()) {
-    <div class="mt-6">
-      <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-        Permisos eliminados
-      </h2>
-
-      <app-spinner [show]="loadingTrashed()" />
-
-      @if (!loadingTrashed()) {
-      @if (trashed().length === 0) {
-        <div
-          class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+    @if (permissions().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay permisos creados.</p>
+        <a
+          routerLink="/admin/permissions/new"
+          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
         >
-          <p class="text-sm text-amber-600">No hay permisos eliminados.</p>
-        </div>
-      } @else {
-        <div appTable="trashed">
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>Módulo</th>
-                  <th>Acción</th>
-                  <th>Nombre completo</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (group of groupedTrashed(); track group.module) {
-                  @for (perm of group.perms; track perm.id; let first = $first) {
-                    <tr>
-                      <td class="px-5 py-3 text-gray-400">
-                        @if (first) {
-                          <span
-                            class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-600"
-                          >
-                            {{ group.module }}
-                          </span>
-                        }
-                      </td>
-                      <td class="px-5 py-3 font-medium text-gray-400 line-through">
-                        {{ actionLabel(perm.name) }}
-                      </td>
-                      <td class="px-5 py-3 font-mono text-xs text-gray-400 line-through">
-                        {{ perm.name }}
-                      </td>
-                      <td class="px-5 py-3 text-right">
-                        <button
-                          (click)="restore(perm)"
-                          [disabled]="restoringId() === perm.id"
-                          appBtn="table-restore"
+          Crear el primero
+        </a>
+      </div>
+    } @else {
+      <div appTable>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Módulo</th>
+                <th>Acción</th>
+                <th>Nombre completo</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (group of grouped(); track group.module) {
+                @for (perm of group.perms; track perm.id; let first = $first) {
+                  <tr>
+                    <td class="px-5 py-3 text-gray-500">
+                      @if (first) {
+                        <span
+                          class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
                         >
-                          @if (restoringId() === perm.id) {
-                            Restaurando...
+                          {{ group.module }}
+                        </span>
+                      }
+                    </td>
+                    <td class="px-5 py-3 font-medium text-gray-800">
+                      {{ actionLabel(perm.name) }}
+                    </td>
+                    <td class="px-5 py-3 font-mono text-xs text-gray-400">{{ perm.name }}</td>
+                    <td class="px-5 py-3 text-right">
+                      <div class="flex items-center justify-end gap-1">
+                        <a
+                          [routerLink]="['/admin/permissions', perm.id, 'edit']"
+                          appBtn="table-edit"
+                        >
+                          Editar
+                        </a>
+                        <button
+                          (click)="delete(perm)"
+                          [disabled]="deletingId() === perm.id"
+                          appBtn="table-danger"
+                        >
+                          @if (deletingId() === perm.id) {
+                            Eliminando...
                           } @else {
-                            Restaurar
+                            Eliminar
                           }
                         </button>
-                      </td>
-                    </tr>
-                  }
+                      </div>
+                    </td>
+                  </tr>
                 }
-              </tbody>
-            </table>
-          </div>
+              }
+            </tbody>
+          </table>
         </div>
-      }
-      }
-    </div>
+      </div>
+    }
+
+    <!-- Deleted permissions -->
+    @if (showTrashed()) {
+      <div class="mt-6">
+        <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Permisos eliminados
+        </h2>
+
+        <app-spinner [show]="loadingTrashed()" />
+
+        @if (!loadingTrashed()) {
+          @if (trashed().length === 0) {
+            <div
+              class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+            >
+              <p class="text-sm text-amber-600">No hay permisos eliminados.</p>
+            </div>
+          } @else {
+            <div appTable="trashed">
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Módulo</th>
+                      <th>Acción</th>
+                      <th>Nombre completo</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (group of groupedTrashed(); track group.module) {
+                      @for (perm of group.perms; track perm.id; let first = $first) {
+                        <tr>
+                          <td class="px-5 py-3 text-gray-400">
+                            @if (first) {
+                              <span
+                                class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-600"
+                              >
+                                {{ group.module }}
+                              </span>
+                            }
+                          </td>
+                          <td class="px-5 py-3 font-medium text-gray-400 line-through">
+                            {{ actionLabel(perm.name) }}
+                          </td>
+                          <td class="px-5 py-3 font-mono text-xs text-gray-400 line-through">
+                            {{ perm.name }}
+                          </td>
+                          <td class="px-5 py-3 text-right">
+                            <button
+                              (click)="restore(perm)"
+                              [disabled]="restoringId() === perm.id"
+                              appBtn="table-restore"
+                            >
+                              @if (restoringId() === perm.id) {
+                                Restaurando...
+                              } @else {
+                                Restaurar
+                              }
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
   }
-}
 </div>

@@ -48,166 +48,168 @@
   <app-spinner [show]="loading()" />
 
   @if (!loading()) {
-  @if (roles().length === 0) {
-    <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
-      <p class="text-sm text-gray-400">No hay roles creados.</p>
-      <a
-        routerLink="/admin/roles/new"
-        class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
-      >
-        Crear el primero
-      </a>
-    </div>
-  } @else {
-    <div appTable>
-      <div class="overflow-x-auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Permisos</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (role of roles(); track role.id) {
-              <tr>
-                <td class="px-5 py-3.5">
-                  <span class="font-medium text-gray-800">{{ role.name }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  @if (role.permissions.length > 0) {
-                    <div class="flex flex-wrap gap-1">
-                      @for (perm of role.permissions.slice(0, 4); track perm.id) {
-                        <span
-                          class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
-                        >
-                          {{ perm.name }}
-                        </span>
-                      }
-                      @if (role.permissions.length > 4) {
-                        <span
-                          class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
-                        >
-                          +{{ role.permissions.length - 4 }} más
-                        </span>
-                      }
-                    </div>
-                  } @else {
-                    <span class="text-xs text-gray-400">Sin permisos</span>
-                  }
-                </td>
-                <td class="px-5 py-3.5 text-right">
-                  <div class="flex items-center justify-end gap-1">
-                    <a [routerLink]="['/admin/roles', role.id, 'edit']" appBtn="table-edit">
-                      Editar
-                    </a>
-                    <button
-                      (click)="delete(role)"
-                      [disabled]="deletingId() === role.id"
-                      appBtn="table-danger"
-                    >
-                      @if (deletingId() === role.id) {
-                        Eliminando...
-                      } @else {
-                        Eliminar
-                      }
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
-
-  <!-- Deleted roles -->
-  @if (showTrashed()) {
-    <div class="mt-6">
-      <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-        Roles eliminados
-      </h2>
-
-      <app-spinner [show]="loadingTrashed()" />
-
-      @if (!loadingTrashed()) {
-      @if (trashed().length === 0) {
-        <div
-          class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+    @if (roles().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay roles creados.</p>
+        <a
+          routerLink="/admin/roles/new"
+          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
         >
-          <p class="text-sm text-amber-600">No hay roles eliminados.</p>
-        </div>
-      } @else {
-        <div appTable="trashed">
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
+          Crear el primero
+        </a>
+      </div>
+    } @else {
+      <div appTable>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Permisos</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (role of roles(); track role.id) {
                 <tr>
-                  <th>Nombre</th>
-                  <th>Permisos</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (role of trashed(); track role.id) {
-                  <tr>
-                    <td class="px-5 py-3.5">
-                      <span class="font-medium text-gray-500 line-through">{{ role.name }}</span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                      @if (role.permissions.length > 0) {
-                        <div class="flex flex-wrap gap-1">
-                          @for (perm of role.permissions.slice(0, 4); track perm.id) {
-                            <span
-                              class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
-                            >
-                              {{ perm.name }}
-                            </span>
-                          }
-                          @if (role.permissions.length > 4) {
-                            <span
-                              class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
-                            >
-                              +{{ role.permissions.length - 4 }} más
-                            </span>
-                          }
-                        </div>
-                      } @else {
-                        <span class="text-xs text-gray-400">Sin permisos</span>
-                      }
-                    </td>
-                    <td class="px-5 py-3.5 text-right">
+                  <td class="px-5 py-3.5">
+                    <span class="font-medium text-gray-800">{{ role.name }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    @if (role.permissions.length > 0) {
+                      <div class="flex flex-wrap gap-1">
+                        @for (perm of role.permissions.slice(0, 4); track perm.id) {
+                          <span
+                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                          >
+                            {{ perm.name }}
+                          </span>
+                        }
+                        @if (role.permissions.length > 4) {
+                          <span
+                            class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
+                          >
+                            +{{ role.permissions.length - 4 }} más
+                          </span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="text-xs text-gray-400">Sin permisos</span>
+                    }
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      <a [routerLink]="['/admin/roles', role.id, 'edit']" appBtn="table-edit">
+                        Editar
+                      </a>
                       <button
-                        (click)="restore(role)"
-                        [disabled]="restoringId() === role.id"
-                        appBtn="table-restore"
+                        (click)="delete(role)"
+                        [disabled]="deletingId() === role.id"
+                        appBtn="table-danger"
                       >
-                        @if (restoringId() === role.id) {
-                          Restaurando...
+                        @if (deletingId() === role.id) {
+                          Eliminando...
                         } @else {
-                          Restaurar
+                          Eliminar
                         }
                       </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-      }
-      }
-    </div>
+      </div>
+    }
+
+    <!-- Deleted roles -->
+    @if (showTrashed()) {
+      <div class="mt-6">
+        <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Roles eliminados
+        </h2>
+
+        <app-spinner [show]="loadingTrashed()" />
+
+        @if (!loadingTrashed()) {
+          @if (trashed().length === 0) {
+            <div
+              class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+            >
+              <p class="text-sm text-amber-600">No hay roles eliminados.</p>
+            </div>
+          } @else {
+            <div appTable="trashed">
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Permisos</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (role of trashed(); track role.id) {
+                      <tr>
+                        <td class="px-5 py-3.5">
+                          <span class="font-medium text-gray-500 line-through">{{
+                            role.name
+                          }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          @if (role.permissions.length > 0) {
+                            <div class="flex flex-wrap gap-1">
+                              @for (perm of role.permissions.slice(0, 4); track perm.id) {
+                                <span
+                                  class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
+                                >
+                                  {{ perm.name }}
+                                </span>
+                              }
+                              @if (role.permissions.length > 4) {
+                                <span
+                                  class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
+                                >
+                                  +{{ role.permissions.length - 4 }} más
+                                </span>
+                              }
+                            </div>
+                          } @else {
+                            <span class="text-xs text-gray-400">Sin permisos</span>
+                          }
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                          <button
+                            (click)="restore(role)"
+                            [disabled]="restoringId() === role.id"
+                            appBtn="table-restore"
+                          >
+                            @if (restoringId() === role.id) {
+                              Restaurando...
+                            } @else {
+                              Restaurar
+                            }
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
   }
-}
 </div>

@@ -5,7 +5,7 @@ import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Parameter } from '@core/models/parameter';
-import { ParametersService } from '@core/services/parameters.service'; 
+import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 
 @Component({
