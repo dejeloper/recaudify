@@ -1,5 +1,4 @@
 <div class="p-4 sm:p-8">
-
   <!-- Page header -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
@@ -8,7 +7,8 @@
     </div>
     <a
       routerLink="/admin/permissions/new"
-      class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:self-start self-stretch">
+      class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:self-start self-stretch"
+    >
       <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
@@ -19,14 +19,17 @@
   <!-- Table -->
   @if (loading()) {
     <div class="space-y-2">
-      @for (_ of [1,2,3,4,5]; track $index) {
+      @for (_ of [1, 2, 3, 4, 5]; track $index) {
         <div class="h-12 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
       }
     </div>
   } @else if (permissions().length === 0) {
     <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
       <p class="text-sm text-gray-400">No hay permisos creados.</p>
-      <a routerLink="/admin/permissions/new" class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900">
+      <a
+        routerLink="/admin/permissions/new"
+        class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+      >
         Crear el primero
       </a>
     </div>
@@ -36,9 +39,21 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-gray-100 bg-gray-50">
-              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Módulo</th>
-              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Acción</th>
-              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Nombre completo</th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Módulo
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Acción
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Nombre completo
+              </th>
               <th class="px-5 py-3"></th>
             </tr>
           </thead>
@@ -48,7 +63,9 @@
                 <tr class="hover:bg-gray-50 transition-colors">
                   <td class="px-5 py-3 text-gray-500">
                     @if (first) {
-                      <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                      <span
+                        class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
+                      >
                         {{ group.module }}
                       </span>
                     }
@@ -59,14 +76,20 @@
                     <div class="flex items-center justify-end gap-1">
                       <a
                         [routerLink]="['/admin/permissions', perm.id, 'edit']"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                      >
                         Editar
                       </a>
                       <button
                         (click)="delete(perm)"
                         [disabled]="deletingId() === perm.id"
-                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50">
-                        @if (deletingId() === perm.id) { Eliminando... } @else { Eliminar }
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50"
+                      >
+                        @if (deletingId() === perm.id) {
+                          Eliminando...
+                        } @else {
+                          Eliminar
+                        }
                       </button>
                     </div>
                   </td>
@@ -78,5 +101,4 @@
       </div>
     </div>
   }
-
 </div>

@@ -1,5 +1,4 @@
 <div class="p-4 sm:p-8">
-
   <!-- Page header -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
@@ -8,7 +7,8 @@
     </div>
     <a
       routerLink="/admin/roles/new"
-      class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:self-start self-stretch">
+      class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors sm:self-start self-stretch"
+    >
       <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
@@ -19,14 +19,17 @@
   <!-- Table -->
   @if (loading()) {
     <div class="space-y-2">
-      @for (_ of [1,2,3,4]; track $index) {
+      @for (_ of [1, 2, 3, 4]; track $index) {
         <div class="h-14 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
       }
     </div>
   } @else if (roles().length === 0) {
     <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
       <p class="text-sm text-gray-400">No hay roles creados.</p>
-      <a routerLink="/admin/roles/new" class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900">
+      <a
+        routerLink="/admin/roles/new"
+        class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+      >
         Crear el primero
       </a>
     </div>
@@ -36,8 +39,16 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-gray-100 bg-gray-50">
-              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Nombre</th>
-              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Permisos</th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Nombre
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Permisos
+              </th>
               <th class="px-5 py-3"></th>
             </tr>
           </thead>
@@ -51,12 +62,16 @@
                   @if (role.permissions.length > 0) {
                     <div class="flex flex-wrap gap-1">
                       @for (perm of role.permissions.slice(0, 4); track perm.id) {
-                        <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                        <span
+                          class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                        >
                           {{ perm.name }}
                         </span>
                       }
                       @if (role.permissions.length > 4) {
-                        <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400">
+                        <span
+                          class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-400"
+                        >
                           +{{ role.permissions.length - 4 }} más
                         </span>
                       }
@@ -69,14 +84,20 @@
                   <div class="flex items-center justify-end gap-1">
                     <a
                       [routerLink]="['/admin/roles', role.id, 'edit']"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                      class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                    >
                       Editar
                     </a>
                     <button
                       (click)="delete(role)"
                       [disabled]="deletingId() === role.id"
-                      class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50">
-                      @if (deletingId() === role.id) { Eliminando... } @else { Eliminar }
+                      class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50"
+                    >
+                      @if (deletingId() === role.id) {
+                        Eliminando...
+                      } @else {
+                        Eliminar
+                      }
                     </button>
                   </div>
                 </td>
@@ -87,5 +108,4 @@
       </div>
     </div>
   }
-
 </div>
