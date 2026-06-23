@@ -18,21 +18,24 @@ class CheckUserSchedule
             return $next($request);
         }
 
-        $now        = now();
-        $dayOfWeek  = $now->dayOfWeek;
-        $schedules  = $user->schedules()->where('day_of_week', $dayOfWeek)->get();
-
-        // Sin horarios definidos → sin restricción
-        if ($schedules->isEmpty()) {
+        if ($user->hasRole('superadmin')) {
             return $next($request);
         }
 
-        $currentTime = $now->format('H:i');
+        $schedules = $user->schedules()->get();
 
-        $allowed = $schedules->contains(
-            fn ($s) => substr($s->start_time, 0, 5) <= $currentTime
-                    && $currentTime <= substr($s->end_time, 0, 5)
-        );
+        if ($schedules->isEmpty()) {
+            return ApiResult::forbidden('No tiene horario de acceso asignado.')->toResponse();
+        }
+
+        $now         = now();
+        $currentTime = $now->format('H:i');
+        $allowed     = $schedules
+            ->where('day_of_week', $now->dayOfWeek)
+            ->contains(
+                fn ($s) => substr($s->start_time, 0, 5) <= $currentTime
+                        && $currentTime <= substr($s->end_time, 0, 5)
+            );
 
         if (! $allowed) {
             return ApiResult::forbidden('Acceso fuera del horario permitido.')->toResponse();

@@ -14,7 +14,9 @@
     "paths": {
         "/api/auth/register": {
             "post": {
-                "tags": ["Auth"],
+                "tags": [
+                    "Auth"
+                ],
                 "summary": "Registrar usuario",
                 "operationId": "e177feb0b097c9a77e3e1761ecf52708",
                 "requestBody": {
@@ -71,7 +73,9 @@
         },
         "/api/auth/login": {
             "post": {
-                "tags": ["Auth"],
+                "tags": [
+                    "Auth"
+                ],
                 "summary": "Iniciar sesión",
                 "operationId": "f73e7629dfbd9e09e5999fb5b2020f43",
                 "requestBody": {
@@ -79,7 +83,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["username", "password"],
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
                                 "properties": {
                                     "username": {
                                         "type": "string",
@@ -111,7 +118,9 @@
         },
         "/api/auth/me": {
             "get": {
-                "tags": ["Auth"],
+                "tags": [
+                    "Auth"
+                ],
                 "summary": "Obtener usuario autenticado",
                 "operationId": "352bc0c5fb5c8efcd9e602e7f350be48",
                 "responses": {
@@ -134,7 +143,9 @@
         },
         "/api/auth/refresh": {
             "post": {
-                "tags": ["Auth"],
+                "tags": [
+                    "Auth"
+                ],
                 "summary": "Renovar token de sesión",
                 "operationId": "1a9e0f060a4c1ea5c323e3109cab4dff",
                 "responses": {
@@ -157,7 +168,9 @@
         },
         "/api/auth/logout": {
             "post": {
-                "tags": ["Auth"],
+                "tags": [
+                    "Auth"
+                ],
                 "summary": "Cerrar sesión",
                 "operationId": "5dd852a24127d2fed98599955e3cd51c",
                 "responses": {
@@ -180,7 +193,9 @@
         },
         "/api/parameters": {
             "get": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Listar parámetros",
                 "operationId": "01836dabd6d9f5b8915baa8c3df5841d",
                 "responses": {
@@ -201,7 +216,9 @@
                 ]
             },
             "post": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Crear parámetro",
                 "operationId": "72e820304ebef1757ef7a1b9305d34ad",
                 "requestBody": {
@@ -209,7 +226,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["key", "value"],
+                                "required": [
+                                    "key",
+                                    "value"
+                                ],
                                 "properties": {
                                     "key": {
                                         "type": "string",
@@ -253,7 +273,9 @@
         },
         "/api/parameters/trashed": {
             "get": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Listar parámetros eliminados",
                 "operationId": "7c1347fbe7784d6e4ba9135f07cb68dd",
                 "responses": {
@@ -276,7 +298,9 @@
         },
         "/api/parameters/{id}": {
             "get": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Obtener parámetro por ID",
                 "operationId": "57fb9c2562e8f5eb8fea017239f10eb4",
                 "parameters": [
@@ -307,7 +331,9 @@
                 ]
             },
             "put": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Actualizar parámetro",
                 "operationId": "159493039c4b6c1238c90a0ad75f0d67",
                 "parameters": [
@@ -325,7 +351,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["key", "value"],
+                                "required": [
+                                    "key",
+                                    "value"
+                                ],
                                 "properties": {
                                     "key": {
                                         "type": "string",
@@ -370,7 +399,9 @@
                 ]
             },
             "delete": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Eliminar parámetro",
                 "operationId": "feb620437d27ff3941c4f0a911bc3ee1",
                 "parameters": [
@@ -403,7 +434,9 @@
         },
         "/api/parameters/{id}/restore": {
             "post": {
-                "tags": ["Parámetros"],
+                "tags": [
+                    "Parámetros"
+                ],
                 "summary": "Restaurar parámetro eliminado",
                 "operationId": "761b457f0098bbfa8df4c06da101b0a7",
                 "parameters": [
@@ -436,7 +469,9 @@
         },
         "/api/permissions": {
             "get": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Listar permisos",
                 "operationId": "c48ce0f60f698a129de6de995abee71b",
                 "responses": {
@@ -454,7 +489,9 @@
                 ]
             },
             "post": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Crear permiso",
                 "operationId": "4a60ed1628e396462d8dcb3a65eb78ee",
                 "requestBody": {
@@ -462,7 +499,9 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["name"],
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
                                     "name": {
                                         "description": "Formato modulo.accion (minúsculas, guion bajo y guion).",
@@ -496,7 +535,9 @@
         },
         "/api/permissions/{id}": {
             "get": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Obtener permiso por ID",
                 "operationId": "f770751a51987f283e4b28ecc35922c2",
                 "parameters": [
@@ -527,7 +568,9 @@
                 ]
             },
             "put": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Actualizar permiso",
                 "operationId": "1da43c549f8e6afd1ac3230ff528aca7",
                 "parameters": [
@@ -544,7 +587,9 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["name"],
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
                                     "name": {
                                         "description": "Formato modulo.accion (minúsculas, guion bajo y guion).",
@@ -579,7 +624,9 @@
                 ]
             },
             "delete": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Eliminar permiso",
                 "operationId": "4a51b32977cd036f7e674bd665d05740",
                 "parameters": [
@@ -612,7 +659,9 @@
         },
         "/api/permissions/trashed": {
             "get": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Listar permisos eliminados",
                 "operationId": "56e38615b6f32cee81df0d70b4f03e3d",
                 "responses": {
@@ -635,7 +684,9 @@
         },
         "/api/permissions/{id}/restore": {
             "post": {
-                "tags": ["Permisos"],
+                "tags": [
+                    "Permisos"
+                ],
                 "summary": "Restaurar permiso eliminado",
                 "operationId": "dc2c8fcb20230a0e2d7a10fe2015d9e3",
                 "parameters": [
@@ -668,7 +719,9 @@
         },
         "/api/roles": {
             "get": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Listar roles con sus permisos",
                 "operationId": "ec3e2bad90f17645ad891774d06a127d",
                 "responses": {
@@ -689,7 +742,9 @@
                 ]
             },
             "post": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Crear rol",
                 "operationId": "225caea1d42392f1b90d86e3053c470d",
                 "requestBody": {
@@ -697,7 +752,9 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["name"],
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -736,7 +793,9 @@
         },
         "/api/roles/{id}": {
             "get": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Obtener rol por ID",
                 "operationId": "1a1fe470a1cf8e3862b36bd2f1ffba94",
                 "parameters": [
@@ -767,7 +826,9 @@
                 ]
             },
             "put": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Actualizar rol",
                 "operationId": "cedc4cebd581195564961004b09a94b2",
                 "parameters": [
@@ -823,7 +884,9 @@
                 ]
             },
             "delete": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Eliminar rol",
                 "operationId": "3a056e285398ef9458f4beb1e7d9d68f",
                 "parameters": [
@@ -856,7 +919,9 @@
         },
         "/api/roles/trashed": {
             "get": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Listar roles eliminados",
                 "operationId": "f8c7642e8faf961cc2bb3c60397bfb1c",
                 "responses": {
@@ -879,7 +944,9 @@
         },
         "/api/roles/{id}/restore": {
             "post": {
-                "tags": ["Roles"],
+                "tags": [
+                    "Roles"
+                ],
                 "summary": "Restaurar rol eliminado",
                 "operationId": "3cab390e6341ac25b56f2e99d686c5dc",
                 "parameters": [
@@ -912,7 +979,9 @@
         },
         "/api/users/{userId}/schedules": {
             "get": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Listar horarios de un usuario",
                 "operationId": "c891ae0c9dba57f5eef3b2d7685ce52a",
                 "parameters": [
@@ -943,7 +1012,9 @@
                 ]
             },
             "post": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Crear horario para un usuario",
                 "operationId": "67558ef7c0d2d54e1ed4658ec1e469c5",
                 "parameters": [
@@ -1016,7 +1087,9 @@
         },
         "/api/users/{userId}/schedules/trashed": {
             "get": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Listar horarios eliminados de un usuario",
                 "operationId": "74d43099501ab93ae13ec262538160d4",
                 "parameters": [
@@ -1049,7 +1122,9 @@
         },
         "/api/schedules/{id}": {
             "put": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Actualizar horario",
                 "operationId": "f2edaa2b140da70bd2e9bb1eef927d64",
                 "parameters": [
@@ -1110,7 +1185,9 @@
                 ]
             },
             "delete": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Eliminar horario",
                 "operationId": "28268edb9f9232da1ab00042dbc55561",
                 "parameters": [
@@ -1143,7 +1220,9 @@
         },
         "/api/schedules/{id}/restore": {
             "post": {
-                "tags": ["Horarios"],
+                "tags": [
+                    "Horarios"
+                ],
                 "summary": "Restaurar horario eliminado",
                 "operationId": "5a8eaa66c109f5e0821ca896c4a1fb7a",
                 "parameters": [
@@ -1179,7 +1258,9 @@
         },
         "/api/users": {
             "get": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Listar usuarios activos",
                 "operationId": "615595d89ec5af928e2a7b2bf76079b4",
                 "responses": {
@@ -1200,7 +1281,9 @@
                 ]
             },
             "post": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Crear usuario",
                 "operationId": "62ba21842fff6320b2a967462dff0b9e",
                 "requestBody": {
@@ -1273,7 +1356,9 @@
         },
         "/api/users/disabled": {
             "get": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Listar usuarios desactivados (soft delete)",
                 "operationId": "ac3480a129a667fa2d105285a11baef5",
                 "responses": {
@@ -1296,7 +1381,9 @@
         },
         "/api/users/{id}": {
             "get": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Obtener usuario por ID",
                 "operationId": "a4d064c27229c91e693ac2b6d4adaa81",
                 "parameters": [
@@ -1327,7 +1414,9 @@
                 ]
             },
             "put": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Actualizar usuario",
                 "operationId": "e830dffcafd6030e1481928a6c491436",
                 "parameters": [
@@ -1398,7 +1487,9 @@
                 ]
             },
             "delete": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Desactivar usuario (soft delete)",
                 "operationId": "5aa98d7be69f046dfa1a42c950d22108",
                 "parameters": [
@@ -1431,7 +1522,9 @@
         },
         "/api/users/trashed/{id}": {
             "get": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Obtener usuario eliminado por ID",
                 "operationId": "acffae361928890db419030b7dcf26af",
                 "parameters": [
@@ -1464,7 +1557,9 @@
         },
         "/api/users/search/{name}": {
             "get": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Buscar usuarios por nombre",
                 "operationId": "d73be801ab26eb79f26ea5bfd7a80844",
                 "parameters": [
@@ -1494,7 +1589,9 @@
         },
         "/api/users/{id}/restore": {
             "post": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Restaurar usuario desactivado",
                 "operationId": "5727350529e316908a284edf60c94edd",
                 "parameters": [
@@ -1527,7 +1624,9 @@
         },
         "/api/users/{id}/permissions": {
             "post": {
-                "tags": ["Usuarios"],
+                "tags": [
+                    "Usuarios"
+                ],
                 "summary": "Asignar o revocar permisos directos a un usuario",
                 "operationId": "544afe5e3d87b3f1d250703f2dad7457",
                 "parameters": [
@@ -1545,7 +1644,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["permissions", "assign"],
+                                "required": [
+                                    "permissions",
+                                    "assign"
+                                ],
                                 "properties": {
                                     "permissions": {
                                         "type": "array",

@@ -11,6 +11,7 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
+            'superadmin'    => null, // all permissions, exempt from schedules
             'administrador' => null, // all permissions
 
             'coordinador' => [
@@ -38,7 +39,9 @@ class RoleSeeder extends Seeder
             }
         }
 
-        $administrador = Role::findByName('administrador');
-        $administrador->syncPermissions(Permission::pluck('name')->toArray());
+        $allPermissions = Permission::pluck('name')->toArray();
+
+        Role::findByName('superadmin')->syncPermissions($allPermissions);
+        Role::findByName('administrador')->syncPermissions($allPermissions);
     }
 }
