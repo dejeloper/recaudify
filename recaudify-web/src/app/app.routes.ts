@@ -27,6 +27,18 @@ export const routes: Routes = [
             loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
           },
           {
+            path: 'users',
+            loadComponent: () => import('./features/admin/users/users').then((m) => m.Users),
+          },
+          {
+            path: 'users/new',
+            loadComponent: () => import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
+          },
+          {
+            path: 'users/:id/edit',
+            loadComponent: () => import('./features/admin/users/user-form/user-form').then((m) => m.UserForm),
+          },
+          {
             path: 'roles',
             loadComponent: () => import('./features/admin/roles/roles').then((m) => m.Roles),
           },

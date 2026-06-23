@@ -1,0 +1,269 @@
+<div class="p-4 sm:p-8">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Usuarios</h1>
+      <p class="mt-0.5 text-sm text-gray-400">Gestión de accesos al sistema.</p>
+    </div>
+    <div class="flex items-center gap-2 sm:self-start self-stretch">
+      <button
+        (click)="toggleDisabled()"
+        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        [class.bg-amber-50]="showDisabled()"
+        [class.border-amber-300]="showDisabled()"
+        [class.text-amber-700]="showDisabled()"
+      >
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+          />
+        </svg>
+        {{ showDisabled() ? 'Ocultar desactivados' : 'Ver desactivados' }}
+        @if (disabled().length > 0) {
+          <span
+            class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-700"
+          >
+            {{ disabled().length }}
+          </span>
+        }
+      </button>
+      @if (canCreate()) {
+        <a
+          routerLink="/admin/users/new"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Nuevo usuario
+        </a>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="space-y-2">
+      @for (_ of [1, 2, 3, 4, 5]; track $index) {
+        <div class="h-14 rounded-lg bg-white border border-gray-200 animate-pulse"></div>
+      }
+    </div>
+  } @else if (users().length === 0) {
+    <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+      <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
+      @if (canCreate()) {
+        <a
+          routerLink="/admin/users/new"
+          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          >Crear el primero</a
+        >
+      }
+    </div>
+  } @else {
+    <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-100 bg-gray-50">
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Usuario
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Nombre de usuario
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Email
+              </th>
+              <th
+                class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400"
+              >
+                Rol
+              </th>
+              <th class="px-5 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (user of users(); track user.id) {
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700"
+                    >
+                      {{ user.name.charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="font-medium text-gray-800">{{ user.name }}</span>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5">
+                  <span class="font-mono text-xs text-gray-500">{{ user.username }}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                  <span class="text-sm text-gray-500">{{ user.email ?? '—' }}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                  @if (user.roles.length > 0) {
+                    <span
+                      class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"
+                    >
+                      {{ roleLabel(user) }}
+                    </span>
+                  } @else {
+                    <span class="text-xs text-gray-400">Sin rol</span>
+                  }
+                </td>
+                <td class="px-5 py-3.5 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    @if (canEdit()) {
+                      <a
+                        [routerLink]="['/admin/users', user.id, 'edit']"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                        >Editar</a
+                      >
+                    }
+                    @if (canDelete()) {
+                      <button
+                        (click)="delete(user)"
+                        [disabled]="deletingId() === user.id"
+                        class="rounded-md px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors disabled:opacity-50"
+                      >
+                        @if (deletingId() === user.id) {
+                          Desactivando...
+                        } @else {
+                          Desactivar
+                        }
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Disabled users -->
+  @if (showDisabled()) {
+    <div class="mt-6">
+      <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+          />
+        </svg>
+        Usuarios desactivados
+      </h2>
+
+      @if (loadingDisabled()) {
+        <div class="space-y-2">
+          @for (_ of [1, 2]; track $index) {
+            <div class="h-14 rounded-lg bg-amber-50 border border-amber-200 animate-pulse"></div>
+          }
+        </div>
+      } @else if (disabled().length === 0) {
+        <div
+          class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+        >
+          <p class="text-sm text-amber-600">No hay usuarios desactivados.</p>
+        </div>
+      } @else {
+        <div class="rounded-xl border border-amber-200 bg-amber-50/50 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-amber-200 bg-amber-50">
+                  <th
+                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
+                  >
+                    Usuario
+                  </th>
+                  <th
+                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
+                  >
+                    Nombre de usuario
+                  </th>
+                  <th
+                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
+                  >
+                    Email
+                  </th>
+                  <th
+                    class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-600"
+                  >
+                    Rol
+                  </th>
+                  <th class="px-5 py-3"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-amber-100">
+                @for (user of disabled(); track user.id) {
+                  <tr class="hover:bg-amber-50 transition-colors">
+                    <td class="px-5 py-3.5">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-500"
+                        >
+                          {{ user.name.charAt(0).toUpperCase() }}
+                        </div>
+                        <span class="font-medium text-gray-400 line-through">{{ user.name }}</span>
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5">
+                      <span class="font-mono text-xs text-gray-400">{{ user.username }}</span>
+                    </td>
+                    <td class="px-5 py-3.5">
+                      <span class="text-sm text-gray-400">{{ user.email ?? '—' }}</span>
+                    </td>
+                    <td class="px-5 py-3.5">
+                      @if (user.roles.length > 0) {
+                        <span
+                          class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400"
+                        >
+                          {{ roleLabel(user) }}
+                        </span>
+                      } @else {
+                        <span class="text-xs text-gray-400">Sin rol</span>
+                      }
+                    </td>
+                    <td class="px-5 py-3.5 text-right">
+                      @if (canRestore()) {
+                        <button
+                          (click)="restore(user)"
+                          [disabled]="restoringId() === user.id"
+                          class="rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 hover:text-amber-900 transition-colors disabled:opacity-50"
+                        >
+                          @if (restoringId() === user.id) {
+                            Activando...
+                          } @else {
+                            Activar
+                          }
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
