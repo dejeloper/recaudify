@@ -14,6 +14,10 @@ export class AuthService {
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
+  hasPermission(permission: string): boolean {
+    return this.currentUser()?.permissions.includes(permission) ?? false;
+  }
+
   private refreshRequest$: Observable<unknown> | null = null;
 
   checkAuth() {
