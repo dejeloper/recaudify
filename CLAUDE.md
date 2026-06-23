@@ -46,11 +46,13 @@ pnpm add <pkg>      # Install a dependency
 **Authorization:** Spatie Laravel Permission. Roles and permissions are seeded. Controllers use `->middleware('permission:scope.action')` per route and `->middleware('role:administrador')` per group.
 
 **API responses:**
+
 - Use API Resources (`App\Http\Resources\`) for user data — never raw `response()->json()` with manual field mapping.
 - Controllers extend `App\Http\Controllers\Api\ApiController` (holds OpenAPI metadata).
 - All endpoints documented with `#[OA\...]` PHP attributes (swagger-php).
 
 **Conventions:**
+
 - Form Requests in `App\Http\Requests\{Module}\` for all validation.
 - All business models use `SoftDeletes`.
 - `env()` is forbidden outside `config/` files — always use `config()`.
@@ -67,13 +69,24 @@ pnpm add <pkg>      # Install a dependency
 **HTTP:** `ApiService` (`core/services/api.service.ts`) is the single HTTP abstraction. It builds URLs as `{apiUrl}/{controller}/{action}`, sets security headers, sanitizes body keys against prototype pollution. Never use `HttpClient` directly.
 
 **Auth flow:**
+
 1. `authInterceptor` attaches `Authorization: Bearer <token>` from `AuthService.token`.
 2. `authGuard` / `guestGuard` use `auth.isAuthenticated()` (signal call).
 3. Token stored in `localStorage` under key `auth_token` and mirrored in `_token` signal.
 
 **Routing:** All routes use `loadComponent` (lazy). `withComponentInputBinding()` enabled.
 
+**Shared components** (`core/components/`):
+
+- `Spinner` (`core/components/spinner/spinner.ts`) — selector `app-spinner`. Inputs: `show` (required `boolean`), `label` (optional `string`). Renders a centered SVG spinner while `show` is `true`; nothing when `false`. Import and use in any page that needs a loading state.
+
+```html
+<app-spinner [show]="loading()" />
+<app-spinner [show]="loading()" label="Cargando usuarios..." />
+```
+
 **Conventions:**
+
 - `inject()` only — no constructor injection.
 - Component fields: `private readonly` for injected services, `protected` for template-bound state.
 - Subscriptions in components must use `takeUntilDestroyed(this.destroyRef)`.
@@ -83,13 +96,13 @@ pnpm add <pkg>      # Install a dependency
 
 ## Environment
 
-| Variable | Default |
-|---|---|
-| `APP_URL` | `http://localhost:8000` |
-| `FRONTEND_URL` | `http://localhost:4200` |
-| `DB_DATABASE` | `recaudify` |
-| `JWT_TTL` | `15` (minutes) |
-| `JWT_REFRESH_TTL` | `240` (minutes) |
+| Variable                | Default                 |
+| ----------------------- | ----------------------- |
+| `APP_URL`               | `http://localhost:8000` |
+| `FRONTEND_URL`          | `http://localhost:4200` |
+| `DB_DATABASE`           | `recaudify`             |
+| `JWT_TTL`               | `15` (minutes)          |
+| `JWT_REFRESH_TTL`       | `240` (minutes)         |
 | `L5_SWAGGER_CONST_HOST` | falls back to `APP_URL` |
 
 Angular API URL is set in `src/environments/environment.ts` → `apiUrl`.

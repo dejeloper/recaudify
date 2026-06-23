@@ -132,12 +132,14 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 ### Personal
 
 #### Cobradores
+
 - [ ] Crear cobrador.
 - [ ] Editar cobrador.
 - [ ] Gestión de cobrador.
 - [ ] Asignación de clientes a cobrador.
 
 #### Vendedores
+
 - [ ] Crear vendedor.
 - [ ] Editar vendedor.
 - [ ] Listar vendedores.
