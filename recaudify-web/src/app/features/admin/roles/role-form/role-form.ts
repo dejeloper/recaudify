@@ -1,0 +1,111 @@
+import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { ApiError } from '@core/models/api-error';
+import { Permission } from '@core/models/permission';
+import { PermissionsService } from '@core/services/permissions.service';
+import { RolesService } from '@core/services/roles.service';
+
+@Component({
+  selector: 'app-role-form',
+  imports: [FormsModule, RouterLink],
+  templateUrl: './role-form.html',
+})
+export class RoleForm implements OnInit {
+  private readonly rolesService = inject(RolesService);
+  private readonly permissionsService = inject(PermissionsService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly id = input<string>();
+
+  protected readonly loading = signal(true);
+  protected readonly saving = signal(false);
+  protected readonly error = signal('');
+
+  protected formName = '';
+  protected readonly allPermissions = signal<Permission[]>([]);
+  protected readonly selected = signal<Set<string>>(new Set());
+
+  protected readonly isEdit = computed(() => !!this.id());
+
+  protected readonly grouped = computed(() => {
+    const groups = new Map<string, string[]>();
+    for (const p of this.allPermissions()) {
+      const module = p.name.split('.')[0];
+      if (!groups.has(module)) groups.set(module, []);
+      groups.get(module)!.push(p.name);
+    }
+    return [...groups.entries()].map(([module, perms]) => ({ module, perms }));
+  });
+
+  ngOnInit() {
+    this.permissionsService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: perms => {
+        this.allPermissions.set(perms);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+
+    const id = this.id();
+    if (!id) return;
+
+    this.loading.set(true);
+    this.rolesService.getById(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: role => {
+        this.formName = role.name;
+        this.selected.set(new Set(role.permissions.map(p => p.name)));
+      },
+      error: () => this.error.set('No se pudo cargar el rol.'),
+    });
+  }
+
+  protected toggle(permName: string) {
+    const s = new Set(this.selected());
+    s.has(permName) ? s.delete(permName) : s.add(permName);
+    this.selected.set(s);
+  }
+
+  protected isSelected(permName: string) {
+    return this.selected().has(permName);
+  }
+
+  protected toggleAll(perms: string[], checked: boolean) {
+    const s = new Set(this.selected());
+    perms.forEach(p => checked ? s.add(p) : s.delete(p));
+    this.selected.set(s);
+  }
+
+  protected allChecked(perms: string[]) {
+    return perms.every(p => this.selected().has(p));
+  }
+
+  protected actionLabel(perm: string) {
+    return perm.split('.')[1] ?? perm;
+  }
+
+  protected save() {
+    if (!this.formName.trim()) return;
+
+    this.saving.set(true);
+    this.error.set('');
+
+    const id = this.id();
+    const name = this.formName.trim();
+    const permissions = [...this.selected()];
+
+    const req$ = id
+      ? this.rolesService.update(+id, name, permissions)
+      : this.rolesService.create(name, permissions);
+
+    req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.router.navigate(['/admin/roles']),
+      error: (err: ApiError) => {
+        this.error.set(err.message ?? 'Error al guardar el rol.');
+        this.saving.set(false);
+      },
+    });
+  }
+}

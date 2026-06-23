@@ -23,6 +23,22 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         children: [
           {
+            path: '',
+            loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+          },
+          {
+            path: 'roles',
+            loadComponent: () => import('./features/admin/roles/roles').then((m) => m.Roles),
+          },
+          {
+            path: 'roles/new',
+            loadComponent: () => import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
+          },
+          {
+            path: 'roles/:id/edit',
+            loadComponent: () => import('./features/admin/roles/role-form/role-form').then((m) => m.RoleForm),
+          },
+          {
             path: 'permissions',
             loadComponent: () => import('./features/admin/permissions/permissions').then((m) => m.Permissions),
           },
