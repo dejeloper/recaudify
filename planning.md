@@ -204,10 +204,10 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Crear sistema de permisos por rol.
 - [x] Crear interceptores HTTP (token, errores, logout).
 - [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
-- [ ] Crear diseño responsive.
-- [ ] Implementar `AuthService.can('modulo.accion')` para validar permisos desde el signal `currentUser`
+- [x] Crear diseño responsive.
+- [x] Implementar `AuthService.can('modulo.accion')` para validar permisos desde el signal `currentUser`
 - [ ] Crear directiva estructural `*appHasPermission="'modulo.accion'"` para condicionar elementos del DOM
-- [ ] Crear `permissionGuard` para proteger rutas según permiso requerido
+- [x] Crear `permissionGuard` para proteger rutas según permiso requerido
 - [x] Ocultar ítems de navegación según permisos del usuario autenticado
 
 ### Pantallas
