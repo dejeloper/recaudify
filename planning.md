@@ -211,7 +211,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Crear directiva estructural `*appHasPermission="'modulo.accion'"` para condicionar elementos del DOM
 - [x] Crear `permissionGuard` para proteger rutas según permiso requerido
 - [x] Ocultar ítems de navegación según permisos del usuario autenticado
-- [ ] Corregir bug NG0955: cambiar `track item.route` por `track item.label` en `app-shell.html:132` para eliminar warning de claves duplicadas en el sidebar.
+- [x] Corregir bug NG0955: cambiar `track item.route` por `track item.label` en `app-shell.html:132` para eliminar warning de claves duplicadas en el sidebar.
 - [ ] Implementar acciones del menú de perfil de usuario: "Mi resumen", "Notificaciones" (conectar a datos reales, quitar badge hardcodeado), "Cambio de contraseña" y "Configuración".
 
 ### Pantallas
