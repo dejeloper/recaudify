@@ -18,34 +18,37 @@ class AuthController extends ApiController
     {
         $user = User::create($request->validated());
 
-        return ApiResult::created([
-            'id'       => $user->id,
-            'name'     => $user->name,
-            'username' => $user->username,
-        ], 'Usuario registrado correctamente.')->toResponse();
+        return ApiResult::created(
+            [
+                "id" => $user->id,
+                "name" => $user->name,
+                "username" => $user->username,
+            ],
+            "Usuario registrado correctamente.",
+        )->toResponse();
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = [
-            'username' => $request->username,
-            'password' => $request->password,
+            "username" => $request->username,
+            "password" => $request->password,
         ];
 
-        if (! $token = $this->guard()->attempt($credentials)) {
-            return ApiResult::unauthorized('Credenciales incorrectas.')->toResponse();
+        if (!($token = $this->guard()->attempt($credentials))) {
+            return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
 
         /** @var User $user */
         $user = $this->guard()->user();
 
-        if (! $user->active) {
+        if (!$user->active) {
             $this->guard()->logout();
 
-            return ApiResult::forbidden('Usuario inactivo.')->toResponse();
+            return ApiResult::forbidden("Usuario inactivo.")->toResponse();
         }
 
-        if ($user->hasRole('superadmin')) {
+        if ($user->hasRole("superadmin")) {
             return $this->buildTokenResponse($token, $user);
         }
 
@@ -54,22 +57,21 @@ class AuthController extends ApiController
         if ($schedules->isEmpty()) {
             $this->guard()->logout();
 
-            return ApiResult::forbidden('No tiene horario de acceso asignado.')->toResponse();
+            return ApiResult::forbidden("No tiene horario de acceso asignado.")->toResponse();
         }
 
-        $now         = now();
-        $currentTime = $now->format('H:i');
-        $allowed     = $schedules
-            ->where('day_of_week', $now->dayOfWeek)
+        $now = now();
+        $currentTime = $now->format("H:i");
+        $allowed = $schedules
+            ->where("day_of_week", $now->dayOfWeek)
             ->contains(
-                fn ($s) => substr($s->start_time, 0, 5) <= $currentTime
-                        && $currentTime <= substr($s->end_time, 0, 5)
+                fn($s) => substr($s->start_time, 0, 5) <= $currentTime && $currentTime <= substr($s->end_time, 0, 5),
             );
 
-        if (! $allowed) {
+        if (!$allowed) {
             $this->guard()->logout();
 
-            return ApiResult::forbidden('Acceso fuera del horario permitido.')->toResponse();
+            return ApiResult::forbidden("Acceso fuera del horario permitido.")->toResponse();
         }
 
         return $this->buildTokenResponse($token, $user);
@@ -77,21 +79,24 @@ class AuthController extends ApiController
 
     private function buildTokenResponse(string $token, User $user): JsonResponse
     {
-        $response = ApiResult::success([
-            'token'      => $token,
-            'token_type' => 'bearer',
-            'expires_in' => config('jwt.ttl') * 60,
-            'user'       => [
-                'id'       => $user->id,
-                'name'     => $user->name,
-                'username' => $user->username,
-                'role'     => $user->getRoleNames()->first(),
+        $response = ApiResult::success(
+            [
+                "token" => $token,
+                "token_type" => "bearer",
+                "expires_in" => config("jwt.ttl") * 60,
+                "user" => [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "username" => $user->username,
+                    "role" => $user->getRoleNames()->first(),
+                ],
             ],
-        ], 'Sesión iniciada correctamente.')
+            "Sesión iniciada correctamente.",
+        )
             ->toResponse()
             ->withCookie($this->tokenCookie($token));
 
-        $response->headers->set('Authorization', "Bearer {$token}");
+        $response->headers->set("Authorization", "Bearer {$token}");
 
         return $response;
     }
@@ -109,18 +114,21 @@ class AuthController extends ApiController
         try {
             $newToken = $this->guard()->refresh();
         } catch (\Throwable) {
-            return ApiResult::unauthorized('No se pudo renovar la sesión.')->toResponse();
+            return ApiResult::unauthorized("No se pudo renovar la sesión.")->toResponse();
         }
 
-        $response = ApiResult::success([
-            'token'      => $newToken,
-            'token_type' => 'bearer',
-            'expires_in' => config('jwt.ttl') * 60,
-        ], 'Token renovado.')
+        $response = ApiResult::success(
+            [
+                "token" => $newToken,
+                "token_type" => "bearer",
+                "expires_in" => config("jwt.ttl") * 60,
+            ],
+            "Token renovado.",
+        )
             ->toResponse()
             ->withCookie($this->tokenCookie($newToken));
 
-        $response->headers->set('Authorization', "Bearer {$newToken}");
+        $response->headers->set("Authorization", "Bearer {$newToken}");
 
         return $response;
     }
@@ -129,30 +137,30 @@ class AuthController extends ApiController
     {
         $this->guard()->logout();
 
-        return ApiResult::empty('Sesión cerrada correctamente.')
+        return ApiResult::empty("Sesión cerrada correctamente.")
             ->toResponse()
-            ->withCookie(Cookie::forget(config('jwt.cookie_key_name', 'token')));
+            ->withCookie(Cookie::forget(config("jwt.cookie_key_name", "token")));
     }
 
     private function tokenCookie(string $token): SymfonyCookie
     {
-        $minutes = (int) config('jwt.refresh_ttl');
-        $isLocal = app()->environment('local');
+        $minutes = (int) config("jwt.refresh_ttl");
+        $isLocal = app()->environment("local");
 
         return cookie(
-            name: config('jwt.cookie_key_name', 'token'),
+            name: config("jwt.cookie_key_name", "token"),
             value: $token,
             minutes: $minutes,
-            path: '/',
-            secure: ! $isLocal,
+            path: "/",
+            secure: !$isLocal,
             httpOnly: true,
-            sameSite: $isLocal ? 'Lax' : 'None',
+            sameSite: $isLocal ? "Lax" : "None",
         );
     }
 
     private function guard(): JWTGuard
     {
         /** @var JWTGuard */
-        return auth('api');
+        return auth("api");
     }
 }

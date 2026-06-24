@@ -14,14 +14,14 @@ class StorePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100', 'unique:permissions,name', 'regex:/^[a-z_]+\.[a-z_-]+$/'],
+            "name" => ["required", "string", "max:100", "unique:permissions,name", 'regex:/^[a-z_]+\.[a-z_-]+$/'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.regex' => 'El permiso debe tener el formato modulo.accion (ej. clientes.crear).',
+            "name.regex" => "El permiso debe tener el formato modulo.accion (ej. clientes.crear).",
         ];
     }
 }

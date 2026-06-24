@@ -10,10 +10,10 @@ class ParameterResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'key'         => $this->key,
-            'value'       => $this->value,
-            'description' => $this->description,
+            "id" => $this->id,
+            "key" => $this->key,
+            "value" => $this->value,
+            "description" => $this->description,
         ];
     }
 }

@@ -14,9 +14,9 @@ class StoreParameterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'key'         => ['required', 'string', 'max:100', 'unique:parameters,key'],
-            'value'       => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:255'],
+            "key" => ["required", "string", "max:100", "unique:parameters,key"],
+            "value" => ["required", "string", "max:255"],
+            "description" => ["nullable", "string", "max:255"],
         ];
     }
 }

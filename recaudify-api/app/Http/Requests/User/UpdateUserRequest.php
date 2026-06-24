@@ -13,22 +13,29 @@ class UpdateUserRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('id');
+        $id = $this->route("id");
 
         return [
-            'name'     => ['sometimes', 'string', 'min:3', 'max:100'],
-            'username' => ['sometimes', 'string', 'min:3', 'max:50', 'unique:users,username,' . $id, 'regex:/^[a-z0-9._-]+$/'],
-            'email'    => ['nullable', 'email', 'max:150'],
-            'password' => ['sometimes', 'nullable', 'string', 'min:8', 'confirmed'],
-            'role'     => ['nullable', 'string', 'exists:roles,name'],
-            'active'   => ['sometimes', 'boolean'],
+            "name" => ["sometimes", "string", "min:3", "max:100"],
+            "username" => [
+                "sometimes",
+                "string",
+                "min:3",
+                "max:50",
+                "unique:users,username," . $id,
+                'regex:/^[a-z0-9._-]+$/',
+            ],
+            "email" => ["nullable", "email", "max:150"],
+            "password" => ["sometimes", "nullable", "string", "min:8", "confirmed"],
+            "role" => ["nullable", "string", "exists:roles,name"],
+            "active" => ["sometimes", "boolean"],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('username')) {
-            $this->merge(['username' => strtolower(trim($this->username ?? ''))]);
+        if ($this->has("username")) {
+            $this->merge(["username" => strtolower(trim($this->username ?? ""))]);
         }
     }
 }

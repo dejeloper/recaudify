@@ -10,10 +10,10 @@ class SetJwtFromCookie
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $cookieName = config('jwt.cookie_key_name', 'token');
+        $cookieName = config("jwt.cookie_key_name", "token");
 
-        if (! $request->headers->has('Authorization') && $request->hasCookie($cookieName)) {
-            $request->headers->set('Authorization', 'Bearer '.$request->cookie($cookieName));
+        if (!$request->headers->has("Authorization") && $request->hasCookie($cookieName)) {
+            $request->headers->set("Authorization", "Bearer " . $request->cookie($cookieName));
         }
 
         return $next($request);

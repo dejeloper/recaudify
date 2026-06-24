@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'secret' => env('JWT_SECRET'),
+    "secret" => env("JWT_SECRET"),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     |
     */
 
-    'keys' => [
+    "keys" => [
         /*
         |--------------------------------------------------------------------------
         | Public Key
@@ -46,7 +46,7 @@ return [
         |
         */
 
-        'public' => env('JWT_PUBLIC_KEY'),
+        "public" => env("JWT_PUBLIC_KEY"),
 
         /*
         |--------------------------------------------------------------------------
@@ -59,7 +59,7 @@ return [
         |
         */
 
-        'private' => env('JWT_PRIVATE_KEY'),
+        "private" => env("JWT_PRIVATE_KEY"),
 
         /*
         |--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ return [
         |
         */
 
-        'passphrase' => env('JWT_PASSPHRASE'),
+        "passphrase" => env("JWT_PASSPHRASE"),
     ],
 
     /*
@@ -89,7 +89,7 @@ return [
     |
     */
 
-    'ttl' => (int) env('JWT_TTL', 60),
+    "ttl" => (int) env("JWT_TTL", 60),
 
     /*
     |--------------------------------------------------------------------------
@@ -117,8 +117,8 @@ return [
     |
     */
 
-    'refresh_iat' => env('JWT_REFRESH_IAT', false),
-    'refresh_ttl' => (int) env('JWT_REFRESH_TTL', 20160),
+    "refresh_iat" => env("JWT_REFRESH_IAT", false),
+    "refresh_ttl" => (int) env("JWT_REFRESH_TTL", 20160),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,7 +132,7 @@ return [
     |
     */
 
-    'algo' => env('JWT_ALGO', 'HS256'),
+    "algo" => env("JWT_ALGO", "HS256"),
 
     /*
     |--------------------------------------------------------------------------
@@ -145,15 +145,7 @@ return [
     |
     */
 
-    'required_claims' => [
-        'iss',
-        'iat',
-        'exp',
-        'nbf',
-        'sub',
-        'jti',
-        'aud',
-    ],
+    "required_claims" => ["iss", "iat", "exp", "nbf", "sub", "jti", "aud"],
 
     /*
     |--------------------------------------------------------------------------
@@ -168,7 +160,7 @@ return [
     |
     */
 
-    'persistent_claims' => [
+    "persistent_claims" => [
         // 'foo',
         // 'bar',
     ],
@@ -190,7 +182,7 @@ return [
     |
     */
 
-    'lock_subject' => true,
+    "lock_subject" => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -207,7 +199,7 @@ return [
     |
     */
 
-    'leeway' => (int) env('JWT_LEEWAY', 0),
+    "leeway" => (int) env("JWT_LEEWAY", 0),
 
     /*
     |--------------------------------------------------------------------------
@@ -219,7 +211,7 @@ return [
     |
     */
 
-    'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
+    "blacklist_enabled" => env("JWT_BLACKLIST_ENABLED", true),
 
     /*
     | -------------------------------------------------------------------------
@@ -234,7 +226,7 @@ return [
     |
     */
 
-    'blacklist_grace_period' => (int) env('JWT_BLACKLIST_GRACE_PERIOD', 0),
+    "blacklist_grace_period" => (int) env("JWT_BLACKLIST_GRACE_PERIOD", 0),
 
     /*
     |--------------------------------------------------------------------------
@@ -245,7 +237,7 @@ return [
     |
     */
 
-    'show_black_list_exception' => env('JWT_SHOW_BLACKLIST_EXCEPTION', true),
+    "show_black_list_exception" => env("JWT_SHOW_BLACKLIST_EXCEPTION", true),
 
     /*
     |--------------------------------------------------------------------------
@@ -263,7 +255,7 @@ return [
     |
     */
 
-    'decrypt_cookies' => false,
+    "decrypt_cookies" => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -274,7 +266,7 @@ return [
     |
     */
 
-    'cookie_key_name' => 'token',
+    "cookie_key_name" => "token",
 
     /*
     |--------------------------------------------------------------------------
@@ -285,7 +277,7 @@ return [
     |
     */
 
-    'providers' => [
+    "providers" => [
         /*
         |--------------------------------------------------------------------------
         | JWT Provider
@@ -295,7 +287,7 @@ return [
         |
         */
 
-        'jwt' => PHPOpenSourceSaver\JWTAuth\Providers\JWT\Lcobucci::class,
+        "jwt" => PHPOpenSourceSaver\JWTAuth\Providers\JWT\Lcobucci::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -306,7 +298,7 @@ return [
         |
         */
 
-        'auth' => PHPOpenSourceSaver\JWTAuth\Providers\Auth\Illuminate::class,
+        "auth" => PHPOpenSourceSaver\JWTAuth\Providers\Auth\Illuminate::class,
 
         /*
         |--------------------------------------------------------------------------
@@ -317,6 +309,6 @@ return [
         |
         */
 
-        'storage' => PHPOpenSourceSaver\JWTAuth\Providers\Storage\Illuminate::class,
+        "storage" => PHPOpenSourceSaver\JWTAuth\Providers\Storage\Illuminate::class,
     ],
 ];

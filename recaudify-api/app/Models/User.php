@@ -14,25 +14,17 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, SoftDeletes, HasRoles;
 
-    protected string $guard_name = 'api';
+    protected string $guard_name = "api";
 
-    protected $fillable = [
-        'name',
-        'username',
-        'email',
-        'password',
-        'active',
-    ];
+    protected $fillable = ["name", "username", "email", "password", "active"];
 
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = ["password"];
 
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
-            'active'   => 'boolean',
+            "password" => "hashed",
+            "active" => "boolean",
         ];
     }
 
@@ -49,8 +41,8 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims(): array
     {
         return [
-            'role' => $this->getRoleNames()->first(),
-            'aud'  => config('app.url'),
+            "role" => $this->getRoleNames()->first(),
+            "aud" => config("app.url"),
         ];
     }
 }

@@ -13,17 +13,17 @@ class RoleController extends ApiController
 {
     public function index(): JsonResponse
     {
-        $roles = Role::where('guard_name', 'api')->with('permissions')->orderBy('name')->get();
+        $roles = Role::where("guard_name", "api")->with("permissions")->orderBy("name")->get();
 
         return ApiResult::success(RoleResource::collection($roles))->toResponse();
     }
 
     public function show(int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->with('permissions')->find($id);
+        $role = Role::where("guard_name", "api")->with("permissions")->find($id);
 
-        if (! $role) {
-            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        if (!$role) {
+            return ApiResult::notFound("Rol no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new RoleResource($role))->toResponse();
@@ -31,69 +31,71 @@ class RoleController extends ApiController
 
     public function store(StoreRoleRequest $request): JsonResponse
     {
-        $role = Role::create(['name' => $request->name, 'guard_name' => 'api']);
+        $role = Role::create(["name" => $request->name, "guard_name" => "api"]);
 
-        if ($request->filled('permissions')) {
+        if ($request->filled("permissions")) {
             $role->syncPermissions($request->permissions);
         }
 
-        return ApiResult::created(new RoleResource($role->load('permissions')), 'Rol creado correctamente.')->toResponse();
+        return ApiResult::created(
+            new RoleResource($role->load("permissions")),
+            "Rol creado correctamente.",
+        )->toResponse();
     }
 
     public function update(UpdateRoleRequest $request, int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->find($id);
+        $role = Role::where("guard_name", "api")->find($id);
 
-        if (! $role) {
-            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        if (!$role) {
+            return ApiResult::notFound("Rol no encontrado.")->toResponse();
         }
 
-        if ($request->filled('name')) {
-            $role->update(['name' => $request->name]);
+        if ($request->filled("name")) {
+            $role->update(["name" => $request->name]);
         }
 
-        if ($request->has('permissions')) {
+        if ($request->has("permissions")) {
             $role->syncPermissions($request->permissions);
         }
 
-        return ApiResult::success(new RoleResource($role->load('permissions')), 'Rol actualizado correctamente.')->toResponse();
+        return ApiResult::success(
+            new RoleResource($role->load("permissions")),
+            "Rol actualizado correctamente.",
+        )->toResponse();
     }
 
     public function destroy(int $id): JsonResponse
     {
-        $role = Role::where('guard_name', 'api')->find($id);
+        $role = Role::where("guard_name", "api")->find($id);
 
-        if (! $role) {
-            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        if (!$role) {
+            return ApiResult::notFound("Rol no encontrado.")->toResponse();
         }
 
         $role->syncPermissions([]);
         $role->delete();
 
-        return ApiResult::empty('Rol eliminado correctamente.')->toResponse();
+        return ApiResult::empty("Rol eliminado correctamente.")->toResponse();
     }
 
     public function trashed(): JsonResponse
     {
-        $roles = Role::onlyTrashed()
-            ->where('guard_name', 'api')
-            ->with('permissions')
-            ->orderBy('name')
-            ->get();
+        $roles = Role::onlyTrashed()->where("guard_name", "api")->with("permissions")->orderBy("name")->get();
 
         return ApiResult::success(RoleResource::collection($roles))->toResponse();
     }
 
     public function restore(int $id): JsonResponse
     {
-        $role = Role::onlyTrashed()->where('guard_name', 'api')->find($id);
+        $role = Role::onlyTrashed()->where("guard_name", "api")->find($id);
 
-        if (! $role) {
-            return ApiResult::notFound('Rol no encontrado.')->toResponse();
+        if (!$role) {
+            return ApiResult::notFound("Rol no encontrado.")->toResponse();
         }
 
         $role->restore();
 
-        return ApiResult::empty('Rol restaurado correctamente.')->toResponse();
+        return ApiResult::empty("Rol restaurado correctamente.")->toResponse();
     }
 }
