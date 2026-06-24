@@ -146,6 +146,7 @@ class AuthController extends ApiController
 
         $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
         $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
+        $data["ip_address"] = request()->ip();
 
         return ApiResult::success($data)->toResponse();
     }
