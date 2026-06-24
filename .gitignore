@@ -14,6 +14,9 @@ desktop.ini
 # Logs
 *.log
 
+# node modules
+node_modules/*
+
 # Laravel
 recaudify-api/.env
 recaudify-api/vendor/

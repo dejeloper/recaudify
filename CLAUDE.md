@@ -81,8 +81,7 @@ pnpm add <pkg>      # Install a dependency
 - `Spinner` (`core/components/spinner/spinner.ts`) — selector `app-spinner`. Inputs: `show` (required `boolean`), `label` (optional `string`). Renders a centered SVG spinner while `show` is `true`; nothing when `false`. Import and use in any page that needs a loading state.
 
 ```html
-<app-spinner [show]="loading()" />
-<app-spinner [show]="loading()" label="Cargando usuarios..." />
+<app-spinner [show]="loading()" /> <app-spinner [show]="loading()" label="Cargando usuarios..." />
 ```
 
 - `ToastContainer` (`core/components/toast/toast.ts`) — selector `app-toast`. Mounted once in `app.html`. Never import directly in pages. Use `ToastService` (`core/services/toast.service.ts`) to trigger toasts from anywhere. Types: `success`, `error`, `warning`, `info`. Default duration: 5 s. Toasts auto-dismiss and can be closed manually.

@@ -1,0 +1,15 @@
+{
+  "printWidth": 120,
+  "plugins": ["@prettier/plugin-php"],
+  "overrides": [
+    {
+      "files": "*.php",
+      "options": {
+        "parser": "php",
+        "phpVersion": "8.2",
+        "trailingCommaPHP": true,
+        "braceStyle": "per-cs"
+      }
+    }
+  ]
+}
