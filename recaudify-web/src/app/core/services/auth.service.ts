@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { catchError, finalize, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { lower } from '@core/utils/text';
 import { ApiError } from '@core/models/api-error';
-import { User } from '@core/models/user';
+import { CurrentShift, User } from '@core/models/user';
 import { ApiService } from '@core/services/api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -13,6 +13,14 @@ export class AuthService {
 
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
+
+  readonly currentShift = computed<CurrentShift | null>(
+    () => this.currentUser()?.current_shift ?? null,
+  );
+  readonly shiftStatusEnabled = computed(() => this.currentUser()?.shift_status_enabled ?? false);
+  readonly shiftCountdownEnabled = computed(
+    () => this.currentUser()?.shift_countdown_enabled ?? false,
+  );
 
   hasPermission(permission: string): boolean {
     return this.currentUser()?.permissions.includes(permission) ?? false;

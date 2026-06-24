@@ -1,3 +1,12 @@
+export interface CurrentShift {
+  is_within_schedule: boolean;
+  show_status: boolean;
+  day_of_week: number;
+  start_time: string | null;
+  end_time: string | null;
+  remaining_minutes: number | null;
+}
+
 export interface User {
   id: number;
   name: string;
@@ -6,4 +15,7 @@ export interface User {
   active: boolean;
   roles: string[];
   permissions: string[];
+  current_shift?: CurrentShift;
+  shift_status_enabled?: boolean;
+  shift_countdown_enabled?: boolean;
 }
