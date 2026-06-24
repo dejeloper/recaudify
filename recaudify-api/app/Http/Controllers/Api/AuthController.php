@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResult;
 use App\Models\User;
+use App\Services\AuthService;
 use App\Services\ParameterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 
 class AuthController extends ApiController
 {
+    public function __construct(private readonly AuthService $authService) {}
+
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create($request->validated());
@@ -49,30 +52,12 @@ class AuthController extends ApiController
             return ApiResult::forbidden("Usuario inactivo.")->toResponse();
         }
 
-        if ($user->hasRole("superadmin")) {
-            return $this->buildTokenResponse($token, $user);
-        }
+        $error = $this->authService->getScheduleAccessError($user);
 
-        $schedules = $user->schedules()->get();
-
-        if ($schedules->isEmpty()) {
+        if ($error !== null) {
             $this->guard()->logout();
 
-            return ApiResult::forbidden("No tiene horario de acceso asignado.")->toResponse();
-        }
-
-        $now = now();
-        $currentTime = $now->format("H:i");
-        $allowed = $schedules
-            ->where("day_of_week", $now->dayOfWeek)
-            ->contains(
-                fn($s) => substr($s->start_time, 0, 5) <= $currentTime && $currentTime <= substr($s->end_time, 0, 5),
-            );
-
-        if (!$allowed) {
-            $this->guard()->logout();
-
-            return ApiResult::forbidden("Acceso fuera del horario permitido.")->toResponse();
+            return ApiResult::forbidden($error)->toResponse();
         }
 
         return $this->buildTokenResponse($token, $user);
@@ -110,40 +95,7 @@ class AuthController extends ApiController
         $resource = new UserResource($user);
         $data = $resource->toArray(request());
 
-        if ($user->hasRole("superadmin")) {
-            $data["current_shift"] = [
-                "is_within_schedule" => true,
-                "show_status" => true,
-                "day_of_week" => now()->dayOfWeek,
-                "start_time" => null,
-                "end_time" => null,
-                "remaining_minutes" => null,
-            ];
-        } else {
-            $now = now();
-            $currentTime = $now->format("H:i");
-            $dayOfWeek = $now->dayOfWeek;
-
-            $schedules = $user->schedules()->get();
-            $currentSchedule = $schedules
-                ->where("day_of_week", $dayOfWeek)
-                ->first(
-                    fn($s) => substr($s->start_time, 0, 5) <= $currentTime &&
-                        $currentTime <= substr($s->end_time, 0, 5),
-                );
-
-            $data["current_shift"] = [
-                "is_within_schedule" => $currentSchedule !== null,
-                "show_status" => $currentSchedule ? (bool) $currentSchedule->show_status : false,
-                "day_of_week" => $dayOfWeek,
-                "start_time" => $currentSchedule ? substr($currentSchedule->start_time, 0, 5) : null,
-                "end_time" => $currentSchedule ? substr($currentSchedule->end_time, 0, 5) : null,
-                "remaining_minutes" => $currentSchedule
-                    ? (int) ((strtotime(substr($currentSchedule->end_time, 0, 5)) - strtotime($currentTime)) / 60)
-                    : null,
-            ];
-        }
-
+        $data["current_shift"] = $this->authService->getCurrentShift($user);
         $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
         $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
         $data["ip_address"] = request()->ip();

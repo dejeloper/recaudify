@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -15,7 +16,8 @@ class LoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create(["username" => "testuser"]);
+        Role::create(["name" => "superadmin", "guard_name" => "api"]);
+        $this->user = User::factory()->withRole("superadmin")->create(["username" => "testuser"]);
     }
 
     public function test_login_returns_token_on_success(): void

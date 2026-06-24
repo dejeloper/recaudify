@@ -6,21 +6,21 @@ use App\Http\Requests\Permission\StorePermissionRequest;
 use App\Http\Requests\Permission\UpdatePermissionRequest;
 use App\Http\Resources\PermissionResource;
 use App\Http\Responses\ApiResult;
-use App\Models\Permission;
+use App\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
 
 class PermissionController extends ApiController
 {
+    public function __construct(private readonly PermissionService $permissionService) {}
+
     public function index(): JsonResponse
     {
-        $permissions = Permission::where("guard_name", "api")->orderBy("name")->get();
-
-        return ApiResult::success(PermissionResource::collection($permissions))->toResponse();
+        return ApiResult::success(PermissionResource::collection($this->permissionService->all()))->toResponse();
     }
 
     public function show(int $id): JsonResponse
     {
-        $permission = Permission::where("guard_name", "api")->find($id);
+        $permission = $this->permissionService->find($id);
 
         if (!$permission) {
             return ApiResult::notFound("Permiso no encontrado.")->toResponse();
@@ -31,20 +31,20 @@ class PermissionController extends ApiController
 
     public function store(StorePermissionRequest $request): JsonResponse
     {
-        $permission = Permission::create(["name" => $request->name, "guard_name" => "api"]);
+        $permission = $this->permissionService->create($request->name);
 
         return ApiResult::created(new PermissionResource($permission), "Permiso creado correctamente.")->toResponse();
     }
 
     public function update(UpdatePermissionRequest $request, int $id): JsonResponse
     {
-        $permission = Permission::where("guard_name", "api")->find($id);
+        $permission = $this->permissionService->find($id);
 
         if (!$permission) {
             return ApiResult::notFound("Permiso no encontrado.")->toResponse();
         }
 
-        $permission->update(["name" => $request->name]);
+        $this->permissionService->update($permission, $request->name);
 
         return ApiResult::success(
             new PermissionResource($permission),
@@ -54,33 +54,31 @@ class PermissionController extends ApiController
 
     public function destroy(int $id): JsonResponse
     {
-        $permission = Permission::where("guard_name", "api")->find($id);
+        $permission = $this->permissionService->find($id);
 
         if (!$permission) {
             return ApiResult::notFound("Permiso no encontrado.")->toResponse();
         }
 
-        $permission->delete();
+        $this->permissionService->delete($permission);
 
         return ApiResult::empty("Permiso eliminado correctamente.")->toResponse();
     }
 
     public function trashed(): JsonResponse
     {
-        $permissions = Permission::onlyTrashed()->where("guard_name", "api")->orderBy("name")->get();
-
-        return ApiResult::success(PermissionResource::collection($permissions))->toResponse();
+        return ApiResult::success(PermissionResource::collection($this->permissionService->trashed()))->toResponse();
     }
 
     public function restore(int $id): JsonResponse
     {
-        $permission = Permission::onlyTrashed()->where("guard_name", "api")->find($id);
+        $permission = $this->permissionService->findTrashed($id);
 
         if (!$permission) {
             return ApiResult::notFound("Permiso no encontrado.")->toResponse();
         }
 
-        $permission->restore();
+        $this->permissionService->restore($permission);
 
         return ApiResult::empty("Permiso restaurado correctamente.")->toResponse();
     }
