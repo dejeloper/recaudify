@@ -1,15 +1,29 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, finalize, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { lower } from '@core/utils/text';
 import { ApiError } from '@core/models/api-error';
 import { CurrentShift, User } from '@core/models/user';
 import { ApiService } from '@core/services/api.service';
+import { AuditService } from '@core/services/audit.service';
+import { GeolocationService } from '@core/services/geolocation.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
+  private readonly audit = inject(AuditService);
+  private readonly geolocation = inject(GeolocationService);
 
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
@@ -50,7 +64,25 @@ export class AuthService {
 
   login(username: string, password: string) {
     const data = { username: lower(username), password };
-    return this.api.post('auth', 'login', data).pipe(switchMap(() => this.me()));
+    return this.api.post('auth', 'login', data).pipe(
+      switchMap(() => this.me()),
+      switchMap((user) =>
+        this.geolocation.request().pipe(
+          tap((coords) => this.audit.captureLogin(user.id, user.ip_address ?? null, coords)),
+          map(() => user),
+          catchError(() =>
+            this.api.post('auth', 'logout').pipe(
+              tap(() => this.currentUser.set(null)),
+              switchMap(() =>
+                throwError(
+                  () => new Error('Se requiere permiso de ubicación para usar la aplicación.'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   me() {

@@ -18,4 +18,5 @@ export interface User {
   current_shift?: CurrentShift;
   shift_status_enabled?: boolean;
   shift_countdown_enabled?: boolean;
+  ip_address?: string;
 }
