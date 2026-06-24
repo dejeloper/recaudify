@@ -19,9 +19,11 @@ class ParameterService
 
     public static function all(): Collection
     {
-        return Cache::remember(self::CACHE_KEY, self::TTL, function () {
-            return Parameter::pluck("value", "key");
+        $data = Cache::remember(self::CACHE_KEY, self::TTL, function () {
+            return Parameter::pluck("value", "key")->all();
         });
+
+        return collect($data);
     }
 
     public static function clearCache(): void

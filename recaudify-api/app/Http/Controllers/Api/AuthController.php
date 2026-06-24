@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResult;
 use App\Models\User;
+use App\Services\ParameterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
 use PHPOpenSourceSaver\JWTAuth\JWTGuard;
@@ -106,7 +107,47 @@ class AuthController extends ApiController
         /** @var User $user */
         $user = $this->guard()->user();
 
-        return ApiResult::success(new UserResource($user))->toResponse();
+        $resource = new UserResource($user);
+        $data = $resource->toArray(request());
+
+        if ($user->hasRole("superadmin")) {
+            $data["current_shift"] = [
+                "is_within_schedule" => true,
+                "show_status" => true,
+                "day_of_week" => now()->dayOfWeek,
+                "start_time" => null,
+                "end_time" => null,
+                "remaining_minutes" => null,
+            ];
+        } else {
+            $now = now();
+            $currentTime = $now->format("H:i");
+            $dayOfWeek = $now->dayOfWeek;
+
+            $schedules = $user->schedules()->get();
+            $currentSchedule = $schedules
+                ->where("day_of_week", $dayOfWeek)
+                ->first(
+                    fn($s) => substr($s->start_time, 0, 5) <= $currentTime &&
+                        $currentTime <= substr($s->end_time, 0, 5),
+                );
+
+            $data["current_shift"] = [
+                "is_within_schedule" => $currentSchedule !== null,
+                "show_status" => $currentSchedule ? (bool) $currentSchedule->show_status : false,
+                "day_of_week" => $dayOfWeek,
+                "start_time" => $currentSchedule ? substr($currentSchedule->start_time, 0, 5) : null,
+                "end_time" => $currentSchedule ? substr($currentSchedule->end_time, 0, 5) : null,
+                "remaining_minutes" => $currentSchedule
+                    ? (int) ((strtotime(substr($currentSchedule->end_time, 0, 5)) - strtotime($currentTime)) / 60)
+                    : null,
+            ];
+        }
+
+        $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
+        $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
+
+        return ApiResult::success($data)->toResponse();
     }
 
     public function refresh(): JsonResponse
