@@ -20,3 +20,12 @@ export interface User {
   shift_countdown_enabled?: boolean;
   ip_address?: string;
 }
+
+export interface UserPayload extends Record<string, unknown> {
+  name: string;
+  username: string;
+  email: string | null;
+  password?: string;
+  password_confirmation?: string;
+  role: string | null;
+}

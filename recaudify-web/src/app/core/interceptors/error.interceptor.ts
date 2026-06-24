@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { ApiError } from '@core/models/api-error';
+import { ApiError } from '@core/interfaces/api-error.interface';
 import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@core/services/toast.service';
 

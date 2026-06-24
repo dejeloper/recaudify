@@ -1,15 +1,6 @@
-export interface NavItem {
-  label: string;
-  icons: string[];
-  route: string;
-  permission?: string;
-}
+import { NavGroup, NavItem } from '@core/interfaces/nav.interface';
 
-export interface NavGroup {
-  key: string;
-  label: string;
-  items: NavItem[];
-}
+export type { NavGroup, NavItem };
 
 export const NAV_GROUPS: NavGroup[] = [
   {

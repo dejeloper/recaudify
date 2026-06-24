@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
-import { Role } from '@core/models/role';
+import { Role } from '@core/interfaces/role.interface';
 import { RolesService } from '@core/services/roles.service';
 import { ToastService } from '@core/services/toast.service';
 

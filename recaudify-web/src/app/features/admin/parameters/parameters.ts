@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
-import { Parameter } from '@core/models/parameter';
+import { Parameter } from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 

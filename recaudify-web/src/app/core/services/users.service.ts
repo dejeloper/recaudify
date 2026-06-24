@@ -1,15 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { User } from '@core/models/user';
+import { User, UserPayload } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
-
-export interface UserPayload extends Record<string, unknown> {
-  name: string;
-  username: string;
-  email: string | null;
-  password?: string;
-  password_confirmation?: string;
-  role: string | null;
-}
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {

@@ -1,9 +1,9 @@
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
-import { errorInterceptor } from '@core/interceptors/error.interceptor';
-import type { ApiError } from '@core/models/api-error';
+import {HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
+import {provideZonelessChangeDetection} from '@angular/core';
+import {errorInterceptor} from '@core/interceptors/error.interceptor';
+import type {ApiError} from '@core/interfaces/api-error.interface';
 
 describe('errorInterceptor', () => {
   let http: HttpClient;
@@ -26,11 +26,11 @@ describe('errorInterceptor', () => {
 
   it('maps server error body to ApiError', () => {
     let error!: ApiError;
-    http.get('/test').subscribe({ error: (e) => (error = e) });
+    http.get('/test').subscribe({error: (e) => (error = e)});
 
     controller.expectOne('/test').flush(
-      { message: 'No autorizado.', statusCode: 401 },
-      { status: 401, statusText: 'Unauthorized' },
+      {message: 'No autorizado.', statusCode: 401},
+      {status: 401, statusText: 'Unauthorized'},
     );
 
     expect(error.message).toBe('No autorizado.');
@@ -40,15 +40,15 @@ describe('errorInterceptor', () => {
 
   it('maps validation errors to ApiError.errors', () => {
     let error!: ApiError;
-    http.post('/test', {}).subscribe({ error: (e) => (error = e) });
+    http.post('/test', {}).subscribe({error: (e) => (error = e)});
 
     controller.expectOne('/test').flush(
       {
         message: 'Error de validación.',
         statusCode: 422,
-        data: { username: ['El usuario ya existe.'] },
+        data: {username: ['El usuario ya existe.']},
       },
-      { status: 422, statusText: 'Unprocessable Entity' },
+      {status: 422, statusText: 'Unprocessable Entity'},
     );
 
     expect(error.message).toBe('Error de validación.');
@@ -58,9 +58,9 @@ describe('errorInterceptor', () => {
 
   it('falls back to generic message when body is empty', () => {
     let error!: ApiError;
-    http.get('/test').subscribe({ error: (e) => (error = e) });
+    http.get('/test').subscribe({error: (e) => (error = e)});
 
-    controller.expectOne('/test').flush(null, { status: 500, statusText: 'Internal Server Error' });
+    controller.expectOne('/test').flush(null, {status: 500, statusText: 'Internal Server Error'});
 
     expect(error.message).toBe('Error inesperado. Intente nuevamente.');
     expect(error.statusCode).toBe(500);

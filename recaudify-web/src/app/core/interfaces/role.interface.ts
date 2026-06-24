@@ -1,6 +1,4 @@
-import { Permission } from './permission';
-
-export type { Permission };
+import { Permission } from './permission.interface';
 
 export interface Role {
   id: number;

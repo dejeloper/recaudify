@@ -2,24 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '@env/environment';
-
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  statusCode: number;
-  data: T;
-}
-
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
-interface ApiOptions {
-  controller: string;
-  action?: string;
-  method?: HttpMethod;
-  body?: Record<string, unknown>;
-  params?: Record<string, string | number | boolean>;
-  headers?: Record<string, string>;
-}
+import { ApiOptions, ApiResponse } from '@core/interfaces/api.interface';
 
 const SAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 

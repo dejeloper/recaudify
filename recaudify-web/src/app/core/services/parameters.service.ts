@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Parameter } from '@core/models/parameter';
+import { Parameter } from '@core/interfaces/parameter.interface';
 import { ApiService } from '@core/services/api.service';
 
 @Injectable({ providedIn: 'root' })

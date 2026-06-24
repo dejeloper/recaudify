@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
-import { ApiError } from '@core/models/api-error';
+import { ApiError } from '@core/interfaces/api-error.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 

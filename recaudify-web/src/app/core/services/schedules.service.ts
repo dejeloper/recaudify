@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Schedule } from '@core/models/schedule';
+import { Schedule } from '@core/interfaces/schedule.interface';
 import { ApiService } from '@core/services/api.service';
 
 @Injectable({ providedIn: 'root' })

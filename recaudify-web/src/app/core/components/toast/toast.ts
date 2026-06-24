@@ -1,15 +1,13 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Toast, ToastService, ToastType } from '@core/services/toast.service';
+import {
+  SizeStyle,
+  Toast,
+  ToastPosition,
+  ToastSize,
+  ToastType,
+} from '@core/interfaces/toast.interface';
+import { ToastService } from '@core/services/toast.service';
 
-export type ToastPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type ToastSize = 'sm' | 'md' | 'lg';
-
-/**
- * Position grid:
- *  1 | 2 | 3   ← top
- *  4 | 5 | 6   ← middle
- *  7 | 8 | 9   ← bottom
- */
 const POSITION_CLASSES: Record<ToastPosition, string> = {
   1: 'top-5 left-5',
   2: 'top-5 left-1/2 -translate-x-1/2',
@@ -21,14 +19,6 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
   8: 'bottom-5 left-1/2 -translate-x-1/2',
   9: 'bottom-5 right-5',
 };
-
-interface SizeStyle {
-  container: string;
-  card: string;
-  icon: string;
-  closeIcon: string;
-  text: string;
-}
 
 const SIZE_STYLES: Record<ToastSize, SizeStyle> = {
   sm: {

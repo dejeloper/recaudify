@@ -12,8 +12,8 @@ import {
   throwError,
 } from 'rxjs';
 import { lower } from '@core/utils/text';
-import { ApiError } from '@core/models/api-error';
-import { CurrentShift, User } from '@core/models/user';
+import { ApiError } from '@core/interfaces/api-error.interface';
+import { CurrentShift, User } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
 import { AuditService } from '@core/services/audit.service';
 import { GeolocationService } from '@core/services/geolocation.service';

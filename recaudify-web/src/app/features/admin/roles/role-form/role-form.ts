@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
-import { ApiError } from '@core/models/api-error';
-import { Permission } from '@core/models/permission';
+import { ApiError } from '@core/interfaces/api-error.interface';
+import { Permission } from '@core/interfaces/permission.interface';
 import { PermissionsService } from '@core/services/permissions.service';
 import { RolesService } from '@core/services/roles.service';
 import { ToastService } from '@core/services/toast.service';
@@ -73,7 +73,11 @@ export class RoleForm implements OnInit {
 
   protected toggle(permName: string) {
     const s = new Set(this.selected());
-    s.has(permName) ? s.delete(permName) : s.add(permName);
+    if (s.has(permName)) {
+      s.delete(permName);
+    } else {
+      s.add(permName);
+    }
     this.selected.set(s);
   }
 

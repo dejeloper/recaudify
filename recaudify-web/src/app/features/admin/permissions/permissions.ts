@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
-import { Permission } from '@core/models/permission';
+import { Permission } from '@core/interfaces/permission.interface';
 import { PermissionsService } from '@core/services/permissions.service';
 import { ToastService } from '@core/services/toast.service';
 
