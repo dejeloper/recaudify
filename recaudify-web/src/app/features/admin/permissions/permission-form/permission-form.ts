@@ -7,8 +7,6 @@ import { ApiError } from '@core/interfaces/api-error.interface';
 import { PermissionsService } from '@core/services/permissions.service';
 import { ToastService } from '@core/services/toast.service';
 
-const NAME_PATTERN = /^[a-z_]+\.[a-z_-]+$/;
-
 @Component({
   selector: 'app-permission-form',
   imports: [FormsModule, RouterLink, BtnDirective],
@@ -29,7 +27,9 @@ export class PermissionForm implements OnInit {
   protected formName = '';
 
   protected readonly isEdit = computed(() => !!this.id());
-  protected readonly isValid = computed(() => NAME_PATTERN.test(this.formName.trim()));
+  protected readonly isValid = computed(() =>
+    this.permissionsService.isValidName(this.formName.trim()),
+  );
 
   ngOnInit() {
     const id = this.id();
@@ -53,7 +53,7 @@ export class PermissionForm implements OnInit {
 
   protected save() {
     const name = this.formName.trim();
-    if (!NAME_PATTERN.test(name)) {
+    if (!this.permissionsService.isValidName(name)) {
       this.error.set('Usa el formato modulo.accion (ej. clientes.crear).');
       return;
     }

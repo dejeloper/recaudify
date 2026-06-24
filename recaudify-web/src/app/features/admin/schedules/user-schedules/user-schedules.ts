@@ -5,12 +5,10 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Schedule } from '@core/interfaces/schedule.interface';
-import { User } from '@core/interfaces/user.interface';
 import { AuthService } from '@core/services/auth.service';
-import { ParametersService } from '@core/services/parameters.service';
 import { SchedulesService } from '@core/services/schedules.service';
-import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
+import { finalize } from 'rxjs';
 
 const DAYS = [
   { id: 1, name: 'Lunes' },
@@ -32,16 +30,14 @@ export class UserSchedules implements OnInit {
 
   private readonly usersService = inject(UsersService);
   private readonly schedulesService = inject(SchedulesService);
-  private readonly parametersService = inject(ParametersService);
   private readonly authService = inject(AuthService);
-  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly days = DAYS;
-  protected readonly user = signal<User | null>(null);
-  protected readonly schedules = signal<Schedule[]>([]);
-  protected readonly loading = signal(true);
-  protected readonly showStatusEnabled = signal(false);
+  protected readonly user = signal(this.usersService.items()[0] ?? null);
+  protected readonly schedules = this.schedulesService.items;
+  protected readonly loading = this.schedulesService.loading;
+  protected readonly showStatusEnabled = this.schedulesService.showStatusEnabled;
 
   protected readonly canCreate = computed(() => this.authService.hasPermission('horarios.crear'));
   protected readonly canEdit = computed(() => this.authService.hasPermission('horarios.editar'));
@@ -68,41 +64,16 @@ export class UserSchedules implements OnInit {
       .getById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (user) => this.user.set(user) });
-    this.loadSchedules(id);
-    this.parametersService
-      .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (params) => {
-          const param = params.find((p) => p.key === 'shift-status');
-          this.showStatusEnabled.set(param?.value === 'true');
-        },
-      });
+    this.schedulesService.loadForUser(id);
+    this.schedulesService.loadShiftStatusFlag();
   }
 
-  protected formatTime(time: string): string {
-    const [h, m] = time.split(':').map(Number);
-    const period = h >= 12 ? 'PM' : 'AM';
-    const hour = h % 12 || 12;
-    return `${hour}:${String(m).padStart(2, '0')} ${period}`;
+  protected formatTime(time: string) {
+    return this.schedulesService.formatTime(time);
   }
 
-  protected schedulesForDay(dayId: number): Schedule[] {
-    return this.schedules().filter((s) => s.day_of_week === dayId);
-  }
-
-  private loadSchedules(userId: number) {
-    this.loading.set(true);
-    this.schedulesService
-      .getByUser(userId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (list) => {
-          this.schedules.set(list);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+  protected schedulesForDay(dayId: number) {
+    return this.schedulesService.getForDay(dayId);
   }
 
   protected openAdd(dayId: number) {
@@ -122,25 +93,17 @@ export class UserSchedules implements OnInit {
     if (dayId === null || !this.addStart || !this.addEnd) return;
     this.savingAdd.set(true);
     this.schedulesService
-      .create(Number(this.userId()), {
+      .addEntry(Number(this.userId()), {
         day_of_week: dayId,
         start_time: this.addStart,
         end_time: this.addEnd,
         show_status: this.showStatusEnabled() && this.addShowStatus,
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (created) => {
-          this.schedules.update((list) => [...list, created]);
-          this.addingDay.set(null);
-          this.savingAdd.set(false);
-          this.toast.success('Horario agregado.');
-        },
-        error: () => {
-          this.savingAdd.set(false);
-          this.toast.error('No se pudo agregar el horario.');
-        },
-      });
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.savingAdd.set(false)),
+      )
+      .subscribe({ next: () => this.addingDay.set(null) });
   }
 
   protected openEdit(entry: Schedule) {
@@ -160,47 +123,28 @@ export class UserSchedules implements OnInit {
     if (!id || !this.editStart || !this.editEnd) return;
     this.savingEdit.set(true);
     this.schedulesService
-      .update(id, {
+      .updateEntry(id, {
         start_time: this.editStart,
         end_time: this.editEnd,
         show_status: this.showStatusEnabled() && this.editShowStatus,
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (updated) => {
-          this.schedules.update((list) => list.map((s) => (s.id === updated.id ? updated : s)));
-          this.editingId.set(null);
-          this.savingEdit.set(false);
-          this.toast.success('Horario actualizado.');
-        },
-        error: () => {
-          this.savingEdit.set(false);
-          this.toast.error('No se pudo actualizar el horario.');
-        },
-      });
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.savingEdit.set(false)),
+      )
+      .subscribe({ next: () => this.editingId.set(null) });
   }
 
   protected deleteEntry(entry: Schedule) {
-    if (
-      !confirm(
-        `¿Eliminar el horario ${this.formatTime(entry.start_time)}–${this.formatTime(entry.end_time)} del ${entry.day_name}?`,
-      )
-    )
-      return;
+    const label = `${this.formatTime(entry.start_time)}–${this.formatTime(entry.end_time)} del ${entry.day_name}`;
+    if (!confirm(`¿Eliminar el horario ${label}?`)) return;
     this.deletingId.set(entry.id);
     this.schedulesService
-      .delete(entry.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.schedules.update((list) => list.filter((s) => s.id !== entry.id));
-          this.deletingId.set(null);
-          this.toast.success('Horario eliminado.');
-        },
-        error: () => {
-          this.deletingId.set(null);
-          this.toast.error('No se pudo eliminar el horario.');
-        },
-      });
+      .removeEntry(entry)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.deletingId.set(null)),
+      )
+      .subscribe();
   }
 }

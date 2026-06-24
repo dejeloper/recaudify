@@ -6,7 +6,7 @@ import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Role } from '@core/interfaces/role.interface';
 import { RolesService } from '@core/services/roles.service';
-import { ToastService } from '@core/services/toast.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-roles',
@@ -14,86 +14,45 @@ import { ToastService } from '@core/services/toast.service';
   templateUrl: './roles.html',
 })
 export class Roles implements OnInit {
-  private readonly rolesService = inject(RolesService);
-  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly service = inject(RolesService);
 
-  protected readonly roles = signal<Role[]>([]);
-  protected readonly trashed = signal<Role[]>([]);
-  protected readonly loading = signal(true);
-  protected readonly loadingTrashed = signal(false);
+  protected readonly roles = this.service.items;
+  protected readonly trashed = this.service.trashed;
+  protected readonly loading = this.service.loading;
+  protected readonly loadingTrashed = this.service.loadingTrashed;
+  protected readonly showTrashed = this.service.showTrashed;
   protected readonly deletingId = signal<number | null>(null);
   protected readonly restoringId = signal<number | null>(null);
-  protected readonly showTrashed = signal(false);
 
   ngOnInit() {
-    this.rolesService
-      .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (roles) => {
-          this.roles.set(roles);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+    this.service.load();
   }
 
   protected toggleTrashed() {
-    const next = !this.showTrashed();
-    this.showTrashed.set(next);
-    if (next && this.trashed().length === 0) {
-      this.loadingTrashed.set(true);
-      this.rolesService
-        .getTrashed()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (list) => {
-            this.trashed.set(list);
-            this.loadingTrashed.set(false);
-          },
-          error: () => this.loadingTrashed.set(false),
-        });
-    }
+    this.service.toggleTrashed();
   }
 
   protected delete(role: Role) {
     if (!confirm(`¿Eliminar el rol "${role.name}"?`)) return;
     this.deletingId.set(role.id);
-    this.rolesService
-      .delete(role.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          const removed = this.roles().find((r) => r.id === role.id)!;
-          this.roles.update((list) => list.filter((r) => r.id !== role.id));
-          this.trashed.update((list) => [removed, ...list]);
-          this.deletingId.set(null);
-          this.toast.success(`Rol "${role.name}" eliminado.`);
-        },
-        error: () => {
-          this.deletingId.set(null);
-          this.toast.error('No se pudo eliminar el rol.');
-        },
-      });
+    this.service
+      .remove(role)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.deletingId.set(null)),
+      )
+      .subscribe();
   }
 
   protected restore(role: Role) {
     this.restoringId.set(role.id);
-    this.rolesService
-      .restore(role.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.trashed.update((list) => list.filter((r) => r.id !== role.id));
-          this.roles.update((list) => [...list, role].sort((a, b) => a.name.localeCompare(b.name)));
-          this.restoringId.set(null);
-          this.toast.success(`Rol "${role.name}" restaurado.`);
-        },
-        error: () => {
-          this.restoringId.set(null);
-          this.toast.error('No se pudo restaurar el rol.');
-        },
-      });
+    this.service
+      .restoreItem(role)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.restoringId.set(null)),
+      )
+      .subscribe();
   }
 }

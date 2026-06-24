@@ -33,15 +33,9 @@ export class RoleForm implements OnInit {
 
   protected readonly isEdit = computed(() => !!this.id());
 
-  protected readonly grouped = computed(() => {
-    const groups = new Map<string, string[]>();
-    for (const p of this.allPermissions()) {
-      const module = p.name.split('.')[0];
-      if (!groups.has(module)) groups.set(module, []);
-      groups.get(module)!.push(p.name);
-    }
-    return [...groups.entries()].map(([module, perms]) => ({ module, perms }));
-  });
+  protected readonly grouped = computed(() =>
+    this.permissionsService.groupByModuleNames(this.allPermissions()),
+  );
 
   ngOnInit() {
     this.permissionsService
@@ -96,7 +90,7 @@ export class RoleForm implements OnInit {
   }
 
   protected actionLabel(perm: string) {
-    return perm.split('.')[1] ?? perm;
+    return this.permissionsService.actionLabel(perm);
   }
 
   protected save() {

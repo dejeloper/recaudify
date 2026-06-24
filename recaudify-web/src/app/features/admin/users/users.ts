@@ -6,8 +6,8 @@ import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { User } from '@core/interfaces/user.interface';
 import { AuthService } from '@core/services/auth.service';
-import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -15,16 +15,15 @@ import { UsersService } from '@core/services/users.service';
   templateUrl: './users.html',
 })
 export class Users implements OnInit {
-  private readonly usersService = inject(UsersService);
-  private readonly authService = inject(AuthService);
-  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  protected readonly service = inject(UsersService);
 
-  protected readonly users = signal<User[]>([]);
-  protected readonly disabled = signal<User[]>([]);
-  protected readonly loading = signal(true);
-  protected readonly loadingDisabled = signal(false);
-  protected readonly showDisabled = signal(false);
+  protected readonly users = this.service.items;
+  protected readonly disabled = this.service.disabled;
+  protected readonly loading = this.service.loading;
+  protected readonly loadingDisabled = this.service.loadingDisabled;
+  protected readonly showDisabled = this.service.showDisabled;
   protected readonly deletingId = signal<number | null>(null);
   protected readonly restoringId = signal<number | null>(null);
 
@@ -38,77 +37,37 @@ export class Users implements OnInit {
   );
 
   ngOnInit() {
-    this.usersService
-      .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (users) => {
-          this.users.set(users);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+    this.service.load();
   }
 
   protected toggleDisabled() {
-    const next = !this.showDisabled();
-    this.showDisabled.set(next);
-    if (next && this.disabled().length === 0) {
-      this.loadingDisabled.set(true);
-      this.usersService
-        .getDisabled()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (list) => {
-            this.disabled.set(list);
-            this.loadingDisabled.set(false);
-          },
-          error: () => this.loadingDisabled.set(false),
-        });
-    }
+    this.service.toggleDisabled();
+  }
+
+  protected roleLabel(user: User) {
+    return this.service.roleLabel(user);
   }
 
   protected delete(user: User) {
     if (!confirm(`¿Desactivar al usuario "${user.name}"?`)) return;
     this.deletingId.set(user.id);
-    this.usersService
-      .delete(user.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          const removed = this.users().find((u) => u.id === user.id)!;
-          this.users.update((list) => list.filter((u) => u.id !== user.id));
-          this.disabled.update((list) => [removed, ...list]);
-          this.deletingId.set(null);
-          this.toast.success(`Usuario "${user.name}" desactivado.`);
-        },
-        error: () => {
-          this.deletingId.set(null);
-          this.toast.error('No se pudo desactivar el usuario.');
-        },
-      });
+    this.service
+      .remove(user)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.deletingId.set(null)),
+      )
+      .subscribe();
   }
 
   protected restore(user: User) {
     this.restoringId.set(user.id);
-    this.usersService
-      .restore(user.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.disabled.update((list) => list.filter((u) => u.id !== user.id));
-          this.users.update((list) => [...list, user].sort((a, b) => a.name.localeCompare(b.name)));
-          this.restoringId.set(null);
-          this.toast.success(`Usuario "${user.name}" activado.`);
-        },
-        error: () => {
-          this.restoringId.set(null);
-          this.toast.error('No se pudo activar el usuario.');
-        },
-      });
-  }
-
-  protected roleLabel(user: User): string {
-    return user.roles[0] ?? '—';
+    this.service
+      .restoreItem(user)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.restoringId.set(null)),
+      )
+      .subscribe();
   }
 }
