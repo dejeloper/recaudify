@@ -24,12 +24,13 @@ export class PermissionForm implements OnInit {
   protected readonly saving = signal(false);
   protected readonly error = signal('');
 
-  protected formName = '';
+  protected readonly formName = signal('');
 
   protected readonly isEdit = computed(() => !!this.id());
-  protected readonly isValid = computed(() =>
-    this.permissionsService.isValidName(this.formName.trim()),
-  );
+
+  protected get isValid(): boolean {
+    return this.permissionsService.isValidName(this.formName().trim());
+  }
 
   ngOnInit() {
     const id = this.id();
@@ -41,7 +42,7 @@ export class PermissionForm implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (perm) => {
-          this.formName = perm.name;
+          this.formName.set(perm.name);
           this.loading.set(false);
         },
         error: () => {
@@ -52,7 +53,7 @@ export class PermissionForm implements OnInit {
   }
 
   protected save() {
-    const name = this.formName.trim();
+    const name = this.formName().trim();
     if (!this.permissionsService.isValidName(name)) {
       this.error.set('Usa el formato modulo.accion (ej. clientes.crear).');
       return;
