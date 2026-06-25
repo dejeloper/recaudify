@@ -9,12 +9,12 @@ class CallReasonService
 {
     public function getAll(): Collection
     {
-        return CallReason::orderBy('name')->get();
+        return CallReason::orderBy("name")->get();
     }
 
     public function getTrashed(): Collection
     {
-        return CallReason::onlyTrashed()->orderBy('name')->get();
+        return CallReason::onlyTrashed()->orderBy("name")->get();
     }
 
     public function find(int $id): ?CallReason

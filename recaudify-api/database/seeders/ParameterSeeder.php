@@ -10,20 +10,20 @@ class ParameterSeeder extends Seeder
     public function run(): void
     {
         Parameter::firstOrCreate(
-            ['key' => 'shift-status'],
-            ['value' => 'true', 'description' => 'Muestra el widget de estado de turno al usuario.'],
+            ["key" => "shift-status"],
+            ["value" => "true", "description" => "Muestra el widget de estado de turno al usuario."],
         );
 
         Parameter::firstOrCreate(
-            ['key' => 'shift-status-countdown'],
-            ['value' => 'true', 'description' => 'Muestra el contador regresivo de tiempo restante del turno.'],
+            ["key" => "shift-status-countdown"],
+            ["value" => "true", "description" => "Muestra el contador regresivo de tiempo restante del turno."],
         );
 
         Parameter::firstOrCreate(
-            ['key' => 'geolocalization_login'],
+            ["key" => "geolocalization_login"],
             [
-                'value' => 'true',
-                'description' => 'Requiere permiso de geolocalización al iniciar sesión.',
+                "value" => "true",
+                "description" => "Requiere permiso de geolocalización al iniciar sesión.",
             ],
         );
     }

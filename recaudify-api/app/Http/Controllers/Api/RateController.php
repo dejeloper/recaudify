@@ -22,8 +22,8 @@ class RateController extends ApiController
     {
         $rate = $this->rateService->find($id);
 
-        if (! $rate) {
-            return ApiResult::notFound('Tarifa no encontrada.')->toResponse();
+        if (!$rate) {
+            return ApiResult::notFound("Tarifa no encontrada.")->toResponse();
         }
 
         return ApiResult::success(new RateResource($rate))->toResponse();
@@ -33,33 +33,36 @@ class RateController extends ApiController
     {
         $rate = $this->rateService->create($request->validated());
 
-        return ApiResult::created(new RateResource($rate), 'Tarifa creada correctamente.')->toResponse();
+        return ApiResult::created(new RateResource($rate), "Tarifa creada correctamente.")->toResponse();
     }
 
     public function update(UpdateRateRequest $request, int $id): JsonResponse
     {
         $rate = $this->rateService->find($id);
 
-        if (! $rate) {
-            return ApiResult::notFound('Tarifa no encontrada.')->toResponse();
+        if (!$rate) {
+            return ApiResult::notFound("Tarifa no encontrada.")->toResponse();
         }
 
         $this->rateService->update($rate, $request->validated());
 
-        return ApiResult::success(new RateResource($rate->fresh('product')), 'Tarifa actualizada correctamente.')->toResponse();
+        return ApiResult::success(
+            new RateResource($rate->fresh("product")),
+            "Tarifa actualizada correctamente.",
+        )->toResponse();
     }
 
     public function destroy(int $id): JsonResponse
     {
         $rate = $this->rateService->find($id);
 
-        if (! $rate) {
-            return ApiResult::notFound('Tarifa no encontrada.')->toResponse();
+        if (!$rate) {
+            return ApiResult::notFound("Tarifa no encontrada.")->toResponse();
         }
 
         $this->rateService->delete($rate);
 
-        return ApiResult::empty('Tarifa eliminada correctamente.')->toResponse();
+        return ApiResult::empty("Tarifa eliminada correctamente.")->toResponse();
     }
 
     public function trashed(): JsonResponse
@@ -71,12 +74,12 @@ class RateController extends ApiController
     {
         $rate = $this->rateService->findTrashed($id);
 
-        if (! $rate) {
-            return ApiResult::notFound('Tarifa no encontrada.')->toResponse();
+        if (!$rate) {
+            return ApiResult::notFound("Tarifa no encontrada.")->toResponse();
         }
 
         $this->rateService->restore($rate);
 
-        return ApiResult::empty('Tarifa restaurada correctamente.')->toResponse();
+        return ApiResult::empty("Tarifa restaurada correctamente.")->toResponse();
     }
 }

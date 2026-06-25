@@ -9,9 +9,9 @@ class CallReason extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'color', 'active'];
+    protected $fillable = ["name", "color", "active"];
 
     protected $casts = [
-        'active' => 'boolean',
+        "active" => "boolean",
     ];
 }

@@ -9,5 +9,5 @@ class Parameter extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['key', 'value', 'description'];
+    protected $fillable = ["key", "value", "description"];
 }

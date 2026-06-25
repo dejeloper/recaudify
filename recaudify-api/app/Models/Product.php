@@ -10,11 +10,11 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'value', 'active'];
+    protected $fillable = ["name", "value", "active"];
 
     protected $casts = [
-        'value' => 'integer',
-        'active' => 'boolean',
+        "value" => "integer",
+        "active" => "boolean",
     ];
 
     public function rates(): HasMany

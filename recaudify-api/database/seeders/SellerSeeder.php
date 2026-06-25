@@ -12,16 +12,10 @@ class SellerSeeder extends Seeder
      */
     public function run(): void
     {
-        $sellers = [
-            [101, 'Fabiola Guzmán', 'Vendedor1'],
-            [102, 'Hector Gómez', 'Vendedor2'],
-        ];
+        $sellers = [[101, "Fabiola Guzmán", "Vendedor1"], [102, "Hector Gómez", "Vendedor2"]];
 
         foreach ($sellers as [$id, $name, $username]) {
-            Seller::updateOrCreate(
-                ['id' => $id],
-                ['name' => $name, 'username' => $username, 'active' => true],
-            );
+            Seller::updateOrCreate(["id" => $id], ["name" => $name, "username" => $username, "active" => true]);
         }
     }
 }

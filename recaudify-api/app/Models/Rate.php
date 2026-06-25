@@ -10,14 +10,14 @@ class Rate extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'product_id', 'value', 'installments', 'installment_value', 'discount', 'active'];
+    protected $fillable = ["name", "product_id", "value", "installments", "installment_value", "discount", "active"];
 
     protected $casts = [
-        'value' => 'integer',
-        'installments' => 'integer',
-        'installment_value' => 'integer',
-        'discount' => 'integer',
-        'active' => 'boolean',
+        "value" => "integer",
+        "installments" => "integer",
+        "installment_value" => "integer",
+        "discount" => "integer",
+        "active" => "boolean",
     ];
 
     public function product(): BelongsTo

@@ -19,48 +19,51 @@ class StateTest extends TestCase
     {
         parent::setUp();
 
-        Permission::create(['name' => 'catalogos.ver', 'guard_name' => 'api']);
+        Permission::create(["name" => "catalogos.ver", "guard_name" => "api"]);
 
-        $role = Role::create(['name' => 'superadmin', 'guard_name' => 'api']);
+        $role = Role::create(["name" => "superadmin", "guard_name" => "api"]);
         $role->syncPermissions(Permission::all());
 
-        $this->user = User::factory()->withRole('superadmin')->create();
+        $this->user = User::factory()->withRole("superadmin")->create();
 
-        $this->makeState(111, 'Al día', 'contract');
-        $this->makeState(123, 'Paz y Salvo', 'client');
-        $this->makeState(104, 'Al día', 'client');
+        $this->makeState(111, "Al día", "contract");
+        $this->makeState(123, "Paz y Salvo", "client");
+        $this->makeState(104, "Al día", "client");
     }
 
     private function makeState(int $id, string $name, string $type): void
     {
-        $state = new State(['name' => $name, 'state_type' => $type]);
+        $state = new State(["name" => $name, "state_type" => $type]);
         $state->id = $id;
         $state->save();
     }
 
     public function test_index_lists_all_states(): void
     {
-        $response = $this->actingAs($this->user, 'api')->getJson('/api/states');
+        $response = $this->actingAs($this->user, "api")->getJson("/api/states");
 
-        $response->assertStatus(200)->assertJsonCount(3, 'data');
+        $response->assertStatus(200)->assertJsonCount(3, "data");
     }
 
     public function test_index_filters_by_type(): void
     {
-        $response = $this->actingAs($this->user, 'api')->getJson('/api/states?type=client');
+        $response = $this->actingAs($this->user, "api")->getJson("/api/states?type=client");
 
-        $response->assertStatus(200)->assertJsonCount(2, 'data');
+        $response->assertStatus(200)->assertJsonCount(2, "data");
     }
 
     public function test_show_returns_state(): void
     {
-        $response = $this->actingAs($this->user, 'api')->getJson('/api/states/111');
+        $response = $this->actingAs($this->user, "api")->getJson("/api/states/111");
 
-        $response->assertStatus(200)->assertJsonPath('data.name', 'Al día')->assertJsonPath('data.state_type', 'contract');
+        $response
+            ->assertStatus(200)
+            ->assertJsonPath("data.name", "Al día")
+            ->assertJsonPath("data.state_type", "contract");
     }
 
     public function test_requires_authentication(): void
     {
-        $this->getJson('/api/states')->assertStatus(401);
+        $this->getJson("/api/states")->assertStatus(401);
     }
 }

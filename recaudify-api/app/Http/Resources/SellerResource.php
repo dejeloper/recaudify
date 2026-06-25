@@ -10,10 +10,10 @@ class SellerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'username' => $this->username,
-            'active' => $this->active,
+            "id" => $this->id,
+            "name" => $this->name,
+            "username" => $this->username,
+            "active" => $this->active,
         ];
     }
 }

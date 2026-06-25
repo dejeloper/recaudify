@@ -14,9 +14,9 @@ class StoreSellerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
-            'username' => ['nullable', 'string', 'max:30'],
-            'active' => ['sometimes', 'boolean'],
+            "name" => ["required", "string", "max:100"],
+            "username" => ["nullable", "string", "max:30"],
+            "active" => ["sometimes", "boolean"],
         ];
     }
 }

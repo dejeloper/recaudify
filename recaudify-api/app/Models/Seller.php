@@ -9,9 +9,9 @@ class Seller extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'username', 'active'];
+    protected $fillable = ["name", "username", "active"];
 
     protected $casts = [
-        'active' => 'boolean',
+        "active" => "boolean",
     ];
 }

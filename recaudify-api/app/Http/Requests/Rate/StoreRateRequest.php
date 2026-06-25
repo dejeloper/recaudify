@@ -14,13 +14,13 @@ class StoreRateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-            'value' => ['required', 'integer', 'min:0'],
-            'installments' => ['required', 'integer', 'min:0'],
-            'installment_value' => ['required', 'integer', 'min:0'],
-            'discount' => ['sometimes', 'integer', 'min:0'],
-            'active' => ['sometimes', 'boolean'],
+            "name" => ["required", "string", "max:100"],
+            "product_id" => ["required", "integer", "exists:products,id"],
+            "value" => ["required", "integer", "min:0"],
+            "installments" => ["required", "integer", "min:0"],
+            "installment_value" => ["required", "integer", "min:0"],
+            "discount" => ["sometimes", "integer", "min:0"],
+            "active" => ["sometimes", "boolean"],
         ];
     }
 }

@@ -9,5 +9,5 @@ class Permission extends SpatiePermission
 {
     use SoftDeletes;
 
-    protected string $guard_name = 'api';
+    protected string $guard_name = "api";
 }

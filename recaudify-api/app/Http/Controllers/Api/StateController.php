@@ -14,7 +14,7 @@ class StateController extends ApiController
 
     public function index(Request $request): JsonResponse
     {
-        $type = $request->query('type');
+        $type = $request->query("type");
 
         return ApiResult::success(StateResource::collection($this->stateService->getAll($type)))->toResponse();
     }
@@ -23,8 +23,8 @@ class StateController extends ApiController
     {
         $state = $this->stateService->find($id);
 
-        if (! $state) {
-            return ApiResult::notFound('Estado no encontrado.')->toResponse();
+        if (!$state) {
+            return ApiResult::notFound("Estado no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new StateResource($state))->toResponse();

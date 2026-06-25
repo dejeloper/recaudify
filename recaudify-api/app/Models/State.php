@@ -9,9 +9,9 @@ class State extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'state_type', 'active'];
+    protected $fillable = ["name", "state_type", "active"];
 
     protected $casts = [
-        'active' => 'boolean',
+        "active" => "boolean",
     ];
 }

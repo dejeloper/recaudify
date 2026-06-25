@@ -15,51 +15,48 @@ class StateSeeder extends Seeder
     {
         $states = [
             // Usuarios (legacy TipoEstado 101)
-            [101, 'Activo', 'user'],
-            [102, 'Inactivo', 'user'],
-            [103, 'Bloqueado', 'user'],
+            [101, "Activo", "user"],
+            [102, "Inactivo", "user"],
+            [103, "Bloqueado", "user"],
             // Clientes (legacy TipoEstado 102)
-            [104, 'Al día', 'client'],
-            [105, 'Debe', 'client'],
-            [106, 'Devolución', 'client'],
+            [104, "Al día", "client"],
+            [105, "Debe", "client"],
+            [106, "Devolución", "client"],
             // Vendedores (legacy TipoEstado 103)
-            [107, 'Activo', 'seller'],
-            [108, 'Vacaciones', 'seller'],
-            [109, 'Inactivo', 'seller'],
+            [107, "Activo", "seller"],
+            [108, "Vacaciones", "seller"],
+            [109, "Inactivo", "seller"],
             // Pedidos / Contratos (legacy TipoEstado 104)
-            [110, 'Sin Pago', 'contract'],
-            [111, 'Al día', 'contract'],
-            [112, 'Deuda', 'contract'],
-            [113, 'Devolución', 'contract'],
-            [114, 'Paz y Salvo', 'contract'],
+            [110, "Sin Pago", "contract"],
+            [111, "Al día", "contract"],
+            [112, "Deuda", "contract"],
+            [113, "Devolución", "contract"],
+            [114, "Paz y Salvo", "contract"],
             // Clientes (continuación)
-            [115, 'DataCredito', 'client'],
+            [115, "DataCredito", "client"],
             // Pagos Programados (legacy TipoEstado 105)
-            [116, 'Programado', 'scheduled_payment'],
-            [117, 'Pagado', 'scheduled_payment'],
-            [118, 'No Pagado', 'scheduled_payment'],
+            [116, "Programado", "scheduled_payment"],
+            [117, "Pagado", "scheduled_payment"],
+            [118, "No Pagado", "scheduled_payment"],
             // Cobradores (legacy TipoEstado 106)
-            [119, 'En Operación', 'collector'],
-            [120, 'Inactivo', 'collector'],
-            [121, 'Bloqueado', 'collector'],
+            [119, "En Operación", "collector"],
+            [120, "Inactivo", "collector"],
+            [121, "Bloqueado", "collector"],
             // Pagos Programados (continuación)
-            [122, 'Descartado', 'scheduled_payment'],
+            [122, "Descartado", "scheduled_payment"],
             // Clientes (continuación)
-            [123, 'Paz y Salvo', 'client'],
-            [124, 'En Mora', 'client'],
+            [123, "Paz y Salvo", "client"],
+            [124, "En Mora", "client"],
             // Pedidos / Contratos (continuación)
-            [125, 'DataCredito', 'contract'],
+            [125, "DataCredito", "contract"],
             // Clientes (continuación)
-            [126, 'Reportado', 'client'],
+            [126, "Reportado", "client"],
             // Pedidos / Contratos (continuación)
-            [127, 'Reportado', 'contract'],
+            [127, "Reportado", "contract"],
         ];
 
         foreach ($states as [$id, $name, $type]) {
-            State::updateOrCreate(
-                ['id' => $id],
-                ['name' => $name, 'state_type' => $type, 'active' => true],
-            );
+            State::updateOrCreate(["id" => $id], ["name" => $name, "state_type" => $type, "active" => true]);
         }
     }
 }

@@ -9,9 +9,7 @@ class StateService
 {
     public function getAll(?string $type = null): Collection
     {
-        return State::when($type, fn ($query) => $query->where('state_type', $type))
-            ->orderBy('id')
-            ->get();
+        return State::when($type, fn($query) => $query->where("state_type", $type))->orderBy("id")->get();
     }
 
     public function find(int $id): ?State

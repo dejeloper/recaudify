@@ -22,8 +22,8 @@ class CallReasonController extends ApiController
     {
         $callReason = $this->callReasonService->find($id);
 
-        if (! $callReason) {
-            return ApiResult::notFound('Motivo de llamada no encontrado.')->toResponse();
+        if (!$callReason) {
+            return ApiResult::notFound("Motivo de llamada no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new CallReasonResource($callReason))->toResponse();
@@ -33,33 +33,39 @@ class CallReasonController extends ApiController
     {
         $callReason = $this->callReasonService->create($request->validated());
 
-        return ApiResult::created(new CallReasonResource($callReason), 'Motivo de llamada creado correctamente.')->toResponse();
+        return ApiResult::created(
+            new CallReasonResource($callReason),
+            "Motivo de llamada creado correctamente.",
+        )->toResponse();
     }
 
     public function update(UpdateCallReasonRequest $request, int $id): JsonResponse
     {
         $callReason = $this->callReasonService->find($id);
 
-        if (! $callReason) {
-            return ApiResult::notFound('Motivo de llamada no encontrado.')->toResponse();
+        if (!$callReason) {
+            return ApiResult::notFound("Motivo de llamada no encontrado.")->toResponse();
         }
 
         $this->callReasonService->update($callReason, $request->validated());
 
-        return ApiResult::success(new CallReasonResource($callReason), 'Motivo de llamada actualizado correctamente.')->toResponse();
+        return ApiResult::success(
+            new CallReasonResource($callReason),
+            "Motivo de llamada actualizado correctamente.",
+        )->toResponse();
     }
 
     public function destroy(int $id): JsonResponse
     {
         $callReason = $this->callReasonService->find($id);
 
-        if (! $callReason) {
-            return ApiResult::notFound('Motivo de llamada no encontrado.')->toResponse();
+        if (!$callReason) {
+            return ApiResult::notFound("Motivo de llamada no encontrado.")->toResponse();
         }
 
         $this->callReasonService->delete($callReason);
 
-        return ApiResult::empty('Motivo de llamada eliminado correctamente.')->toResponse();
+        return ApiResult::empty("Motivo de llamada eliminado correctamente.")->toResponse();
     }
 
     public function trashed(): JsonResponse
@@ -71,12 +77,12 @@ class CallReasonController extends ApiController
     {
         $callReason = $this->callReasonService->findTrashed($id);
 
-        if (! $callReason) {
-            return ApiResult::notFound('Motivo de llamada no encontrado.')->toResponse();
+        if (!$callReason) {
+            return ApiResult::notFound("Motivo de llamada no encontrado.")->toResponse();
         }
 
         $this->callReasonService->restore($callReason);
 
-        return ApiResult::empty('Motivo de llamada restaurado correctamente.')->toResponse();
+        return ApiResult::empty("Motivo de llamada restaurado correctamente.")->toResponse();
     }
 }

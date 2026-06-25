@@ -15,7 +15,7 @@ class RateSeeder extends Seeder
     public function run(): void
     {
         $rates = [
-            [1, 'Tarifa Importada sin Valor', 101, 0, 0, 0, 0],
+            [1, "Tarifa Importada sin Valor", 101, 0, 0, 0, 0],
             // Biblia Grande (101)
             [101, '7 Cuota - Biblia $350.000', 101, 350000, 7, 50000, 0],
             [102, '10 Cuota - Biblia $350.000', 101, 350000, 10, 35000, 0],
@@ -44,15 +44,15 @@ class RateSeeder extends Seeder
 
         foreach ($rates as [$id, $name, $productId, $value, $installments, $installmentValue, $discount]) {
             Rate::updateOrCreate(
-                ['id' => $id],
+                ["id" => $id],
                 [
-                    'name' => $name,
-                    'product_id' => $productId,
-                    'value' => $value,
-                    'installments' => $installments,
-                    'installment_value' => $installmentValue,
-                    'discount' => $discount,
-                    'active' => true,
+                    "name" => $name,
+                    "product_id" => $productId,
+                    "value" => $value,
+                    "installments" => $installments,
+                    "installment_value" => $installmentValue,
+                    "discount" => $discount,
+                    "active" => true,
                 ],
             );
         }

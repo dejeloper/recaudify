@@ -22,8 +22,8 @@ class ProductController extends ApiController
     {
         $product = $this->productService->find($id);
 
-        if (! $product) {
-            return ApiResult::notFound('Producto no encontrado.')->toResponse();
+        if (!$product) {
+            return ApiResult::notFound("Producto no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new ProductResource($product))->toResponse();
@@ -33,33 +33,33 @@ class ProductController extends ApiController
     {
         $product = $this->productService->create($request->validated());
 
-        return ApiResult::created(new ProductResource($product), 'Producto creado correctamente.')->toResponse();
+        return ApiResult::created(new ProductResource($product), "Producto creado correctamente.")->toResponse();
     }
 
     public function update(UpdateProductRequest $request, int $id): JsonResponse
     {
         $product = $this->productService->find($id);
 
-        if (! $product) {
-            return ApiResult::notFound('Producto no encontrado.')->toResponse();
+        if (!$product) {
+            return ApiResult::notFound("Producto no encontrado.")->toResponse();
         }
 
         $this->productService->update($product, $request->validated());
 
-        return ApiResult::success(new ProductResource($product), 'Producto actualizado correctamente.')->toResponse();
+        return ApiResult::success(new ProductResource($product), "Producto actualizado correctamente.")->toResponse();
     }
 
     public function destroy(int $id): JsonResponse
     {
         $product = $this->productService->find($id);
 
-        if (! $product) {
-            return ApiResult::notFound('Producto no encontrado.')->toResponse();
+        if (!$product) {
+            return ApiResult::notFound("Producto no encontrado.")->toResponse();
         }
 
         $this->productService->delete($product);
 
-        return ApiResult::empty('Producto eliminado correctamente.')->toResponse();
+        return ApiResult::empty("Producto eliminado correctamente.")->toResponse();
     }
 
     public function trashed(): JsonResponse
@@ -71,12 +71,12 @@ class ProductController extends ApiController
     {
         $product = $this->productService->findTrashed($id);
 
-        if (! $product) {
-            return ApiResult::notFound('Producto no encontrado.')->toResponse();
+        if (!$product) {
+            return ApiResult::notFound("Producto no encontrado.")->toResponse();
         }
 
         $this->productService->restore($product);
 
-        return ApiResult::empty('Producto restaurado correctamente.')->toResponse();
+        return ApiResult::empty("Producto restaurado correctamente.")->toResponse();
     }
 }

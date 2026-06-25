@@ -9,12 +9,12 @@ class ProductService
 {
     public function getAll(): Collection
     {
-        return Product::orderBy('name')->get();
+        return Product::orderBy("name")->get();
     }
 
     public function getTrashed(): Collection
     {
-        return Product::onlyTrashed()->orderBy('name')->get();
+        return Product::onlyTrashed()->orderBy("name")->get();
     }
 
     public function find(int $id): ?Product

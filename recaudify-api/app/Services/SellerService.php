@@ -9,12 +9,12 @@ class SellerService
 {
     public function getAll(): Collection
     {
-        return Seller::orderBy('name')->get();
+        return Seller::orderBy("name")->get();
     }
 
     public function getTrashed(): Collection
     {
-        return Seller::onlyTrashed()->orderBy('name')->get();
+        return Seller::onlyTrashed()->orderBy("name")->get();
     }
 
     public function find(int $id): ?Seller
