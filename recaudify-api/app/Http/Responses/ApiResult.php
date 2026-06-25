@@ -14,17 +14,17 @@ class ApiResult
         public readonly mixed $data = null,
     ) {}
 
-    public static function success(mixed $data, string $message = 'Operación exitosa.'): self
+    public static function success(mixed $data, string $message = "Operación exitosa."): self
     {
         return new self(true, $message, 200, $data);
     }
 
-    public static function created(mixed $data, string $message = 'Creado correctamente.'): self
+    public static function created(mixed $data, string $message = "Creado correctamente."): self
     {
         return new self(true, $message, 201, $data);
     }
 
-    public static function empty(string $message = 'Operación exitosa.', int $statusCode = 200): self
+    public static function empty(string $message = "Operación exitosa.", int $statusCode = 200): self
     {
         return new self(true, $message, $statusCode, null);
     }
@@ -36,15 +36,15 @@ class ApiResult
     public static function paginated(
         LengthAwarePaginator $paginator,
         mixed $items,
-        string $message = 'Operación exitosa.',
+        string $message = "Operación exitosa.",
     ): self {
         return new self(true, $message, 200, [
-            'items' => $items,
-            'meta' => [
-                'total' => $paginator->total(),
-                'page' => $paginator->currentPage(),
-                'perPage' => $paginator->perPage(),
-                'lastPage' => $paginator->lastPage(),
+            "items" => $items,
+            "meta" => [
+                "total" => $paginator->total(),
+                "page" => $paginator->currentPage(),
+                "perPage" => $paginator->perPage(),
+                "lastPage" => $paginator->lastPage(),
             ],
         ]);
     }
@@ -54,22 +54,22 @@ class ApiResult
         return new self(false, $message, $statusCode, null);
     }
 
-    public static function notFound(string $message = 'No encontrado.'): self
+    public static function notFound(string $message = "No encontrado."): self
     {
         return new self(false, $message, 404, null);
     }
 
-    public static function unauthorized(string $message = 'No autorizado.'): self
+    public static function unauthorized(string $message = "No autorizado."): self
     {
         return new self(false, $message, 401, null);
     }
 
-    public static function forbidden(string $message = 'Sin permisos.'): self
+    public static function forbidden(string $message = "Sin permisos."): self
     {
         return new self(false, $message, 403, null);
     }
 
-    public static function validationError(array $errors, string $message = 'Error de validación.'): self
+    public static function validationError(array $errors, string $message = "Error de validación."): self
     {
         return new self(false, $message, 422, $errors);
     }
@@ -78,10 +78,10 @@ class ApiResult
     {
         return response()->json(
             [
-                'success' => $this->success,
-                'message' => $this->message,
-                'statusCode' => $this->statusCode,
-                'data' => $this->data,
+                "success" => $this->success,
+                "message" => $this->message,
+                "statusCode" => $this->statusCode,
+                "data" => $this->data,
             ],
             $this->statusCode,
         );
