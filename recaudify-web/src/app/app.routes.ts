@@ -108,6 +108,58 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'rates',
+            loadComponent: () => import('./features/admin/rates/rates').then((m) => m.Rates),
+          },
+          {
+            path: 'rates/new',
+            loadComponent: () =>
+              import('./features/admin/rates/rate-form/rate-form').then((m) => m.RateForm),
+          },
+          {
+            path: 'rates/:id/edit',
+            loadComponent: () =>
+              import('./features/admin/rates/rate-form/rate-form').then((m) => m.RateForm),
+          },
+          {
+            path: 'sellers',
+            loadComponent: () => import('./features/admin/sellers/sellers').then((m) => m.Sellers),
+          },
+          {
+            path: 'sellers/new',
+            loadComponent: () =>
+              import('./features/admin/sellers/seller-form/seller-form').then((m) => m.SellerForm),
+          },
+          {
+            path: 'sellers/:id/edit',
+            loadComponent: () =>
+              import('./features/admin/sellers/seller-form/seller-form').then((m) => m.SellerForm),
+          },
+          {
+            path: 'call-reasons',
+            loadComponent: () =>
+              import('./features/admin/call-reasons/call-reasons').then((m) => m.CallReasons),
+          },
+          {
+            path: 'call-reasons/new',
+            loadComponent: () =>
+              import('./features/admin/call-reasons/call-reason-form/call-reason-form').then(
+                (m) => m.CallReasonForm,
+              ),
+          },
+          {
+            path: 'call-reasons/:id/edit',
+            loadComponent: () =>
+              import('./features/admin/call-reasons/call-reason-form/call-reason-form').then(
+                (m) => m.CallReasonForm,
+              ),
+          },
+          {
+            path: 'activity',
+            loadComponent: () =>
+              import('./features/admin/activity/activity').then((m) => m.ActivityFeed),
+          },
+          {
             path: 'parameters',
             loadComponent: () =>
               import('./features/admin/parameters/parameters').then((m) => m.Parameters),
