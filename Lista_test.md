@@ -11,6 +11,7 @@
 ### Modelos (Unit: modelos y relaciones)
 
 #### `app/Models/User.php`
+
 - [ ] `fillable` contiene name, username, email, password, active
 - [ ] `hidden` contiene password
 - [ ] `casts` define password como `hashed` y active como `boolean`
@@ -21,20 +22,24 @@
 - [ ] El guard name por defecto es "api"
 
 #### `app/Models/Role.php`
+
 - [ ] Usa SoftDeletes
 - [ ] El guard name por defecto es "api"
 - [ ] Hereda de Spatie\Permission\Models\Role
 
 #### `app/Models/Permission.php`
+
 - [ ] Usa SoftDeletes
 - [ ] El guard name por defecto es "api"
 - [ ] Hereda de Spatie\Permission\Models\Permission
 
 #### `app/Models/Parameter.php`
+
 - [ ] `fillable` contiene key, value, description
 - [ ] Usa SoftDeletes
 
 #### `app/Models/UserSchedule.php`
+
 - [ ] `fillable` contiene user_id, day_of_week, start_time, end_time, show_status
 - [ ] `casts` define day_of_week como integer, show_status como boolean
 - [ ] `user()` retorna una relación BelongsTo con User
@@ -44,6 +49,7 @@
 ### Servicios (Unit: lógica de negocio)
 
 #### `app/Services/AuthService.php`
+
 - [ ] `getScheduleAccessError()` retorna null si el usuario es superadmin
 - [ ] `getScheduleAccessError()` retorna mensaje si el usuario no tiene horarios asignados
 - [ ] `getScheduleAccessError()` retorna null si la hora actual está dentro del horario
@@ -54,6 +60,7 @@
 - [ ] `getCurrentShift()` retorna show_status según el campo del schedule
 
 #### `app/Services/UserService.php`
+
 - [ ] `all()` retorna todos los usuarios con roles
 - [ ] `allDisabled()` retorna solo usuarios eliminados (soft delete)
 - [ ] `find()` retorna usuario con roles y permisos cargados
@@ -72,6 +79,7 @@
 - [ ] `syncPermissions()` retorna lista de nombres de permisos
 
 #### `app/Services/RoleService.php`
+
 - [ ] `all()` retorna roles con permisos, filtrados por guard_name=api, ordenados por name
 - [ ] `find()` retorna role con permisos
 - [ ] `findTrashed()` retorna role eliminado
@@ -84,6 +92,7 @@
 - [ ] `restore()` restaura role
 
 #### `app/Services/PermissionService.php`
+
 - [ ] `all()` retorna permisos filtrados por guard_name=api, ordenados por name
 - [ ] `find()` retorna permiso por id
 - [ ] `findTrashed()` retorna permiso eliminado
@@ -94,6 +103,7 @@
 - [ ] `restore()` restaura permiso
 
 #### `app/Services/ParameterService.php`
+
 - [ ] `get()` retorna el valor de una clave existente desde caché
 - [ ] `get()` retorna el default si la clave no existe
 - [ ] `all()` retorna todos los parámetros cacheados como colección clave-valor
@@ -108,6 +118,7 @@
 - [ ] `restore()` restaura parámetro y limpia caché
 
 #### `app/Services/UserScheduleService.php`
+
 - [ ] `getForUser()` retorna schedules del usuario ordenados por day_of_week
 - [ ] `isDuplicateDay()` retorna true si ya existe schedule para ese día
 - [ ] `isDuplicateDay()` retorna false si no existe schedule para ese día
@@ -120,6 +131,7 @@
 ### Controladores (Feature: integración con HTTP)
 
 #### `app/Http/Controllers/Api/AuthController.php`
+
 - [ ] `register()` crea usuario y responde 201 con id, name, username
 - [ ] `login()` retorna 200 con token y datos de usuario en éxito
 - [ ] `login()` retorna 401 si las credenciales son incorrectas
@@ -135,6 +147,7 @@
 - [ ] `logout()` elimina la cookie de token
 
 #### `app/Http/Controllers/Api/UserController.php`
+
 - [ ] `index()` retorna lista de usuarios
 - [ ] `indexDisabled()` retorna lista de usuarios desactivados
 - [ ] `show()` retorna usuario por id
@@ -154,6 +167,7 @@
 - [ ] `syncPermissions()` retorna 404 si usuario no existe
 
 #### `app/Http/Controllers/Api/RoleController.php`
+
 - [ ] `index()` retorna lista de roles
 - [ ] `show()` retorna role por id
 - [ ] `show()` retorna 404 si no existe
@@ -168,6 +182,7 @@
 - [ ] `restore()` retorna 404 si no existe en trash
 
 #### `app/Http/Controllers/Api/PermissionController.php`
+
 - [ ] `index()` retorna lista de permisos
 - [ ] `show()` retorna permiso por id
 - [ ] `show()` retorna 404 si no existe
@@ -181,6 +196,7 @@
 - [ ] `restore()` retorna 404 si no existe en trash
 
 #### `app/Http/Controllers/Api/ParameterController.php`
+
 - [ ] `index()` retorna lista de parámetros
 - [ ] `show()` retorna parámetro por id
 - [ ] `show()` retorna 404 si no existe
@@ -194,6 +210,7 @@
 - [ ] `restore()` retorna 404 si no existe en trash
 
 #### `app/Http/Controllers/Api/UserScheduleController.php`
+
 - [ ] `index()` retorna schedules de un usuario
 - [ ] `index()` retorna 404 si el usuario no existe
 - [ ] `store()` crea schedule y retorna 201
@@ -209,12 +226,14 @@
 ### Form Requests (Unit: reglas de validación)
 
 #### `app/Http/Requests/Auth/LoginRequest.php`
+
 - [ ] `authorize()` retorna true
 - [ ] `rules()` exige username (required, string)
 - [ ] `rules()` exige password (required, string)
 - [ ] `prepareForValidation()` normaliza username a minúsculas y trim
 
 #### `app/Http/Requests/Auth/RegisterRequest.php`
+
 - [ ] `rules()` exige name (required, string, max:100)
 - [ ] `rules()` exige username (required, string, max:50, unique, regex)
 - [ ] `rules()` permite email (nullable, email, max:150)
@@ -222,6 +241,7 @@
 - [ ] `prepareForValidation()` normaliza username a minúsculas y trim
 
 #### `app/Http/Requests/User/StoreUserRequest.php`
+
 - [ ] `rules()` exige name (required, string, min:3, max:100)
 - [ ] `rules()` exige username (required, min:3, max:50, unique, regex)
 - [ ] `rules()` permite email nullable
@@ -230,6 +250,7 @@
 - [ ] `rules()` permite active boolean
 
 #### `app/Http/Requests/User/UpdateUserRequest.php`
+
 - [ ] `rules()` permite name (sometimes, min:3, max:100)
 - [ ] `rules()` permite username (sometimes, min:3, max:50, unique ignorando propio id, regex)
 - [ ] `rules()` permite email nullable
@@ -239,39 +260,47 @@
 - [ ] `prepareForValidation()` solo normaliza si username está presente
 
 #### `app/Http/Requests/User/SyncPermissionsRequest.php`
+
 - [ ] `rules()` exige permissions (required, array, min:1)
 - [ ] `rules()` cada permiso debe existir en permissions,name
 - [ ] `rules()` exige assign (required, boolean)
 
 #### `app/Http/Requests/Role/StoreRoleRequest.php`
+
 - [ ] `rules()` exige name (required, string, max:100, unique:roles,name)
 - [ ] `rules()` permite permissions como array opcional
 - [ ] `rules()` cada permiso debe existir en permissions,name
 
 #### `app/Http/Requests/Role/UpdateRoleRequest.php`
+
 - [ ] `rules()` permite name (sometimes, string, max:100, unique ignorando propio id)
 - [ ] `rules()` permite permissions como array opcional
 - [ ] `rules()` cada permiso debe existir en permissions,name
 
 #### `app/Http/Requests/Permission/StorePermissionRequest.php`
+
 - [ ] `rules()` exige name (required, string, max:100, unique, regex modulo.accion)
 - [ ] `messages()` retorna mensaje personalizado para regex
 
 #### `app/Http/Requests/Permission/UpdatePermissionRequest.php`
+
 - [ ] `rules()` exige name (required, string, max:100, unique ignorando propio id, regex)
 - [ ] `messages()` retorna mensaje personalizado para regex
 
 #### `app/Http/Requests/Parameter/StoreParameterRequest.php`
+
 - [ ] `rules()` exige key (required, string, max:100, unique)
 - [ ] `rules()` exige value (required, string, max:255)
 - [ ] `rules()` permite description (nullable, string, max:255)
 
 #### `app/Http/Requests/Parameter/UpdateParameterRequest.php`
+
 - [ ] `rules()` exige key (required, string, max:100, unique ignorando propio id)
 - [ ] `rules()` exige value (required, string, max:255)
 - [ ] `rules()` permite description (nullable, string, max:255)
 
 #### `app/Http/Requests/Schedule/StoreUserScheduleRequest.php`
+
 - [ ] `rules()` exige day_of_week (required, integer, min:0, max:6)
 - [ ] `rules()` exige start_time (required, date_format:H:i)
 - [ ] `rules()` exige end_time (required, date_format:H:i, after:start_time)
@@ -279,6 +308,7 @@
 - [ ] `messages()` retorna mensajes personalizados para day_of_week y end_time
 
 #### `app/Http/Requests/Schedule/UpdateUserScheduleRequest.php`
+
 - [ ] `rules()` permite day_of_week (sometimes, integer, min:0, max:6)
 - [ ] `rules()` permite start_time (sometimes, date_format:H:i)
 - [ ] `rules()` permite end_time (sometimes, date_format:H:i, after:start_time condicional)
@@ -290,18 +320,23 @@
 ### API Resources (Unit: transformación de datos)
 
 #### `app/Http/Resources/UserResource.php`
+
 - [ ] `toArray()` retorna id, name, username, email, active, roles, permissions
 
 #### `app/Http/Resources/RoleResource.php`
+
 - [ ] `toArray()` retorna id, name, guard_name, permissions (usando whenLoaded)
 
 #### `app/Http/Resources/PermissionResource.php`
+
 - [ ] `toArray()` retorna id, name, guard_name
 
 #### `app/Http/Resources/ParameterResource.php`
+
 - [ ] `toArray()` retorna id, key, value, description
 
 #### `app/Http/Resources/UserScheduleResource.php`
+
 - [ ] `toArray()` retorna id, user_id, day_of_week, day_name, start_time, end_time, show_status
 - [ ] `day_name` mapea correctamente los 7 días de la semana según day_of_week
 - [ ] `start_time` y `end_time` se recortan a 5 caracteres
@@ -311,6 +346,7 @@
 ### Middleware (Feature: comportamiento HTTP)
 
 #### `app/Http/Middleware/CheckUserSchedule.php`
+
 - [ ] Permite el paso si no hay usuario autenticado
 - [ ] Permite el paso si el usuario es superadmin
 - [ ] Retorna 403 si el usuario no tiene horarios asignados
@@ -318,6 +354,7 @@
 - [ ] Permite el paso si la hora actual está dentro del horario
 
 #### `app/Http/Middleware/SetJwtFromCookie.php`
+
 - [ ] No modifica el header si ya existe Authorization
 - [ ] Agrega header Authorization desde cookie si no existe token en header
 - [ ] No agrega header si no hay cookie
@@ -327,6 +364,7 @@
 ### Rutas (Feature: mapeo de rutas)
 
 #### `routes/api.php`
+
 - [ ] `POST /api/auth/register` mapea a AuthController@register sin middleware
 - [ ] `POST /api/auth/login` mapea a AuthController@login sin middleware
 - [ ] `GET /api/auth/config` mapea a AuthController@config sin middleware
@@ -357,11 +395,13 @@
 ### Database / Seeders / Factories
 
 #### `database/factories/UserFactory.php`
+
 - [ ] Crea usuario con datos por defecto válidos
 - [ ] `inactive()` estado asigna active=false
 - [ ] `withRole()` asigna role al usuario
 
 #### `database/seeders/`
+
 - [ ] Los seeders crean roles y permisos base correctamente
 
 ---
@@ -371,6 +411,7 @@
 ### Servicios (Unit: lógica de negocio + API calls)
 
 #### `core/services/api.service.ts`
+
 - [ ] `request()` construye URL como `{apiUrl}/{controller}/{action}`
 - [ ] `request()` incluye headers Content-Type, Accept, X-Requested-With
 - [ ] `request()` sanitiza body contra prototype pollution
@@ -385,6 +426,7 @@
 - [ ] URL no incluye action si es undefined
 
 #### `core/services/auth.service.ts`
+
 - [ ] `isAuthenticated` es false cuando currentUser es null
 - [ ] `isAuthenticated` es true cuando currentUser no es null
 - [ ] `currentShift` retorna current_shift del usuario
@@ -408,6 +450,7 @@
 - [ ] `logout()` llama POST auth/logout, limpia usuario y navega a /login
 
 #### `core/services/audit.service.ts`
+
 - [ ] `captureLogin()` crea objeto LoginAudit con user_id, session_id (UUID), logged_at
 - [ ] `captureLogin()` incluye ip_address, user_agent, os, device_type
 - [ ] `captureLogin()` incluye geolocation si coords no es null
@@ -416,6 +459,7 @@
 - [ ] `getDeviceType()` detecta tablet, mobile, desktop según user agent
 
 #### `core/services/geolocation.service.ts`
+
 - [ ] `request()` retorna Observable con coordenadas si geolocation está disponible
 - [ ] `request()` lanza error GEOLOCATION_UNSUPPORTED si no hay geolocation API
 - [ ] `request()` lanza error GEOLOCATION_DENIED si el usuario deniega
@@ -424,6 +468,7 @@
 - [ ] `getPermissionState()` retorna 'prompt' si Permissions API no está disponible
 
 #### `core/services/parameters.service.ts`
+
 - [ ] `load()` llama getAll() y setea items, loading, showTrashed=false
 - [ ] `toggleTrashed()` cambia showTrashed y carga trashed si está vacío
 - [ ] `remove()` llama DELETE, actualiza items y trashed, muestra toast success
@@ -434,6 +479,7 @@
 - [ ] Métodos CRUD: getAll(), getById(), create(), update(), delete(), getTrashed(), restore() llaman ApiService
 
 #### `core/services/permissions.service.ts`
+
 - [ ] `load()` llama getAll() y setea items
 - [ ] `toggleTrashed()` cambia showTrashed y carga trashed
 - [ ] `remove()` llama DELETE, actualiza items y trashed, toast success
@@ -448,6 +494,7 @@
 - [ ] Métodos CRUD: getAll(), getById(), create(), update(), delete(), getTrashed(), restore()
 
 #### `core/services/roles.service.ts`
+
 - [ ] `load()` llama getAll(), setea items, resetea showTrashed
 - [ ] `toggleTrashed()` cambia showTrashed, carga trashed si vacío
 - [ ] `remove()` elimina role, actualiza items y trashed, toast success
@@ -455,6 +502,7 @@
 - [ ] Métodos CRUD: getAll(), getById(), create(), update(), delete(), getTrashed(), restore()
 
 #### `core/services/schedules.service.ts`
+
 - [ ] `loadForUser()` llama getByUser y setea items
 - [ ] `loadShiftStatusFlag()` llama getFlag('shift-status')
 - [ ] `formatTime()` convierte "09:00" a "9:00 AM", "14:30" a "2:30 PM"
@@ -468,6 +516,7 @@
 - [ ] Métodos CRUD: getByUser(), create(), update(), delete()
 
 #### `core/services/shift-status.service.ts`
+
 - [ ] `visibleShift` retorna null si shiftStatusEnabled es false
 - [ ] `visibleShift` retorna null si no hay shift o is_within_schedule es false
 - [ ] `visibleShift` retorna null si show_status es false
@@ -476,6 +525,7 @@
 - [ ] `countdownMinutes` retorna remaining_minutos decrementado por ticks
 
 #### `core/services/toast.service.ts`
+
 - [ ] `success()` agrega toast con type success y duration por defecto
 - [ ] `error()` agrega toast con type error
 - [ ] `warning()` agrega toast con type warning
@@ -486,6 +536,7 @@
 - [ ] `_add()` no auto-descarta si duration = 0
 
 #### `core/services/users.service.ts`
+
 - [ ] `load()` llama getAll(), setea items, resetea showDisabled
 - [ ] `toggleDisabled()` alterna showDisabled, carga disabled si vacío
 - [ ] `remove()` desactiva usuario, actualiza items y disabled, toast success
@@ -498,6 +549,7 @@
 ### Guards (Unit: lógica de autorización)
 
 #### `core/guards/auth.guard.ts`
+
 - [ ] `authGuard` retorna true si está autenticado y geolocation no está denegado
 - [ ] `authGuard` redirige a /login si no está autenticado
 - [ ] `authGuard` expira sesión y redirige a /login si geolocation está denegado
@@ -505,11 +557,13 @@
 - [ ] `guestGuard` redirige a /dashboard si ya está autenticado
 
 #### `core/guards/admin.guard.ts`
+
 - [ ] `adminGuard` retorna true si el usuario es administrador
 - [ ] `adminGuard` retorna true si el usuario es superadmin
 - [ ] `adminGuard` redirige a /dashboard si no tiene rol admin
 
 #### `core/guards/permission.guard.ts`
+
 - [ ] `permissionGuard('usuarios.ver')` retorna true si el usuario tiene el permiso
 - [ ] `permissionGuard('usuarios.ver')` redirige a /dashboard si no tiene el permiso
 
@@ -518,9 +572,11 @@
 ### Interceptors (Unit: transformación HTTP)
 
 #### `core/interceptors/auth.interceptor.ts`
+
 - [ ] Pasa la request sin modificaciones (es un passthrough)
 
 #### `core/interceptors/error.interceptor.ts`
+
 - [ ] En 401 fuera de /auth/: intenta refresh y re-intenta la request original
 - [ ] En 401 fuera de /auth/: si refresh falla, limpia sesión, redirige a /login, retorna ApiError
 - [ ] En 403 con mensaje de schedule: expira sesión, muestra toast, redirige a /login
@@ -534,6 +590,7 @@
 ### Directivas (Unit: manipulación del DOM)
 
 #### `core/directives/btn.directive.ts`
+
 - [ ] Agrega clase CSS correspondiente a la variante primary
 - [ ] Agrega clase para secondary
 - [ ] Agrega clase para table-edit
@@ -544,6 +601,7 @@
 - [ ] Cambia la clase cuando la variante cambia
 
 #### `core/directives/table.directive.ts`
+
 - [ ] Agrega clase `data-table` para variante default
 - [ ] Agrega clase `data-table-trashed` para variante trashed
 - [ ] Cambia la clase cuando la variante cambia
@@ -553,12 +611,14 @@
 ### Componentes (Unit + Integration)
 
 #### `core/components/spinner/spinner.ts`
+
 - [ ] Muestra el spinner cuando show() es true
 - [ ] Oculta el spinner cuando show() es false
 - [ ] Muestra la label cuando se provee
 - [ ] No muestra label cuando no se provee
 
 #### `core/components/toast/toast.ts`
+
 - [ ] Renderiza un toast por cada item en ToastService.toasts()
 - [ ] Aplica clase de posición según input position()
 - [ ] Aplica clase de tamaño según input size()
@@ -568,10 +628,12 @@
 - [ ] Calcula sizeStyle() correctamente para sm, md, lg
 
 #### `app.ts` (Componente raíz)
+
 - [ ] Renderiza router-outlet
 - [ ] Renderiza app-toast
 
 #### `features/auth/login/login.ts`
+
 - [ ] OnInit precarga valores por defecto (admin / admin1234)
 - [ ] OnInit carga config de geolocalización
 - [ ] `submit()` llama auth.login() y navega a /dashboard en éxito
@@ -579,9 +641,11 @@
 - [ ] `submit()` maneja loading state
 
 #### `features/dashboard/dashboard.ts`
+
 - [ ] OnInit carga currentUser si no está presente
 
 #### `features/admin/admin-dashboard/admin-dashboard.ts`
+
 - [ ] `canSeeUsers` es true si tiene permiso usuarios.ver
 - [ ] `canSeeRoles` es true si tiene permiso roles.ver
 - [ ] `canSeePermissions` es true si tiene permiso permisos.ver
@@ -589,6 +653,7 @@
 - [ ] `canSeeParameters` es true si tiene permiso parametros.ver
 
 #### `features/admin/users/users.ts`
+
 - [ ] OnInit llama service.load()
 - [ ] `toggleDisabled()` llama service.toggleDisabled()
 - [ ] `roleLabel()` delega a service.roleLabel()
@@ -597,6 +662,7 @@
 - [ ] Permisos computados: canCreate, canEdit, canDelete, canRestore
 
 #### `features/admin/users/user-form/user-form.ts`
+
 - [ ] OnInit carga roles y si es edición carga usuario por id
 - [ ] `save()` en creación llama service.create() con payload completo
 - [ ] `save()` en edición llama service.update()
@@ -606,12 +672,14 @@
 - [ ] `save()` muestra toast success y error
 
 #### `features/admin/roles/roles.ts`
+
 - [ ] OnInit llama service.load()
 - [ ] `toggleTrashed()` llama service.toggleTrashed()
 - [ ] `delete()` confirma y llama service.remove()
 - [ ] `restore()` llama service.restoreItem()
 
 #### `features/admin/roles/role-form/role-form.ts`
+
 - [ ] OnInit carga permisos y si es edición carga rol
 - [ ] `grouped` computa permisos agrupados por módulo
 - [ ] `toggle()` agrega/remueve permiso de selected
@@ -622,6 +690,7 @@
 - [ ] `save()` navega a /admin/roles en éxito
 
 #### `features/admin/permissions/permissions.ts`
+
 - [ ] OnInit llama service.load()
 - [ ] `toggleTrashed()` llama service.toggleTrashed()
 - [ ] `actionLabel()` delega a service.actionLabel()
@@ -629,6 +698,7 @@
 - [ ] `restore()` llama service.restoreItem()
 
 #### `features/admin/permissions/permission-form/permission-form.ts`
+
 - [ ] OnInit carga permiso si es edición
 - [ ] `isValid` valida formato modulo.accion
 - [ ] `save()` valida nombre antes de enviar
@@ -636,9 +706,11 @@
 - [ ] `save()` en edición llama service.update()
 
 #### `features/admin/schedules/schedules.ts`
+
 - [ ] OnInit carga lista de usuarios para asignar horarios
 
 #### `features/admin/schedules/user-schedules/user-schedules.ts`
+
 - [ ] OnInit carga usuario, schedules y flag shift-status
 - [ ] `formatTime()` delega a schedulesService
 - [ ] `schedulesForDay()` filtra schedules por día
@@ -650,12 +722,14 @@
 - [ ] Permisos computados: canCreate, canEdit, canDelete
 
 #### `features/admin/parameters/parameters.ts`
+
 - [ ] OnInit llama service.load()
 - [ ] `toggleTrashed()` llama service.toggleTrashed()
 - [ ] `delete()` confirma y llama service.remove()
 - [ ] `restore()` llama service.restoreItem()
 
 #### `features/admin/parameters/parameter-form/parameter-form.ts`
+
 - [ ] OnInit carga parámetro si es edición
 - [ ] `save()` en creación llama service.create()
 - [ ] `save()` en edición llama service.update()
@@ -663,6 +737,7 @@
 - [ ] `save()` navega a /admin/parameters en éxito
 
 #### `layout/app-shell/app-shell.ts`
+
 - [ ] `isAdmin` es true si el usuario tiene rol administrador o superadmin
 - [ ] `hasPermission()` delega a authService.hasPermission()
 - [ ] `isItemVisible()` retorna true si no requiere permiso o si lo tiene
@@ -677,6 +752,7 @@
 ### Utilidades (Unit: funciones puras)
 
 #### `core/utils/text.ts`
+
 - [ ] `lower()` convierte a minúsculas y hace trim
 - [ ] `upper()` convierte a mayúsculas y hace trim
 - [ ] `capitalize()` capitaliza primera letra, resto minúsculas, trim
@@ -687,6 +763,7 @@
 ### Routing (Integration: configuración de rutas)
 
 #### `app.routes.ts`
+
 - [ ] Ruta vacía redirige a /dashboard
 - [ ] /login carga LoginComponent con guestGuard
 - [ ] Ruta base carga AppShell con authGuard y children lazy
@@ -706,10 +783,11 @@
 - [ ] /admin/parameters carga ParametersComponent
 - [ ] /admin/parameters/new carga ParameterFormComponent (create)
 - [ ] /admin/parameters/:id/edit carga ParameterFormComponent (edit)
-- [ ] Wildcard ** redirige a /dashboard
+- [ ] Wildcard \*\* redirige a /dashboard
 - [ ] withComponentInputBinding está habilitado
 
 #### `app.config.ts`
+
 - [ ] Provee zoneless change detection
 - [ ] Provee router con component input binding
 - [ ] Provee HTTP client con errorInterceptor
@@ -719,10 +797,10 @@
 
 ## Resumen de cobertura actual vs. objetivo
 
-| Capa       | Archivos totales | Archivos con tests | Cobertura aprox. actual | Objetivo |
-|------------|-----------------|---------------------|-------------------------|----------|
-| Backend    | 43 PHP          | 3 (ApiResult, Login, Register) | ~15 % | 85 %+ |
-| Frontend   | 38 TS           | 5 (app, text, error.interceptor, auth.service, auth.guard) | ~13 % | 85 %+ |
+| Capa     | Archivos totales | Archivos con tests                                         | Cobertura aprox. actual | Objetivo |
+| -------- | ---------------- | ---------------------------------------------------------- | ----------------------- | -------- |
+| Backend  | 43 PHP           | 3 (ApiResult, Login, Register)                             | ~15 %                   | 85 %+    |
+| Frontend | 38 TS            | 5 (app, text, error.interceptor, auth.service, auth.guard) | ~13 %                   | 85 %+    |
 
 **Próximos pasos sugeridos:**
 

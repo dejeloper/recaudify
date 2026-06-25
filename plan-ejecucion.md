@@ -4,9 +4,9 @@
 > `funcionalidades.md`) en Recaudify (Laravel API + Angular). Define **en qué orden** se construye y
 > **cómo** se aborda cada bloque, respetando dependencias.
 >
-> - **`funcionalidades.md`** = el *qué* (goal de comportamiento del legacy).
+> - **`funcionalidades.md`** = el _qué_ (goal de comportamiento del legacy).
 > - **`planning.md`** = checklist plano de tareas por área (estado vivo de avance).
-> - **Este archivo** = el *cómo y en qué orden* (secuencia por fases con dependencias).
+> - **Este archivo** = el _cómo y en qué orden_ (secuencia por fases con dependencias).
 >
 > **Decisión de modelado ya tomada** (en `planning.md`): se **moderniza** el modelo, no se replica el
 > legacy 1:1. En particular: cliente → **muchos contratos** (rompe el 1:1 cliente↔pedido del legacy),
@@ -36,6 +36,7 @@ Para **cada** entidad/funcionalidad nueva, el trabajo se descompone así (reutil
 establecidos en Usuarios/Roles):
 
 **Backend (`recaudify-api/`)**
+
 1. Migración de tabla(s) (con `SoftDeletes`, montos en enteros).
 2. Modelo Eloquent + relaciones.
 3. Form Request(s) para validación.
@@ -46,6 +47,7 @@ establecidos en Usuarios/Roles):
 8. Tests (PHPUnit).
 
 **Frontend (`recaudify-web/`)**
+
 1. Interfaces/modelos TS (`*.model.ts`).
 2. Servicio de feature (consume `ApiService`).
 3. Componente(s) `OnPush` + signals, ruta `loadComponent` lazy.
@@ -58,30 +60,30 @@ establecidos en Usuarios/Roles):
 Estos no son un módulo de negocio pero los necesitan varias fases; conviene resolverlos antes o en
 paralelo con la Fase 1:
 
-| Transversal | Por qué / quién lo necesita | Fase sugerida |
-|---|---|---|
-| **Auditoría / Log** (equivalente a `LogSave`) | Casi toda escritura del legacy registra Log. Lo usan Clientes, Pagos, Gestiones, etc. | Antes de Fase 2 |
-| **Manejo de montos** (enteros COP, sin decimales) | Pedidos, cuotas, pagos, saldos. | Fase 1 |
-| **Paginación estándar** (`data:{items,meta}`) | Todos los listados grandes (clientes, pagos). | Fase 1 |
-| **Storage de archivos** | Evidencias/comprobantes en Gestiones y Pagos. | Antes de Fase 4 |
-| **Scheduler + Queue** (cron cPanel) | Recálculo de mora (`Deuda()`) y descarte automático de recibos vencidos. | Antes de Fase 4 |
-| **Catálogo de estados + reglas de mora** | Reglas 10/45/90 días → al día/debe/mora/datacrédito. | Fase 1 |
+| Transversal                                       | Por qué / quién lo necesita                                                           | Fase sugerida   |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------- |
+| **Auditoría / Log** (equivalente a `LogSave`)     | Casi toda escritura del legacy registra Log. Lo usan Clientes, Pagos, Gestiones, etc. | Antes de Fase 2 |
+| **Manejo de montos** (enteros COP, sin decimales) | Pedidos, cuotas, pagos, saldos.                                                       | Fase 1          |
+| **Paginación estándar** (`data:{items,meta}`)     | Todos los listados grandes (clientes, pagos).                                         | Fase 1          |
+| **Storage de archivos**                           | Evidencias/comprobantes en Gestiones y Pagos.                                         | Antes de Fase 4 |
+| **Scheduler + Queue** (cron cPanel)               | Recálculo de mora (`Deuda()`) y descarte automático de recibos vencidos.              | Antes de Fase 4 |
+| **Catálogo de estados + reglas de mora**          | Reglas 10/45/90 días → al día/debe/mora/datacrédito.                                  | Fase 1          |
 
 ---
 
 ## Fases (orden por dependencias)
 
-| Fase | Bloque | Depende de | Mapea a `funcionalidades.md` |
-|---|---|---|---|
-| 1 | Catálogos base + transversales | Fase 0 | §4, §0.1 |
-| 2 | Clientes | Fase 1 | §3 |
-| 3 | Contratos (Pedidos), Productos y Cartera | Fase 2 | §3 (pedido), §5 (plan) |
-| 4 | Pagos y Recibos | Fase 3 | §5 |
-| 5 | Cobranza / Gestiones (llamadas) | Fase 4 | §6, §7 |
-| 6 | Devoluciones | Fase 4 | §8 |
-| 7 | Reportes | Fases 2–5 | §10, §5.6 |
-| 8 | Importación y Backup | Fases 2–4 | §9, §14 |
-| 9 | Migración de datos legacy + Despliegue | Todas | — |
+| Fase | Bloque                                   | Depende de | Mapea a `funcionalidades.md` |
+| ---- | ---------------------------------------- | ---------- | ---------------------------- |
+| 1    | Catálogos base + transversales           | Fase 0     | §4, §0.1                     |
+| 2    | Clientes                                 | Fase 1     | §3                           |
+| 3    | Contratos (Pedidos), Productos y Cartera | Fase 2     | §3 (pedido), §5 (plan)       |
+| 4    | Pagos y Recibos                          | Fase 3     | §5                           |
+| 5    | Cobranza / Gestiones (llamadas)          | Fase 4     | §6, §7                       |
+| 6    | Devoluciones                             | Fase 4     | §8                           |
+| 7    | Reportes                                 | Fases 2–5  | §10, §5.6                    |
+| 8    | Importación y Backup                     | Fases 2–4  | §9, §14                      |
+| 9    | Migración de datos legacy + Despliegue   | Todas      | —                            |
 
 ---
 
@@ -90,6 +92,7 @@ paralelo con la Fase 1:
 **Objetivo:** dejar disponibles todos los catálogos y reglas de los que dependen Clientes y Contratos.
 
 **Backend**
+
 - Catálogos CRUD + seeders: `TiposDocumentos`, `TiposVivienda`, `Productos`, `Tarifas` (tarifa↔producto),
   `Vendedores`, `Eventos`, `MotivosLlamadas`, `Zonas`.
 - **Estados** de cliente/contrato/cobranza/recibo como catálogo nuevo (mapeando los códigos legacy de
@@ -99,6 +102,7 @@ paralelo con la Fase 1:
 - Infra transversal: auditoría/Log, helper de montos, paginación estándar.
 
 **Frontend**
+
 - Pantalla "Administración de catálogos" (tabla genérica reutilizable para los catálogos simples).
 
 **Resultado:** catálogos administrables y reglas parametrizadas listas para usar.
@@ -110,6 +114,7 @@ paralelo con la Fase 1:
 **Objetivo:** CRUD y ficha 360° del cliente.
 
 **Backend**
+
 - Modelo Cliente (identidad por documento), con **múltiples teléfonos, direcciones y referencias**.
 - Casos de uso: crear, editar (por secciones: datos, dirección, teléfonos, referencias, observaciones),
   buscar (documento/nombre/teléfono/dirección/estado), ficha 360°, log/historial por cliente,
@@ -117,6 +122,7 @@ paralelo con la Fase 1:
 - (Diferido a fase de datos: detección/fusión de duplicados — `planning.md`).
 
 **Frontend**
+
 - Listado/búsqueda de clientes, crear/editar cliente, ficha 360° del cliente.
 
 **Nota de comportamiento (legacy):** el alta de cliente del legacy crea en una sola transacción
@@ -131,6 +137,7 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** contratos por cliente y su plan de pagos.
 
 **Backend**
+
 - Modelo Contrato (1 cliente → N contratos), productos asociados, descripción de lo financiado.
 - Cartera: generar plan de pagos al crear el contrato, periodicidad (semanal/quincenal/mensual),
   número de cuotas, valor de cuota, saldo por contrato y consolidado por cliente.
@@ -138,6 +145,7 @@ contrato" se arma sobre las Fases 2+3.
   **cambio de fecha de pago**.
 
 **Frontend**
+
 - Detalle de contrato + plan de pagos; pantalla de pedidos/contratos.
 
 ---
@@ -147,6 +155,7 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** ciclo completo de cobro de un contrato.
 
 **Backend**
+
 - Registrar pago (abono parcial / total, menor o mayor a la cuota), regla de aplicación a cuotas,
   recálculo automático de saldos y estados (al día / paz y salvo).
 - Recibos de pago: programar, confirmar, descartar (manual y **automático por vencimiento** vía job),
@@ -156,6 +165,7 @@ contrato" se arma sobre las Fases 2+3.
 - Historial de pagos por cliente/contrato; listado de cobros pendientes.
 
 **Frontend**
+
 - Registro de pagos, generación/impresión de recibos, listado de cobros pendientes.
 
 ---
@@ -165,12 +175,14 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** bandeja de trabajo del cobrador y registro de gestiones.
 
 **Backend**
+
 - Registrar gestión: llamada, visita, acuerdo de pago, **promesa de pago** (fecha comprometida),
   observación. Catálogos de tipos y resultados de gestión.
 - Historial por cliente/contrato/usuario; clasificación por mora (al día → jurídico).
 - Bandeja del cobrador, **llamadas del día**, **rellamar**, seguimiento de promesas (cumplidas/incumplidas).
 
 **Frontend**
+
 - Bandeja de cobranza / registro de gestiones, pantalla de llamadas del día.
 
 ---
@@ -180,10 +192,12 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** registrar y consultar devoluciones.
 
 **Backend**
+
 - Generar devolución (cambia estado de contrato y cliente, anula recibos programados pendientes),
   listar por fecha, consultar detalle.
 
 **Frontend**
+
 - Pantalla de devoluciones.
 
 ---
@@ -193,6 +207,7 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** tableros y reportes operativos/financieros.
 
 **Backend + Frontend**
+
 - Conteos de clientes y pagos por estado, cartera por usuario, totales de cartera por estado,
   detalle de pagos por usuario y fecha; reporte contable y de ventas por período.
 
@@ -203,6 +218,7 @@ contrato" se arma sobre las Fases 2+3.
 **Objetivo:** carga masiva y respaldo.
 
 **Backend + Frontend**
+
 - Importar clientes y pagos desde archivo (CSV).
 - Backup: generar/descargar/restaurar (export e import de la cartera).
 
