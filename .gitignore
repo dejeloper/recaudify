@@ -27,6 +27,11 @@ recaudify-api/storage/logs/
 recaudify-api/storage/pail/
 recaudify-api/storage/*.key
 recaudify-api/database/database.sqlite
+recaudify-api/.playwright/*
+recaudify-api/.playwright-cli/*
 
 # Skills
 .playwright-cli/*
+
+# demo
+cobranza_files/*
