@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CallReasonController;
+use App\Http\Controllers\Api\LoginAuditController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProductController;
@@ -23,6 +24,7 @@ Route::prefix("auth")->group(function () {
 
     Route::middleware("auth:api")->group(function () {
         Route::get("me", [AuthController::class, "me"]);
+        Route::post("login/location", [AuthController::class, "loginLocation"]);
         Route::post("logout", [AuthController::class, "logout"]);
     });
 });
@@ -140,5 +142,9 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
 
     Route::prefix("activities")->group(function () {
         Route::get("/", [ActivityController::class, "index"])->middleware("permission:auditoria.ver");
+    });
+
+    Route::prefix("login-audits")->group(function () {
+        Route::get("/", [LoginAuditController::class, "index"])->middleware("permission:accesos.ver");
     });
 });

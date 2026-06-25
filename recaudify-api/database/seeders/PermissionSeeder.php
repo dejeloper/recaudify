@@ -54,6 +54,9 @@ class PermissionSeeder extends Seeder
 
             // Auditoría (feed de actividad)
             "auditoria.ver",
+
+            // Accesos (auditoría de inicios de sesión)
+            "accesos.ver",
         ];
 
         foreach ($permissions as $permission) {

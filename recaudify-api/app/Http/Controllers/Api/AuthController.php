@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Auth\LoginLocationRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResult;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\LoginAuditService;
 use App\Services\ParameterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
@@ -16,7 +18,10 @@ use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 
 class AuthController extends ApiController
 {
-    public function __construct(private readonly AuthService $authService) {}
+    public function __construct(
+        private readonly AuthService $authService,
+        private readonly LoginAuditService $loginAudit,
+    ) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -24,41 +29,48 @@ class AuthController extends ApiController
 
         return ApiResult::created(
             [
-                "id" => $user->id,
-                "name" => $user->name,
-                "username" => $user->username,
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
             ],
-            "Usuario registrado correctamente.",
+            'Usuario registrado correctamente.',
         )->toResponse();
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = [
-            "username" => $request->username,
-            "password" => $request->password,
+            'username' => $request->username,
+            'password' => $request->password,
         ];
 
-        if (!($token = $this->guard()->attempt($credentials))) {
-            return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
+        if (! ($token = $this->guard()->attempt($credentials))) {
+            $attempted = User::where('username', $request->username)->first();
+            $this->loginAudit->recordFailure($request->username, 'invalid_credentials', $attempted, $request);
+
+            return ApiResult::unauthorized('Credenciales incorrectas.')->toResponse();
         }
 
         /** @var User $user */
         $user = $this->guard()->user();
 
-        if (!$user->active) {
+        if (! $user->active) {
             $this->guard()->logout();
+            $this->loginAudit->recordFailure($user->username, 'inactive', $user, $request);
 
-            return ApiResult::forbidden("Usuario inactivo.")->toResponse();
+            return ApiResult::forbidden('Usuario inactivo.')->toResponse();
         }
 
         $error = $this->authService->getScheduleAccessError($user);
 
         if ($error !== null) {
             $this->guard()->logout();
+            $this->loginAudit->recordFailure($user->username, 'out_of_schedule', $user, $request);
 
             return ApiResult::forbidden($error)->toResponse();
         }
+
+        $this->loginAudit->recordSuccess($user, $request);
 
         return $this->buildTokenResponse($token, $user);
     }
@@ -67,24 +79,34 @@ class AuthController extends ApiController
     {
         $response = ApiResult::success(
             [
-                "token" => $token,
-                "token_type" => "bearer",
-                "expires_in" => config("jwt.ttl") * 60,
-                "user" => [
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "username" => $user->username,
-                    "role" => $user->getRoleNames()->first(),
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'role' => $user->getRoleNames()->first(),
                 ],
             ],
-            "Sesión iniciada correctamente.",
+            'Sesión iniciada correctamente.',
         )
             ->toResponse()
             ->withCookie($this->tokenCookie($token));
 
-        $response->headers->set("Authorization", "Bearer {$token}");
+        $response->headers->set('Authorization', "Bearer {$token}");
 
         return $response;
+    }
+
+    public function loginLocation(LoginLocationRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->guard()->user();
+
+        $this->loginAudit->attachLocation($user, $request->validated());
+
+        return ApiResult::empty('Ubicación registrada.')->toResponse();
     }
 
     public function me(): JsonResponse
@@ -95,11 +117,11 @@ class AuthController extends ApiController
         $resource = new UserResource($user);
         $data = $resource->toArray(request());
 
-        $data["current_shift"] = $this->authService->getCurrentShift($user);
-        $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
-        $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
-        $data["geolocalization_login_enabled"] = ParameterService::get("geolocalization_login", "true") === "true";
-        $data["ip_address"] = request()->ip();
+        $data['current_shift'] = $this->authService->getCurrentShift($user);
+        $data['shift_status_enabled'] = ParameterService::get('shift-status', 'true') === 'true';
+        $data['shift_countdown_enabled'] = ParameterService::get('shift-status-countdown', 'true') === 'true';
+        $data['geolocalization_login_enabled'] = ParameterService::get('geolocalization_login', 'true') === 'true';
+        $data['ip_address'] = request()->ip();
 
         return ApiResult::success($data)->toResponse();
     }
@@ -107,7 +129,7 @@ class AuthController extends ApiController
     public function config(): JsonResponse
     {
         return ApiResult::success([
-            "geolocalization_login" => ParameterService::get("geolocalization_login", "true") === "true",
+            'geolocalization_login' => ParameterService::get('geolocalization_login', 'true') === 'true',
         ])->toResponse();
     }
 
@@ -116,21 +138,21 @@ class AuthController extends ApiController
         try {
             $newToken = $this->guard()->refresh();
         } catch (\Throwable) {
-            return ApiResult::unauthorized("No se pudo renovar la sesión.")->toResponse();
+            return ApiResult::unauthorized('No se pudo renovar la sesión.')->toResponse();
         }
 
         $response = ApiResult::success(
             [
-                "token" => $newToken,
-                "token_type" => "bearer",
-                "expires_in" => config("jwt.ttl") * 60,
+                'token' => $newToken,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
             ],
-            "Token renovado.",
+            'Token renovado.',
         )
             ->toResponse()
             ->withCookie($this->tokenCookie($newToken));
 
-        $response->headers->set("Authorization", "Bearer {$newToken}");
+        $response->headers->set('Authorization', "Bearer {$newToken}");
 
         return $response;
     }
@@ -139,30 +161,30 @@ class AuthController extends ApiController
     {
         $this->guard()->logout();
 
-        return ApiResult::empty("Sesión cerrada correctamente.")
+        return ApiResult::empty('Sesión cerrada correctamente.')
             ->toResponse()
-            ->withCookie(Cookie::forget(config("jwt.cookie_key_name", "token")));
+            ->withCookie(Cookie::forget(config('jwt.cookie_key_name', 'token')));
     }
 
     private function tokenCookie(string $token): SymfonyCookie
     {
-        $minutes = (int) config("jwt.refresh_ttl");
-        $isLocal = app()->environment("local");
+        $minutes = (int) config('jwt.refresh_ttl');
+        $isLocal = app()->environment('local');
 
         return cookie(
-            name: config("jwt.cookie_key_name", "token"),
+            name: config('jwt.cookie_key_name', 'token'),
             value: $token,
             minutes: $minutes,
-            path: "/",
-            secure: !$isLocal,
+            path: '/',
+            secure: ! $isLocal,
             httpOnly: true,
-            sameSite: $isLocal ? "Lax" : "None",
+            sameSite: $isLocal ? 'Lax' : 'None',
         );
     }
 
     private function guard(): JWTGuard
     {
         /** @var JWTGuard */
-        return auth("api");
+        return auth('api');
     }
 }

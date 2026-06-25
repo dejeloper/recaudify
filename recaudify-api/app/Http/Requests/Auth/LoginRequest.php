@@ -14,13 +14,13 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "username" => ["required", "string"],
-            "password" => ["required", "string"],
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(["username" => strtolower(trim($this->username ?? ""))]);
+        $this->merge(['username' => strtolower(trim($this->username ?? ''))]);
     }
 }
