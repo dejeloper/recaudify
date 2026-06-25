@@ -1,0 +1,82 @@
+<div class="p-4 sm:p-8">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold text-gray-900">Actividad</h1>
+    <p class="mt-0.5 text-sm text-gray-400">Registro de acciones realizadas en el sistema.</p>
+  </div>
+
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+    @if (activities().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">Aún no hay actividad registrada.</p>
+      </div>
+    } @else {
+      <ol class="space-y-3">
+        @for (activity of activities(); track trackById($index, activity)) {
+          <li class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+            <div class="flex items-start gap-3">
+              <span
+                class="mt-1.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                [class]="eventClasses(activity.event).dot"
+              ></span>
+
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-gray-800">
+                  <span class="font-semibold">{{ activity.causer?.name ?? 'Sistema' }}</span>
+                  {{ activity.description }}
+                  @if (activity.model_label) {
+                    el {{ activity.model_label }}
+                  }
+                  @if (activity.subject.label) {
+                    <span class="font-medium text-gray-900">«{{ activity.subject.label }}»</span>
+                  } @else if (activity.subject.id) {
+                    <span class="text-gray-500">#{{ activity.subject.id }}</span>
+                  }
+                </p>
+
+                <p class="mt-0.5 text-xs text-gray-400">
+                  {{ activity.created_at | date: 'd MMM y, h:mm a' }}
+                </p>
+
+                @if (activity.changes.length > 0) {
+                  <dl
+                    class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 rounded-lg bg-gray-50 px-3.5 py-2.5 sm:grid-cols-2"
+                  >
+                    @for (change of activity.changes; track change.field) {
+                      <div class="flex items-baseline gap-2 text-xs">
+                        <dt class="shrink-0 font-medium text-gray-500">
+                          {{ fieldLabel(activity.model, change.field) }}:
+                        </dt>
+                        <dd class="text-gray-800">
+                          @if (activity.event === 'updated') {
+                            <span class="text-gray-400 line-through">{{
+                              formatValue(change.field, change.old)
+                            }}</span>
+                            <span class="mx-1 text-gray-400">→</span>
+                            <span class="font-medium">{{
+                              formatValue(change.field, change.new)
+                            }}</span>
+                          } @else {
+                            {{ formatValue(change.field, change.new ?? change.old) }}
+                          }
+                        </dd>
+                      </div>
+                    }
+                  </dl>
+                }
+              </div>
+
+              <span
+                class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
+                [class]="eventClasses(activity.event).badge"
+              >
+                {{ activity.description }}
+              </span>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  }
+</div>
