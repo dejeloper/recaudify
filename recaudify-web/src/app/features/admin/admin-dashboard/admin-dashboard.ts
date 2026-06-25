@@ -15,4 +15,5 @@ export class AdminDashboard {
   protected readonly canSeePermissions = computed(() => this.auth.hasPermission('permisos.ver'));
   protected readonly canSeeSchedules = computed(() => this.auth.hasPermission('horarios.ver'));
   protected readonly canSeeParameters = computed(() => this.auth.hasPermission('parametros.ver'));
+  protected readonly canSeeCatalogs = computed(() => this.auth.hasPermission('catalogos.ver'));
 }

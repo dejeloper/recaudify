@@ -89,6 +89,25 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'products',
+            loadComponent: () =>
+              import('./features/admin/products/products').then((m) => m.Products),
+          },
+          {
+            path: 'products/new',
+            loadComponent: () =>
+              import('./features/admin/products/product-form/product-form').then(
+                (m) => m.ProductForm,
+              ),
+          },
+          {
+            path: 'products/:id/edit',
+            loadComponent: () =>
+              import('./features/admin/products/product-form/product-form').then(
+                (m) => m.ProductForm,
+              ),
+          },
+          {
             path: 'parameters',
             loadComponent: () =>
               import('./features/admin/parameters/parameters').then((m) => m.Parameters),
