@@ -15,12 +15,20 @@ class ActivityController extends ApiController
     public function index(Request $request): JsonResponse
     {
         $filters = [
-            "log_name" => $request->query("log_name"),
-            "causer_id" => $request->query("causer_id"),
-            "model" => $request->query("model"),
-            "subject_id" => $request->query("subject_id"),
+            'log_name' => $request->query('log_name'),
+            'causer_id' => $request->query('causer_id'),
+            'model' => $request->query('model'),
+            'subject_id' => $request->query('subject_id'),
         ];
 
-        return ApiResult::success(ActivityResource::collection($this->activityService->getAll($filters)))->toResponse();
+        $perPage = (int) $request->query('per_page', (string) ActivityService::DEFAULT_PER_PAGE);
+        $perPage = max(1, min($perPage, ActivityService::MAX_PER_PAGE));
+
+        $paginator = $this->activityService->getAll($filters, $perPage);
+
+        return ApiResult::paginated(
+            $paginator,
+            ActivityResource::collection($paginator->getCollection()),
+        )->toResponse();
     }
 }
