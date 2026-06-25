@@ -1,0 +1,204 @@
+<div class="p-4 sm:p-8">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Tarifas</h1>
+      <p class="mt-0.5 text-sm text-gray-400">Planes de pago por producto.</p>
+    </div>
+    <div class="flex items-center gap-2 sm:self-start self-stretch">
+      <button
+        (click)="toggleTrashed()"
+        appBtn="secondary"
+        [class.bg-amber-50]="showTrashed()"
+        [class.border-amber-300]="showTrashed()"
+        [class.text-amber-700]="showTrashed()"
+      >
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+        {{ showTrashed() ? 'Ocultar eliminadas' : 'Ver eliminadas' }}
+        @if (trashed().length > 0) {
+          <span
+            class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-700"
+          >
+            {{ trashed().length }}
+          </span>
+        }
+      </button>
+      <a routerLink="/admin/rates/new" appBtn="primary">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        Nueva tarifa
+      </a>
+    </div>
+  </div>
+
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+    @if (rates().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay tarifas registradas.</p>
+        <a
+          routerLink="/admin/rates/new"
+          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          >Crear la primera</a
+        >
+      </div>
+    } @else {
+      <div appTable>
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarifa</th>
+                <th>Producto</th>
+                <th>Valor</th>
+                <th>Cuotas</th>
+                <th>Valor cuota</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rate of rates(); track rate.id) {
+                <tr>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-800">{{ rate.name }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600">{{ rate.product?.name ?? '—' }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600">$ {{ rate.value | number }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600">{{ rate.installments }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600"
+                      >$ {{ rate.installment_value | number }}</span
+                    >
+                  </td>
+                  <td class="px-5 py-3.5">
+                    @if (rate.active) {
+                      <span
+                        class="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700"
+                        >Activa</span
+                      >
+                    } @else {
+                      <span
+                        class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500"
+                        >Inactiva</span
+                      >
+                    }
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      <a [routerLink]="['/admin/rates', rate.id, 'edit']" appBtn="table-edit"
+                        >Editar</a
+                      >
+                      <button
+                        (click)="delete(rate)"
+                        [disabled]="deletingId() === rate.id"
+                        appBtn="table-danger"
+                      >
+                        @if (deletingId() === rate.id) {
+                          Eliminando...
+                        } @else {
+                          Eliminar
+                        }
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Deleted rates -->
+    @if (showTrashed()) {
+      <div class="mt-6">
+        <h2 class="mb-3 text-sm font-semibold text-amber-700 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Tarifas eliminadas
+        </h2>
+
+        <app-spinner [show]="loadingTrashed()" />
+
+        @if (!loadingTrashed()) {
+          @if (trashed().length === 0) {
+            <div
+              class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 py-10 text-center"
+            >
+              <p class="text-sm text-amber-600">No hay tarifas eliminadas.</p>
+            </div>
+          } @else {
+            <div appTable="trashed">
+              <div class="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tarifa</th>
+                      <th>Producto</th>
+                      <th>Valor</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (rate of trashed(); track rate.id) {
+                      <tr>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-500 line-through">{{ rate.name }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-400">{{ rate.product?.name ?? '—' }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span class="text-sm text-gray-400">$ {{ rate.value | number }}</span>
+                        </td>
+                        <td class="px-5 py-3.5 text-right">
+                          <button
+                            (click)="restore(rate)"
+                            [disabled]="restoringId() === rate.id"
+                            appBtn="table-restore"
+                          >
+                            @if (restoringId() === rate.id) {
+                              Restaurando...
+                            } @else {
+                              Restaurar
+                            }
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,129 @@
+<div class="p-4 sm:p-8">
+  <div class="mb-6">
+    <p class="mb-1 text-xs text-gray-400">
+      <a routerLink="/admin/rates" class="hover:text-gray-600">Tarifas</a>
+      <span class="mx-1.5">/</span>
+      {{ isEdit() ? 'Editar' : 'Nueva' }}
+    </p>
+    <h1 class="text-xl font-semibold text-gray-900">
+      {{ isEdit() ? 'Editar tarifa' : 'Nueva tarifa' }}
+    </h1>
+  </div>
+
+  @if (loading()) {
+    <div class="space-y-3 max-w-lg mx-auto">
+      <div class="h-96 rounded-xl bg-white border border-gray-200 animate-pulse"></div>
+    </div>
+  } @else {
+    <div class="max-w-lg mx-auto space-y-4">
+      @if (error()) {
+        <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <div class="rounded-xl border border-gray-200 bg-white p-6 space-y-5">
+        <div>
+          <label for="formName" class="block text-sm font-medium text-gray-700 mb-1.5"
+            >Nombre</label
+          >
+          <input
+            type="text"
+            id="formName"
+            [(ngModel)]="formName"
+            placeholder="ej. 7 Cuota - Biblia $350.000"
+            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+          />
+        </div>
+
+        <div>
+          <label for="formProductId" class="block text-sm font-medium text-gray-700 mb-1.5"
+            >Producto</label
+          >
+          <select
+            id="formProductId"
+            [(ngModel)]="formProductId"
+            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+          >
+            <option [ngValue]="null" disabled>Seleccione un producto…</option>
+            @for (product of products(); track product.id) {
+              <option [ngValue]="product.id">{{ product.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="formValue" class="block text-sm font-medium text-gray-700 mb-1.5"
+              >Valor total (COP)</label
+            >
+            <input
+              type="number"
+              id="formValue"
+              min="0"
+              [(ngModel)]="formValue"
+              placeholder="350000"
+              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            />
+          </div>
+          <div>
+            <label for="formDiscount" class="block text-sm font-medium text-gray-700 mb-1.5"
+              >Descuento (COP)</label
+            >
+            <input
+              type="number"
+              id="formDiscount"
+              min="0"
+              [(ngModel)]="formDiscount"
+              placeholder="0"
+              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            />
+          </div>
+          <div>
+            <label for="formInstallments" class="block text-sm font-medium text-gray-700 mb-1.5"
+              >N.º de cuotas</label
+            >
+            <input
+              type="number"
+              id="formInstallments"
+              min="0"
+              [(ngModel)]="formInstallments"
+              placeholder="7"
+              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            />
+          </div>
+          <div>
+            <label for="formInstallmentValue" class="block text-sm font-medium text-gray-700 mb-1.5"
+              >Valor cuota (COP)</label
+            >
+            <input
+              type="number"
+              id="formInstallmentValue"
+              min="0"
+              [(ngModel)]="formInstallmentValue"
+              placeholder="50000"
+              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="formActive"
+            [(ngModel)]="formActive"
+            class="h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-500/20"
+          />
+          <label for="formActive" class="text-sm font-medium text-gray-700">Activa</label>
+        </div>
+      </div>
+
+      <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 py-2">
+        <a routerLink="/admin/rates" appBtn="secondary"> Cancelar </a>
+        <button (click)="save()" [disabled]="saving() || !isValid()" appBtn="primary">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>
