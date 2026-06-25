@@ -112,6 +112,12 @@ export const NAV_GROUPS: NavGroup[] = [
         route: '/admin/activity',
         permission: 'auditoria.ver',
       },
+      {
+        label: 'Accesos',
+        icons: ['M5 13l4 4L19 7M9 12a4 4 0 100-8 4 4 0 000 8zm0 0c-2.21 0-4 1.79-4 4v1h6'],
+        route: '/admin/access-log',
+        permission: 'accesos.ver',
+      },
     ],
   },
 ];

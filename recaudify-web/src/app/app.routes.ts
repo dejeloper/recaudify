@@ -160,6 +160,11 @@ export const routes: Routes = [
               import('./features/admin/activity/activity').then((m) => m.ActivityFeed),
           },
           {
+            path: 'access-log',
+            loadComponent: () =>
+              import('./features/admin/access-log/access-log').then((m) => m.AccessLog),
+          },
+          {
             path: 'parameters',
             loadComponent: () =>
               import('./features/admin/parameters/parameters').then((m) => m.Parameters),
