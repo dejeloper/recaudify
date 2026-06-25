@@ -1,3 +1,52 @@
 {
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(git *)",
+      "Bash(php *)",
+      "Bash(composer *)",
+      "Bash(pnpm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(ls *)",
+      "Bash(dir *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(jq *)",
+      "Bash(type *)",
+      "Bash(Get-Content *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Set-Location *)",
+      "Bash(Test-Path *)"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(del *)",
+      "Bash(Remove-Item *)",
+      "Bash(rmdir *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $webFiles = $changed | Where-Object { $_ -match '^recaudify-web/.*\\.(ts|html|scss|css)$' } | ForEach-Object { $_ -replace '^recaudify-web/', '' }; if ($webFiles.Count -gt 0) { pnpm --prefix recaudify-web exec prettier --write @($webFiles) --ignore-unknown 2>$null }; exit 0",
+            "statusMessage": "Running Prettier on modified files...",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
 }
