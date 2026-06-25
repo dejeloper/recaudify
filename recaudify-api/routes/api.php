@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
@@ -78,6 +79,18 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::delete("/{id}", [ParameterController::class, "destroy"])->middleware("permission:parametros.eliminar");
         Route::post("/{id}/restore", [ParameterController::class, "restore"])->middleware(
             "permission:parametros.restaurar",
+        );
+    });
+
+    Route::prefix("products")->group(function () {
+        Route::get("/", [ProductController::class, "index"])->middleware("permission:catalogos.ver");
+        Route::get("/trashed", [ProductController::class, "trashed"])->middleware("permission:catalogos.ver");
+        Route::get("/{id}", [ProductController::class, "show"])->middleware("permission:catalogos.ver");
+        Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogos.crear");
+        Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogos.editar");
+        Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogos.eliminar");
+        Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware(
+            "permission:catalogos.restaurar",
         );
     });
 });

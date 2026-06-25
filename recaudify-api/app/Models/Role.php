@@ -9,5 +9,5 @@ class Role extends SpatieRole
 {
     use SoftDeletes;
 
-    protected string $guard_name = "api";
+    protected string $guard_name = 'api';
 }
