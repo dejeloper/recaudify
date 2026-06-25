@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CallReasonController;
 use App\Http\Controllers\Api\ParameterController;
@@ -135,5 +136,9 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
     Route::prefix("states")->group(function () {
         Route::get("/", [StateController::class, "index"])->middleware("permission:catalogos.ver");
         Route::get("/{id}", [StateController::class, "show"])->middleware("permission:catalogos.ver");
+    });
+
+    Route::prefix("activities")->group(function () {
+        Route::get("/", [ActivityController::class, "index"])->middleware("permission:auditoria.ver");
     });
 });

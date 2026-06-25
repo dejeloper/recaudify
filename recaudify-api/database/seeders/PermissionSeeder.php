@@ -51,6 +51,9 @@ class PermissionSeeder extends Seeder
             "catalogos.editar",
             "catalogos.eliminar",
             "catalogos.restaurar",
+
+            // Auditoría (feed de actividad)
+            "auditoria.ver",
         ];
 
         foreach ($permissions as $permission) {
