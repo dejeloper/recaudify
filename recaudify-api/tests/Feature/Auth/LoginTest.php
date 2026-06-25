@@ -17,7 +17,9 @@ class LoginTest extends TestCase
     {
         parent::setUp();
         Role::create(["name" => "superadmin", "guard_name" => "api"]);
-        $this->user = User::factory()->withRole("superadmin")->create(["username" => "testuser"]);
+        $this->user = User::factory()
+            ->withRole("superadmin")
+            ->create(["username" => "testuser"]);
     }
 
     public function test_login_returns_token_on_success(): void

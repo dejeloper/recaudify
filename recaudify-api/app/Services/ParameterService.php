@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ParameterService
 {
-    private const CACHE_KEY = 'parameters.all';
+    private const CACHE_KEY = "parameters.all";
 
     private const TTL = 86400;
 
@@ -23,7 +23,7 @@ class ParameterService
     public static function all(): SupportCollection
     {
         $data = Cache::remember(self::CACHE_KEY, self::TTL, function () {
-            return Parameter::pluck('value', 'key')->all();
+            return Parameter::pluck("value", "key")->all();
         });
 
         return collect($data);
@@ -38,12 +38,12 @@ class ParameterService
 
     public function getAll(): Collection
     {
-        return Parameter::orderBy('key')->get();
+        return Parameter::orderBy("key")->get();
     }
 
     public function getTrashed(): Collection
     {
-        return Parameter::onlyTrashed()->orderBy('key')->get();
+        return Parameter::onlyTrashed()->orderBy("key")->get();
     }
 
     public function find(int $id): ?Parameter

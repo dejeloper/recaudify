@@ -10,29 +10,29 @@ class UserService
 {
     public function all(): Collection
     {
-        return User::with('roles')->get();
+        return User::with("roles")->get();
     }
 
     public function allDisabled(): Collection
     {
-        return User::onlyTrashed()->with('roles')->get();
+        return User::onlyTrashed()->with("roles")->get();
     }
 
     public function find(int $id): ?User
     {
-        return User::with('roles', 'permissions')->find($id);
+        return User::with("roles", "permissions")->find($id);
     }
 
     public function findTrashed(int $id): ?User
     {
-        return User::onlyTrashed()->with('roles')->find($id);
+        return User::onlyTrashed()->with("roles")->find($id);
     }
 
     public function search(string $term): Collection
     {
-        return User::with('roles')
-            ->where('name', 'like', "%{$term}%")
-            ->orWhere('username', 'like', "%{$term}%")
+        return User::with("roles")
+            ->where("name", "like", "%{$term}%")
+            ->orWhere("username", "like", "%{$term}%")
             ->get();
     }
 
@@ -44,14 +44,12 @@ class UserService
             $user->syncRoles([$role]);
         }
 
-        return $user->load('roles', 'permissions');
+        return $user->load("roles", "permissions");
     }
 
     public function update(User $user, array $data, bool $syncRole = false, ?string $role = null): User
     {
-        $filtered = collect($data)
-            ->filter(fn($value, $key) => $key !== 'password' || !empty($value))
-            ->toArray();
+        $filtered = collect($data)->filter(fn($value, $key) => $key !== "password" || !empty($value))->toArray();
 
         $user->update($filtered);
 
@@ -59,7 +57,7 @@ class UserService
             $user->syncRoles(array_filter([$role]));
         }
 
-        return $user->load('roles', 'permissions');
+        return $user->load("roles", "permissions");
     }
 
     public function delete(User $user): void
@@ -80,6 +78,6 @@ class UserService
             $user->revokePermissionTo($permissions);
         }
 
-        return $user->fresh()->getAllPermissions()->pluck('name');
+        return $user->fresh()->getAllPermissions()->pluck("name");
     }
 }

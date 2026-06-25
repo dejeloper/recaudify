@@ -9,32 +9,32 @@ class PermissionService
 {
     public function all(): Collection
     {
-        return Permission::where('guard_name', 'api')->orderBy('name')->get();
+        return Permission::where("guard_name", "api")->orderBy("name")->get();
     }
 
     public function find(int $id): ?Permission
     {
-        return Permission::where('guard_name', 'api')->find($id);
+        return Permission::where("guard_name", "api")->find($id);
     }
 
     public function findTrashed(int $id): ?Permission
     {
-        return Permission::onlyTrashed()->where('guard_name', 'api')->find($id);
+        return Permission::onlyTrashed()->where("guard_name", "api")->find($id);
     }
 
     public function trashed(): Collection
     {
-        return Permission::onlyTrashed()->where('guard_name', 'api')->orderBy('name')->get();
+        return Permission::onlyTrashed()->where("guard_name", "api")->orderBy("name")->get();
     }
 
     public function create(string $name): Permission
     {
-        return Permission::create(['name' => $name, 'guard_name' => 'api']);
+        return Permission::create(["name" => $name, "guard_name" => "api"]);
     }
 
     public function update(Permission $permission, string $name): void
     {
-        $permission->update(['name' => $name]);
+        $permission->update(["name" => $name]);
     }
 
     public function delete(Permission $permission): void

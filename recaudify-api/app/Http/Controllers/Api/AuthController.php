@@ -98,9 +98,17 @@ class AuthController extends ApiController
         $data["current_shift"] = $this->authService->getCurrentShift($user);
         $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
         $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
+        $data["geolocalization_login_enabled"] = ParameterService::get("geolocalization_login", "true") === "true";
         $data["ip_address"] = request()->ip();
 
         return ApiResult::success($data)->toResponse();
+    }
+
+    public function config(): JsonResponse
+    {
+        return ApiResult::success([
+            "geolocalization_login" => ParameterService::get("geolocalization_login", "true") === "true",
+        ])->toResponse();
     }
 
     public function refresh(): JsonResponse

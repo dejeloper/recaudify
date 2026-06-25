@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix("auth")->group(function () {
     Route::post("register", [AuthController::class, "register"]);
     Route::post("login", [AuthController::class, "login"]);
+    Route::get("config", [AuthController::class, "config"]);
 
     Route::post("refresh", [AuthController::class, "refresh"])->middleware("throttle:10,1");
 

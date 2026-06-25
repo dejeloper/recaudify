@@ -53,10 +53,7 @@ class UserController extends ApiController
 
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = $this->userService->create(
-            $request->safe()->except("role"),
-            $request->string("role")->toString(),
-        );
+        $user = $this->userService->create($request->safe()->except("role"), $request->string("role")->toString());
 
         return ApiResult::created(new UserResource($user), "Usuario creado correctamente.")->toResponse();
     }
