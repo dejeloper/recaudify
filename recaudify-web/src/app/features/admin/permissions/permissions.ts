@@ -20,6 +20,8 @@ export class Permissions implements OnInit {
   protected readonly loading = this.service.loading;
   protected readonly loadingTrashed = this.service.loadingTrashed;
   protected readonly showTrashed = this.service.showTrashed;
+  protected readonly permissions = this.service.items;
+  protected readonly trashed = this.service.trashed;
   protected readonly grouped = this.service.grouped;
   protected readonly groupedTrashed = this.service.groupedTrashed;
   protected readonly deletingId = signal<number | null>(null);

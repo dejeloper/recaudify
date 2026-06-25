@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Schedule } from '@core/interfaces/schedule.interface';
+import { User } from '@core/interfaces/user.interface';
 import { AuthService } from '@core/services/auth.service';
 import { SchedulesService } from '@core/services/schedules.service';
 import { UsersService } from '@core/services/users.service';
@@ -34,7 +35,7 @@ export class UserSchedules implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly days = DAYS;
-  protected readonly user = signal(this.usersService.items()[0] ?? null);
+  protected readonly user = signal<User | null>(this.usersService.items()[0] ?? null);
   protected readonly schedules = this.schedulesService.items;
   protected readonly loading = this.schedulesService.loading;
   protected readonly showStatusEnabled = this.schedulesService.showStatusEnabled;
