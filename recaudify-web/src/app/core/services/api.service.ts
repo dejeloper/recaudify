@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { ApiOptions, ApiResponse } from '@core/interfaces/api.interface';
+import { Paginated } from '@core/interfaces/pagination.interface';
 
 const SAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 
@@ -52,6 +53,15 @@ export class ApiService {
 
   get<T = unknown>(controller: string, action?: string, params?: ApiOptions['params']) {
     return this.request<T>({ controller, action, method: 'GET', params });
+  }
+
+  /** GET de un listado paginado estándar: data = { items, meta }. */
+  getPaginated<T = unknown>(
+    controller: string,
+    action?: string,
+    params?: ApiOptions['params'],
+  ): Observable<Paginated<T>> {
+    return this.request<Paginated<T>>({ controller, action, method: 'GET', params });
   }
 
   post<T = unknown>(controller: string, action?: string, body?: ApiOptions['body']) {

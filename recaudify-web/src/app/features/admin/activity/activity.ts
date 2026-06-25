@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Activity } from '@core/interfaces/activity.interface';
 import { ActivitiesService } from '@core/services/activities.service';
@@ -24,17 +25,27 @@ const MONEY_FIELDS = new Set(['value', 'installment_value', 'discount']);
 
 @Component({
   selector: 'app-activity',
-  imports: [Spinner, DatePipe],
+  imports: [Spinner, DatePipe, BtnDirective],
   templateUrl: './activity.html',
 })
 export class ActivityFeed implements OnInit {
   protected readonly service = inject(ActivitiesService);
 
   protected readonly activities = this.service.items;
+  protected readonly meta = this.service.meta;
   protected readonly loading = this.service.loading;
+  protected readonly loadingMore = this.service.loadingMore;
 
   ngOnInit() {
     this.service.load();
+  }
+
+  protected loadMore() {
+    this.service.loadMore();
+  }
+
+  protected hasMore() {
+    return this.service.hasMore();
   }
 
   protected fieldLabel(model: string | null, field: string): string {

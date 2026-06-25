@@ -1,7 +1,12 @@
 <div class="p-4 sm:p-8">
   <div class="mb-6">
     <h1 class="text-xl font-semibold text-gray-900">Actividad</h1>
-    <p class="mt-0.5 text-sm text-gray-400">Registro de acciones realizadas en el sistema.</p>
+    <p class="mt-0.5 text-sm text-gray-400">
+      Registro de acciones realizadas en el sistema.
+      @if (meta(); as m) {
+        <span class="text-gray-300">·</span> {{ m.total }} registro{{ m.total === 1 ? '' : 's' }}
+      }
+    </p>
   </div>
 
   <app-spinner [show]="loading()" />
@@ -77,6 +82,14 @@
           </li>
         }
       </ol>
+
+      @if (hasMore()) {
+        <div class="mt-4 text-center">
+          <button (click)="loadMore()" [disabled]="loadingMore()" appBtn="secondary">
+            {{ loadingMore() ? 'Cargando...' : 'Cargar más' }}
+          </button>
+        </div>
+      }
     }
   }
 </div>
