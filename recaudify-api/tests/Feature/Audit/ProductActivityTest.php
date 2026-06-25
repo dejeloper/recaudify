@@ -55,13 +55,13 @@ class ProductActivityTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJsonPath("data.0.event", "updated")
-            ->assertJsonPath("data.0.description", "actualizó")
-            ->assertJsonPath("data.0.model_label", "producto")
-            ->assertJsonPath("data.0.subject.label", "Biblia Grande")
-            ->assertJsonPath("data.0.changes.0.field", "value")
-            ->assertJsonPath("data.0.changes.0.old", 350000)
-            ->assertJsonPath("data.0.changes.0.new", 300000);
+            ->assertJsonPath("data.items.0.event", "updated")
+            ->assertJsonPath("data.items.0.description", "actualizó")
+            ->assertJsonPath("data.items.0.model_label", "producto")
+            ->assertJsonPath("data.items.0.subject.label", "Biblia Grande")
+            ->assertJsonPath("data.items.0.changes.0.field", "value")
+            ->assertJsonPath("data.items.0.changes.0.old", 350000)
+            ->assertJsonPath("data.items.0.changes.0.new", 300000);
     }
 
     public function test_update_logs_only_changed_fields(): void

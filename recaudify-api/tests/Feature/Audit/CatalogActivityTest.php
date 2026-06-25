@@ -64,9 +64,9 @@ class CatalogActivityTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJsonPath("data.0.model_label", "motivo de llamada")
-            ->assertJsonPath("data.0.subject.label", "Programar Pago")
-            ->assertJsonPath("data.1.model_label", "vendedor")
-            ->assertJsonPath("data.1.subject.label", "Fabiola Guzmán");
+            ->assertJsonPath("data.items.0.model_label", "motivo de llamada")
+            ->assertJsonPath("data.items.0.subject.label", "Programar Pago")
+            ->assertJsonPath("data.items.1.model_label", "vendedor")
+            ->assertJsonPath("data.items.1.subject.label", "Fabiola Guzmán");
     }
 }
