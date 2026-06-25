@@ -3,7 +3,11 @@ import { LoginAudit } from '@core/interfaces/audit.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuditService {
-  captureLogin(userId: number, ipAddress: string | null, coords: GeolocationCoordinates): void {
+  captureLogin(
+    userId: number,
+    ipAddress: string | null,
+    coords: GeolocationCoordinates | null,
+  ): void {
     const audit: LoginAudit = {
       user_id: userId,
       session_id: crypto.randomUUID(),
@@ -12,11 +16,9 @@ export class AuditService {
       user_agent: navigator.userAgent,
       os: this.parseOs(navigator.userAgent),
       device_type: this.getDeviceType(navigator.userAgent),
-      geolocation: {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        accuracy: coords.accuracy,
-      },
+      geolocation: coords
+        ? { latitude: coords.latitude, longitude: coords.longitude, accuracy: coords.accuracy }
+        : null,
     };
 
     console.log('[Audit] Login:', audit);

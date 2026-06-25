@@ -35,6 +35,9 @@ export class AuthService {
   readonly shiftCountdownEnabled = computed(
     () => this.currentUser()?.shift_countdown_enabled ?? false,
   );
+  readonly geolocalizationLoginEnabled = computed(
+    () => this.currentUser()?.geolocalization_login_enabled ?? true,
+  );
 
   hasPermission(permission: string): boolean {
     return this.currentUser()?.permissions.includes(permission) ?? false;
@@ -66,8 +69,12 @@ export class AuthService {
     const data = { username: lower(username), password };
     return this.api.post('auth', 'login', data).pipe(
       switchMap(() => this.me()),
-      switchMap((user) =>
-        this.geolocation.request().pipe(
+      switchMap((user) => {
+        if (!(user.geolocalization_login_enabled ?? true)) {
+          this.audit.captureLogin(user.id, user.ip_address ?? null, null);
+          return of(user);
+        }
+        return this.geolocation.request().pipe(
           tap((coords) => this.audit.captureLogin(user.id, user.ip_address ?? null, coords)),
           map(() => user),
           catchError(() =>
@@ -80,8 +87,8 @@ export class AuthService {
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

@@ -6,5 +6,5 @@ export interface LoginAudit {
   user_agent: string;
   os: { name: string; version: string };
   device_type: 'mobile' | 'tablet' | 'desktop';
-  geolocation: { latitude: number; longitude: number; accuracy: number };
+  geolocation: { latitude: number; longitude: number; accuracy: number } | null;
 }
