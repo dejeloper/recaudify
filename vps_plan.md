@@ -113,9 +113,10 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ### Vercel
 
-- [ ] Conectar repositorio
-- [ ] Configurar `VITE_API_URL` para staging y prod
-- [ ] Verificar build del proyecto Angular
+- [x] Conectar repositorio
+- [x] Configurar dominios staging-app.recaudify.cloud y app.recaudify.cloud
+- [x] Configurar BUILD_CONFIG por entorno (prod/staging)
+- [x] Verificar build del proyecto Angular en staging y prod
 
 ---
 
