@@ -35,3 +35,6 @@ recaudify-api/.playwright-cli/*
 
 # demo
 cobranza_files/*
+
+# Datos Vps 
+Datos del VPS.txt

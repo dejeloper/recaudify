@@ -1,11 +1,13 @@
 .agents/
 .claude/
 .playwright/
-.playwright-cli/
-*.spec.ts
+.playwright-cli/ 
 api-docs.json
 node_modules/
 recaudify-web/node_modules/
 recaudify-api/vendor/
 recaudify-api/storage/
 recaudify-api/bootstrap/cache/
+
+# Datos Vps 
+Datos del VPS.txt

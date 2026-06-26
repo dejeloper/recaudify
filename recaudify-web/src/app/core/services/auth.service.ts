@@ -15,14 +15,12 @@ import { lower } from '@core/utils/text';
 import { ApiError } from '@core/interfaces/api-error.interface';
 import { CurrentShift, User } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
-import { AuditService } from '@core/services/audit.service';
 import { GeolocationService } from '@core/services/geolocation.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
-  private readonly audit = inject(AuditService);
   private readonly geolocation = inject(GeolocationService);
 
   readonly currentUser = signal<User | null>(null);
@@ -71,12 +69,11 @@ export class AuthService {
       switchMap(() => this.me()),
       switchMap((user) => {
         if (!(user.geolocalization_login_enabled ?? true)) {
-          this.audit.captureLogin(user.id, user.ip_address ?? null, null);
           return of(user);
         }
         return this.geolocation.request().pipe(
-          tap((coords) => this.audit.captureLogin(user.id, user.ip_address ?? null, coords)),
-          map(() => user),
+          // Geo concedida → la enviamos al backend (best-effort, no bloquea el login).
+          switchMap((coords) => this.sendLoginLocation(coords).pipe(map(() => user))),
           catchError(() =>
             this.api.post('auth', 'logout').pipe(
               tap(() => this.currentUser.set(null)),
@@ -90,6 +87,16 @@ export class AuthService {
         );
       }),
     );
+  }
+
+  private sendLoginLocation(coords: GeolocationCoordinates) {
+    return this.api
+      .post('auth', 'login/location', {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        accuracy: coords.accuracy,
+      })
+      .pipe(catchError(() => of(null)));
   }
 
   me() {

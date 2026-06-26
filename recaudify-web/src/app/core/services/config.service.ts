@@ -10,8 +10,8 @@ export class ConfigService {
 
   getLoginConfig(): Observable<LoginConfig> {
     if (this.loginConfig) return of(this.loginConfig);
-    return this.api.get<LoginConfig>('auth', 'config').pipe(
-      tap((config) => (this.loginConfig = config)),
-    );
+    return this.api
+      .get<LoginConfig>('auth', 'config')
+      .pipe(tap((config) => (this.loginConfig = config)));
   }
 }

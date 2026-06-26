@@ -88,4 +88,38 @@ use OpenApi\Attributes as OA;
         MD,
     ),
 ]
+#[
+    OA\Tag(
+        name: "Catálogos",
+        description: <<<'MD'
+        Datos base del negocio: **productos**, **tarifas** (plan de pago por producto), **vendedores**,
+        **motivos de llamada** y **estados** (estos últimos, solo lectura).
+
+        Todos los catálogos administrables admiten soft delete (eliminar/restaurar). Requieren permisos
+        del scope `catalogos.*`. Los códigos legacy (101…) se preservan como `id`.
+        MD,
+    ),
+]
+#[
+    OA\Tag(
+        name: "Auditoría",
+        description: <<<'MD'
+        Feed de **cambios de negocio** (creó/actualizó/eliminó/restauró) registrado automáticamente
+        sobre los modelos auditados, con su autor, la entidad afectada y el diff de campos.
+
+        Solo lectura. Requiere el permiso `auditoria.ver`.
+        MD,
+    ),
+]
+#[
+    OA\Tag(
+        name: "Accesos",
+        description: <<<'MD'
+        Auditoría de **inicios de sesión** (exitosos y fallidos), con metadata autoritativa del servidor
+        (IP, user-agent, SO, dispositivo) y la geolocalización del cliente en los exitosos.
+
+        Solo lectura. Requiere el permiso `accesos.ver`.
+        MD,
+    ),
+]
 class ApiInfo {}

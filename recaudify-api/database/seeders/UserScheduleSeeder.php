@@ -11,7 +11,7 @@ class UserScheduleSeeder extends Seeder
     public function run(): void
     {
         $users = User::where("username", "!=", "superadmin")->get();
-        //$users = User::where('username', 'admin')->firstOrFail();
+        // $users = User::where('username', 'admin')->firstOrFail();
 
         foreach ($users as $user) {
             for ($day = 0; $day <= 6; $day++) {

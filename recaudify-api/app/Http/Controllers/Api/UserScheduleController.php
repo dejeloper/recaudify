@@ -6,8 +6,8 @@ use App\Http\Requests\Schedule\StoreUserScheduleRequest;
 use App\Http\Requests\Schedule\UpdateUserScheduleRequest;
 use App\Http\Resources\UserScheduleResource;
 use App\Http\Responses\ApiResult;
-use App\Services\UserScheduleService;
 use App\Models\UserSchedule;
+use App\Services\UserScheduleService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 

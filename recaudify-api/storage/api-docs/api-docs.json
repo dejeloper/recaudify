@@ -12,6 +12,93 @@
         }
     ],
     "paths": {
+        "/api/activities": {
+            "get": {
+                "tags": [
+                    "Auditoría"
+                ],
+                "summary": "Listar actividad (auditoría de cambios)",
+                "description": "Feed paginado de cambios de negocio (creó / actualizó / eliminó / restauró) con su autor,\nla entidad afectada y el diff de campos. Respuesta estándar paginada `data: { items, meta }`.",
+                "operationId": "8ac4fdd1a6c55e753ead95d8f7c257d5",
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "description": "Filtra por modelo (basename, ej. Product, Rate, Seller, CallReason)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Product"
+                        }
+                    },
+                    {
+                        "name": "subject_id",
+                        "in": "query",
+                        "description": "Filtra por ID del registro afectado",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "causer_id",
+                        "in": "query",
+                        "description": "Filtra por usuario que realizó la acción",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "log_name",
+                        "in": "query",
+                        "description": "Filtra por nombre del log (ej. catalogos)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Elementos por página (1–100, por defecto 25)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado paginado de actividad"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "tags": [
@@ -111,9 +198,70 @@
                         "description": "Credenciales incorrectas"
                     },
                     "403": {
-                        "description": "Usuario inactivo"
+                        "description": "Usuario inactivo o fuera de horario"
                     }
                 }
+            }
+        },
+        "/api/auth/login/location": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registrar geolocalización del acceso",
+                "description": "Enriquece el último acceso exitoso del usuario con su geolocalización (la captura el cliente tras el login).",
+                "operationId": "05e2f86f43307edf63babaa959847b92",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "latitude",
+                                    "longitude"
+                                ],
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 4.711
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -74.0721
+                                    },
+                                    "accuracy": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 12.5,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ubicación registrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
             }
         },
         "/api/auth/me": {
@@ -179,6 +327,1281 @@
                     },
                     "401": {
                         "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/call-reasons": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar motivos de llamada",
+                "operationId": "37a6de72fe529eac9f1ad26969381f25",
+                "responses": {
+                    "200": {
+                        "description": "Lista de motivos de llamada"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Crear motivo de llamada",
+                "operationId": "001e6ca59b6328548f6358e43e0e49ed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Programar Pago",
+                                        "maxLength": 30
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "green",
+                                        "nullable": true,
+                                        "maxLength": 30
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Motivo creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/call-reasons/trashed": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar motivos de llamada eliminados",
+                "operationId": "e1d0acb8ca09428ed50b8228d394a49c",
+                "responses": {
+                    "200": {
+                        "description": "Lista de motivos en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/call-reasons/{id}": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Obtener motivo de llamada por ID",
+                "operationId": "a258fe929d83a7bad6fa84552a1b31e5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Motivo encontrado"
+                    },
+                    "404": {
+                        "description": "Motivo no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Actualizar motivo de llamada",
+                "operationId": "73fa53efd119cc1bf0c708b23e0d5a5f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Programar Pago",
+                                        "maxLength": 30
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "green",
+                                        "nullable": true,
+                                        "maxLength": 30
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Motivo actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Motivo no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Eliminar motivo de llamada",
+                "operationId": "8a05137820a1a47f9e0c1c43632d8e51",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Motivo eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Motivo no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/call-reasons/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Restaurar motivo de llamada eliminado",
+                "operationId": "fcef718696a30d79bfb2c860a058fd93",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Motivo restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Motivo no encontrado en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar productos",
+                "operationId": "4e30d42028dd4fa34933fff4bbfa645f",
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Crear producto",
+                "operationId": "4e1ecb5286b1e1b4df7d79f38f3e77c6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Biblia Grande",
+                                        "maxLength": 100
+                                    },
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 350000,
+                                        "minimum": 0
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Producto creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/trashed": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar productos eliminados",
+                "operationId": "532e3c761483efdcd280fe040450a838",
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos en papelera"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Obtener producto por ID",
+                "operationId": "0591dce2632f54e8dbd246d0c9e539be",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto encontrado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Actualizar producto",
+                "operationId": "4bc21d229562081e9e691f3f27702a9c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Biblia Grande",
+                                        "maxLength": 100
+                                    },
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 300000,
+                                        "minimum": 0
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Eliminar producto",
+                "operationId": "938d598b5141ef6470607da340ccf186",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Restaurar producto eliminado",
+                "operationId": "ef50c4120488ac0b9c8de274f432689f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rates": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar tarifas",
+                "operationId": "18479f9356ea2d2a891a6345608f42ee",
+                "responses": {
+                    "200": {
+                        "description": "Lista de tarifas (incluye su producto)"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Crear tarifa",
+                "operationId": "5e915b11c5bc0bc399cfb32370d561bb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "product_id",
+                                    "value",
+                                    "installments",
+                                    "installment_value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "7 Cuota - Biblia",
+                                        "maxLength": 100
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 350000,
+                                        "minimum": 0
+                                    },
+                                    "installments": {
+                                        "type": "integer",
+                                        "example": 7,
+                                        "minimum": 0
+                                    },
+                                    "installment_value": {
+                                        "type": "integer",
+                                        "example": 50000,
+                                        "minimum": 0
+                                    },
+                                    "discount": {
+                                        "type": "integer",
+                                        "example": 0,
+                                        "minimum": 0
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tarifa creada correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación (p. ej. product_id inexistente)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rates/trashed": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar tarifas eliminadas",
+                "operationId": "cdce05120723c6c9830276e068c84b35",
+                "responses": {
+                    "200": {
+                        "description": "Lista de tarifas en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rates/{id}": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Obtener tarifa por ID",
+                "operationId": "2de1c35e24fb39e602be8ad925479bcb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tarifa encontrada"
+                    },
+                    "404": {
+                        "description": "Tarifa no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Actualizar tarifa",
+                "operationId": "70dee7478c21e51acccfb329f6ebf384",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "product_id",
+                                    "value",
+                                    "installments",
+                                    "installment_value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "7 Cuota - Biblia",
+                                        "maxLength": 100
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 350000,
+                                        "minimum": 0
+                                    },
+                                    "installments": {
+                                        "type": "integer",
+                                        "example": 7,
+                                        "minimum": 0
+                                    },
+                                    "installment_value": {
+                                        "type": "integer",
+                                        "example": 50000,
+                                        "minimum": 0
+                                    },
+                                    "discount": {
+                                        "type": "integer",
+                                        "example": 0,
+                                        "minimum": 0
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tarifa actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "Tarifa no encontrada"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Eliminar tarifa",
+                "operationId": "633f85c8da2ebc111c6d59bf40e6549a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tarifa eliminada correctamente"
+                    },
+                    "404": {
+                        "description": "Tarifa no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rates/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Restaurar tarifa eliminada",
+                "operationId": "65a75a81c24cee115ce9c421ee3e1ce4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tarifa restaurada correctamente"
+                    },
+                    "404": {
+                        "description": "Tarifa no encontrada en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar vendedores",
+                "operationId": "b69cc0409e00d5a4c586ae8cfdfae295",
+                "responses": {
+                    "200": {
+                        "description": "Lista de vendedores"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Crear vendedor",
+                "operationId": "3f7ada05be27067cc5a03ab6484bc03d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Fabiola Guzmán",
+                                        "maxLength": 100
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "Vendedor1",
+                                        "nullable": true,
+                                        "maxLength": 30
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vendedor creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers/trashed": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar vendedores eliminados",
+                "operationId": "4205b1aa35d3c32d6432132c2d2f1e8c",
+                "responses": {
+                    "200": {
+                        "description": "Lista de vendedores en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers/{id}": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Obtener vendedor por ID",
+                "operationId": "cbba7626403926319cadd41c83357384",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vendedor encontrado"
+                    },
+                    "404": {
+                        "description": "Vendedor no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Actualizar vendedor",
+                "operationId": "3cc6a4bb7c6f021fed9fbc5e4e95c999",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Fabiola Guzmán",
+                                        "maxLength": 100
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "Vendedor1",
+                                        "nullable": true,
+                                        "maxLength": 30
+                                    },
+                                    "active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vendedor actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Vendedor no encontrado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Eliminar vendedor",
+                "operationId": "f31dc1392820c6fd5c380c265a1ac89c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vendedor eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Vendedor no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Restaurar vendedor eliminado",
+                "operationId": "31f102786d4ab33c29a6756b3d54e11f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vendedor restaurado correctamente"
+                    },
+                    "404": {
+                        "description": "Vendedor no encontrado en papelera"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Listar estados",
+                "description": "Catálogo de estados (códigos legacy 101–127). Filtrable por tipo de entidad.",
+                "operationId": "a16c6e9d7e96bd6cb7973f1cb30f608b",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Agrupador del estado",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "user",
+                                "client",
+                                "seller",
+                                "contract",
+                                "scheduled_payment",
+                                "collector"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de estados"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states/{id}": {
+            "get": {
+                "tags": [
+                    "Catálogos"
+                ],
+                "summary": "Obtener estado por ID",
+                "operationId": "6e82d31954feb8f2f5d2b46557dbd7ef",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado encontrado"
+                    },
+                    "404": {
+                        "description": "Estado no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login-audits": {
+            "get": {
+                "tags": [
+                    "Accesos"
+                ],
+                "summary": "Listar accesos (auditoría de inicios de sesión)",
+                "description": "Feed paginado de inicios de sesión, exitosos y fallidos, con metadata autoritativa del\nservidor (IP, user-agent, SO, dispositivo) y geolocalización del cliente en los exitosos.\nRespuesta estándar paginada `data: { items, meta }`.",
+                "operationId": "68ac4bc99f0109ad9213498d00003096",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtra por resultado del acceso",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "success",
+                                "failed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filtra por usuario",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Elementos por página (1–100, por defecto 25)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado paginado de accesos"
+                    },
+                    "403": {
+                        "description": "Sin permisos"
                     }
                 },
                 "security": [
@@ -1725,6 +3148,18 @@
         {
             "name": "Parámetros",
             "description": "Configuración general del sistema almacenada como pares clave/valor (ej. `max_intentos_login = 5`).\n\nSolo accesible por usuarios con permisos del scope `parametros.*`. Admite soft delete."
+        },
+        {
+            "name": "Catálogos",
+            "description": "Datos base del negocio: **productos**, **tarifas** (plan de pago por producto), **vendedores**,\n**motivos de llamada** y **estados** (estos últimos, solo lectura).\n\nTodos los catálogos administrables admiten soft delete (eliminar/restaurar). Requieren permisos\ndel scope `catalogos.*`. Los códigos legacy (101…) se preservan como `id`."
+        },
+        {
+            "name": "Auditoría",
+            "description": "Feed de **cambios de negocio** (creó/actualizó/eliminó/restauró) registrado automáticamente\nsobre los modelos auditados, con su autor, la entidad afectada y el diff de campos.\n\nSolo lectura. Requiere el permiso `auditoria.ver`."
+        },
+        {
+            "name": "Accesos",
+            "description": "Auditoría de **inicios de sesión** (exitosos y fallidos), con metadata autoritativa del servidor\n(IP, user-agent, SO, dispositivo) y la geolocalización del cliente en los exitosos.\n\nSolo lectura. Requiere el permiso `accesos.ver`."
         }
     ]
 }

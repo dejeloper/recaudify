@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Permission;
 use App\Models\Role;
+use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
@@ -26,9 +26,19 @@ class RoleSeeder extends Seeder
                 "parametros.ver",
                 "parametros.crear",
                 "parametros.editar",
+                "catalogos.ver",
+                "catalogos.crear",
+                "catalogos.editar",
             ],
 
-            "auxiliar" => ["usuarios.ver", "roles.ver", "permisos.ver", "horarios.ver", "parametros.ver"],
+            "auxiliar" => [
+                "usuarios.ver",
+                "roles.ver",
+                "permisos.ver",
+                "horarios.ver",
+                "parametros.ver",
+                "catalogos.ver",
+            ],
         ];
 
         foreach ($roles as $roleName => $permissions) {

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Auth\LoginLocationRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResult;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\LoginAuditService;
 use App\Services\ParameterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
@@ -16,7 +18,10 @@ use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 
 class AuthController extends ApiController
 {
-    public function __construct(private readonly AuthService $authService) {}
+    public function __construct(
+        private readonly AuthService $authService,
+        private readonly LoginAuditService $loginAudit,
+    ) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -40,6 +45,9 @@ class AuthController extends ApiController
         ];
 
         if (!($token = $this->guard()->attempt($credentials))) {
+            $attempted = User::where("username", $request->username)->first();
+            $this->loginAudit->recordFailure($request->username, "invalid_credentials", $attempted, $request);
+
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
 
@@ -48,6 +56,7 @@ class AuthController extends ApiController
 
         if (!$user->active) {
             $this->guard()->logout();
+            $this->loginAudit->recordFailure($user->username, "inactive", $user, $request);
 
             return ApiResult::forbidden("Usuario inactivo.")->toResponse();
         }
@@ -56,9 +65,12 @@ class AuthController extends ApiController
 
         if ($error !== null) {
             $this->guard()->logout();
+            $this->loginAudit->recordFailure($user->username, "out_of_schedule", $user, $request);
 
             return ApiResult::forbidden($error)->toResponse();
         }
+
+        $this->loginAudit->recordSuccess($user, $request);
 
         return $this->buildTokenResponse($token, $user);
     }
@@ -85,6 +97,16 @@ class AuthController extends ApiController
         $response->headers->set("Authorization", "Bearer {$token}");
 
         return $response;
+    }
+
+    public function loginLocation(LoginLocationRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->guard()->user();
+
+        $this->loginAudit->attachLocation($user, $request->validated());
+
+        return ApiResult::empty("Ubicación registrada.")->toResponse();
     }
 
     public function me(): JsonResponse

@@ -2,6 +2,8 @@
 
 Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración y reescritura de Católikas Cobranza (CodeIgniter 3).
 
+---
+
 ## Backend (recaudify-api)
 
 ### Infraestructura
@@ -17,8 +19,8 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Configurar soft deletes en entidades de negocio.
 - [x] Crear seeders de catálogos base (estados, tipos, roles).
 - [x] Definir formato estándar de respuestas API (recursos, paginación, errores).
-- [ ] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
-- [ ] Configurar auditoría (registro de cambios y acciones críticas).
+- [x] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
+- [x] Configurar auditoría (registro de cambios y acciones críticas).
 - [ ] Configurar carga y almacenamiento de archivos.
 - [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
 - [ ] Configurar scheduler vía cron de cPanel.
@@ -26,12 +28,12 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ### Clientes
 
-- [ ] Modelar cliente único (identidad por documento).
-- [ ] Soportar múltiples contratos por cliente.
-- [ ] Soportar múltiples teléfonos.
-- [ ] Soportar múltiples direcciones.
-- [ ] Soportar referencias.
-- [ ] Crear cliente.
+- [x] Modelar cliente único (identidad por documento).
+- [x] Soportar múltiples contratos por cliente.
+- [x] Soportar múltiples teléfonos.
+- [x] Soportar múltiples direcciones.
+- [x] Soportar referencias.
+- [x] Crear cliente (con contrato + productos en una transacción).
 - [ ] Editar cliente.
 - [ ] Buscar cliente (documento, nombre, teléfono, contrato).
 - [ ] Consultar cliente (ficha 360°).
@@ -43,7 +45,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ### Contratos y Productos
 
-- [ ] Romper la relación 1:1 (cliente → muchos contratos).
+- [x] Romper la relación 1:1 (cliente → muchos contratos).
 - [ ] Consolidar cartera por cliente.
 - [ ] Crear contrato.
 - [ ] Consultar contrato.
@@ -157,7 +159,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Crear rol cobrador.
 - [x] Crear rol auxiliar.
 - [x] Definir permisos por rol sobre cada módulo.
-- [ ] Registrar accesos (login/logout).
+- [x] Registrar accesos (login/logout).
 - [ ] Registrar cambios.
 - [ ] Registrar eliminaciones.
 - [ ] Registrar acciones críticas.
@@ -194,6 +196,8 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Generar backup de base de datos.
 - [ ] Descargar backup.
 - [ ] Restaurar backup.
+
+---
 
 ## Frontend (recaudify-web)
 
@@ -240,14 +244,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] CRM — Pedidos: crear pantalla de listado/gestión de pedidos (conectar con el módulo de Contratos/Pedidos del backend cuando esté listo).
 - [ ] Agregar campo de búsqueda en la pantalla `/admin/users` que consuma el endpoint `GET /api/users/search/{name}`.
 
-## Despliegue y Operación
-
-- [ ] Desplegar el front en Vercel (build, variables de entorno).
-- [ ] Desplegar la API en cPanel (document root a `public/`, `.env`, permisos de `storage/`).
-- [ ] Configurar cron de cPanel para el scheduler.
-- [ ] Definir estrategia de backups (MySQL + evidencias).
-- [ ] Definir estrategia de logs.
-- [ ] Definir monitoreo básico.
+---
 
 ## Migración de Datos (Católikas → Recaudify)
 
@@ -264,10 +261,14 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Validar historial completo.
 - [ ] Validar que ningún contrato quede huérfano.
 
+---
+
 ## Nuevas tareas
 
 - Use this format to add new tasks
 
+---
+
 ## Actualizado
 
-2026-06-23
+2026-06-26

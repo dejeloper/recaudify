@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Permission;
+use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
 {
@@ -44,6 +44,19 @@ class PermissionSeeder extends Seeder
             "parametros.editar",
             "parametros.eliminar",
             "parametros.restaurar",
+
+            // Catálogos (productos, tarifas, vendedores, motivos de llamada, estados)
+            "catalogos.ver",
+            "catalogos.crear",
+            "catalogos.editar",
+            "catalogos.eliminar",
+            "catalogos.restaurar",
+
+            // Auditoría (feed de actividad)
+            "auditoria.ver",
+
+            // Accesos (auditoría de inicios de sesión)
+            "accesos.ver",
         ];
 
         foreach ($permissions as $permission) {
