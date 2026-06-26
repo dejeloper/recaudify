@@ -108,6 +108,8 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 - [x] Agregar los 5 secrets al repositorio
 - [x] Crear workflow `deploy-staging.yml` (rama `develop`)
 - [x] Crear workflow `deploy-prod.yml` (rama `main`)
+- [x] Verificar deploy automático a prod funcionando
+- [x] Verificar deploy automático a staging funcionando
 
 ### Vercel
 
