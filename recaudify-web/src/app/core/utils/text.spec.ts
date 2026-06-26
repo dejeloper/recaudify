@@ -1,4 +1,4 @@
-import {capitalize, lower, titleCase, upper} from '@core/utils/text';
+import { capitalize, lower, titleCase, upper } from '@core/utils/text';
 
 describe('lower', () => {
   it('converts to lowercase', () => expect(lower('ADMIN')).toBe('admin'));
