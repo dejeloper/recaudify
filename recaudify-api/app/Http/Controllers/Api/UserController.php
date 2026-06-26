@@ -29,7 +29,7 @@ class UserController extends ApiController
         $user = $this->userService->find($id);
 
         if (!$user) {
-            return ApiResult::notFound("Usuarios no encontrado.")->toResponse();
+            return ApiResult::notFound("Usuario no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new UserResource($user))->toResponse();
@@ -40,7 +40,7 @@ class UserController extends ApiController
         $user = $this->userService->findTrashed($id);
 
         if (!$user) {
-            return ApiResult::notFound("Usuarios no encontrado.")->toResponse();
+            return ApiResult::notFound("Usuario no encontrado.")->toResponse();
         }
 
         return ApiResult::success(new UserResource($user))->toResponse();
