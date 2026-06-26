@@ -20,7 +20,7 @@ class ProductActivityTest extends TestCase
     {
         parent::setUp();
 
-        foreach (["catalogos.crear", "catalogos.editar", "catalogos.eliminar", "auditoria.ver"] as $permission) {
+        foreach (["catalogs.create", "catalogs.edit", "catalogs.delete", "audit.view"] as $permission) {
             Permission::create(["name" => $permission, "guard_name" => "api"]);
         }
 

@@ -11,11 +11,11 @@ class PermissionTest extends TestCase
     use RefreshDatabase;
 
     private const PERMISSIONS = [
-        "permisos.ver",
-        "permisos.crear",
-        "permisos.editar",
-        "permisos.eliminar",
-        "permisos.restaurar",
+        "permissions.view",
+        "permissions.create",
+        "permissions.edit",
+        "permissions.delete",
+        "permissions.restore",
     ];
 
     public function test_index_lists_permissions(): void
