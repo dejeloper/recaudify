@@ -18,6 +18,13 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([errorInterceptor])),
-    provideAppInitializer(() => firstValueFrom(inject(AuthService).checkAuth())),
+    provideAppInitializer(() => {
+      const auth = inject(AuthService);
+      if (!localStorage.getItem('auth_token')) {
+        auth.clearSession();
+        return Promise.resolve();
+      }
+      return firstValueFrom(auth.checkAuth());
+    }),
   ],
 };

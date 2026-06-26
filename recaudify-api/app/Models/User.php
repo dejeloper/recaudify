@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasFactory, HasRoles, LogsModelActivity, Notifiable, SoftDeletes;
 
     protected string $guard_name = "api";
 
@@ -31,6 +32,16 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
+    }
+
+    protected function logName(): string
+    {
+        return "usuarios";
+    }
+
+    protected function activitylogFields(): array
+    {
+        return ["name", "username", "email", "active"];
     }
 
     public function schedules(): HasMany

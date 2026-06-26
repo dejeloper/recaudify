@@ -142,9 +142,9 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 #### Vendedores
 
-- [ ] Crear vendedor.
-- [ ] Editar vendedor.
-- [ ] Listar vendedores.
+- [x] Crear vendedor.
+- [x] Editar vendedor.
+- [x] Listar vendedores.
 
 ### Usuarios y Seguridad
 
@@ -160,9 +160,9 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Crear rol auxiliar.
 - [x] Definir permisos por rol sobre cada módulo.
 - [x] Registrar accesos (login/logout).
-- [ ] Registrar cambios.
-- [ ] Registrar eliminaciones.
-- [ ] Registrar acciones críticas.
+- [x] Registrar cambios.
+- [x] Registrar eliminaciones.
+- [x] Registrar acciones críticas.
 
 ### Reportes
 
@@ -186,8 +186,8 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Gestionar tipos de documentos.
 - [ ] Gestionar tipos de vivienda.
 - [ ] Gestionar tipos de pago.
-- [ ] Gestionar tarifas.
-- [ ] Gestionar parámetros de negocio (consecutivos, días de mora).
+- [x] Gestionar tarifas.
+- [x] Gestionar parámetros de negocio (consecutivos, días de mora).
 - [ ] Gestionar parámetros de cartera (periodicidades).
 - [ ] Gestionar eventos del sistema.
 
