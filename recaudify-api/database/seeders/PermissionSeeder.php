@@ -10,53 +10,53 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            // Usuarios
-            "usuarios.ver",
-            "usuarios.crear",
-            "usuarios.editar",
-            "usuarios.desactivar",
-            "usuarios.restaurar",
+            // Users
+            "users.view",
+            "users.create",
+            "users.edit",
+            "users.deactivate",
+            "users.restore",
 
             // Roles
-            "roles.ver",
-            "roles.crear",
-            "roles.editar",
-            "roles.eliminar",
-            "roles.restaurar",
+            "roles.view",
+            "roles.create",
+            "roles.edit",
+            "roles.delete",
+            "roles.restore",
 
-            // Permisos
-            "permisos.ver",
-            "permisos.crear",
-            "permisos.editar",
-            "permisos.eliminar",
-            "permisos.restaurar",
+            // Permissions
+            "permissions.view",
+            "permissions.create",
+            "permissions.edit",
+            "permissions.delete",
+            "permissions.restore",
 
-            // Horarios
-            "horarios.ver",
-            "horarios.crear",
-            "horarios.editar",
-            "horarios.eliminar",
-            "horarios.restaurar",
+            // Schedules
+            "schedules.view",
+            "schedules.create",
+            "schedules.edit",
+            "schedules.delete",
+            "schedules.restore",
 
-            // Parámetros
-            "parametros.ver",
-            "parametros.crear",
-            "parametros.editar",
-            "parametros.eliminar",
-            "parametros.restaurar",
+            // Parameters
+            "parameters.view",
+            "parameters.create",
+            "parameters.edit",
+            "parameters.delete",
+            "parameters.restore",
 
-            // Catálogos (productos, tarifas, vendedores, motivos de llamada, estados)
-            "catalogos.ver",
-            "catalogos.crear",
-            "catalogos.editar",
-            "catalogos.eliminar",
-            "catalogos.restaurar",
+            // Catalogs (products, rates, sellers, call reasons, states)
+            "catalogs.view",
+            "catalogs.create",
+            "catalogs.edit",
+            "catalogs.delete",
+            "catalogs.restore",
 
-            // Auditoría (feed de actividad)
-            "auditoria.ver",
+            // Audit (activity feed)
+            "audit.view",
 
-            // Accesos (auditoría de inicios de sesión)
-            "accesos.ver",
+            // Access (login audit)
+            "access.view",
         ];
 
         foreach ($permissions as $permission) {

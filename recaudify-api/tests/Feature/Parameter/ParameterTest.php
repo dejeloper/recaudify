@@ -11,11 +11,11 @@ class ParameterTest extends TestCase
     use RefreshDatabase;
 
     private const PERMISSIONS = [
-        "parametros.ver",
-        "parametros.crear",
-        "parametros.editar",
-        "parametros.eliminar",
-        "parametros.restaurar",
+        "parameters.view",
+        "parameters.create",
+        "parameters.edit",
+        "parameters.delete",
+        "parameters.restore",
     ];
 
     public function test_index_lists_parameters(): void

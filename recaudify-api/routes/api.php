@@ -31,120 +31,120 @@ Route::prefix("auth")->group(function () {
 
 Route::middleware(["auth:api", "check.schedule"])->group(function () {
     Route::prefix("users")->group(function () {
-        Route::get("/", [UserController::class, "index"])->middleware("permission:usuarios.ver");
-        Route::get("/disabled", [UserController::class, "indexDisabled"])->middleware("permission:usuarios.ver");
-        Route::get("/search/{name}", [UserController::class, "search"])->middleware("permission:usuarios.ver");
-        Route::get("/trashed/{id}", [UserController::class, "showTrashed"])->middleware("permission:usuarios.ver");
-        Route::get("/{id}", [UserController::class, "show"])->middleware("permission:usuarios.ver");
-        Route::post("/", [UserController::class, "store"])->middleware("permission:usuarios.crear");
-        Route::put("/{id}", [UserController::class, "update"])->middleware("permission:usuarios.editar");
-        Route::delete("/{id}", [UserController::class, "destroy"])->middleware("permission:usuarios.desactivar");
-        Route::post("/{id}/restore", [UserController::class, "restore"])->middleware("permission:usuarios.restaurar");
+        Route::get("/", [UserController::class, "index"])->middleware("permission:users.view");
+        Route::get("/disabled", [UserController::class, "indexDisabled"])->middleware("permission:users.view");
+        Route::get("/search/{name}", [UserController::class, "search"])->middleware("permission:users.view");
+        Route::get("/trashed/{id}", [UserController::class, "showTrashed"])->middleware("permission:users.view");
+        Route::get("/{id}", [UserController::class, "show"])->middleware("permission:users.view");
+        Route::post("/", [UserController::class, "store"])->middleware("permission:users.create");
+        Route::put("/{id}", [UserController::class, "update"])->middleware("permission:users.edit");
+        Route::delete("/{id}", [UserController::class, "destroy"])->middleware("permission:users.deactivate");
+        Route::post("/{id}/restore", [UserController::class, "restore"])->middleware("permission:users.restore");
         Route::post("/{id}/permissions", [UserController::class, "syncPermissions"])->middleware(
-            "permission:usuarios.editar",
+            "permission:users.edit",
         );
     });
 
     Route::prefix("roles")->group(function () {
-        Route::get("/", [RoleController::class, "index"])->middleware("permission:roles.ver");
-        Route::get("/trashed", [RoleController::class, "trashed"])->middleware("permission:roles.ver");
-        Route::get("/{id}", [RoleController::class, "show"])->middleware("permission:roles.ver");
-        Route::post("/", [RoleController::class, "store"])->middleware("permission:roles.crear");
-        Route::put("/{id}", [RoleController::class, "update"])->middleware("permission:roles.editar");
-        Route::delete("/{id}", [RoleController::class, "destroy"])->middleware("permission:roles.eliminar");
-        Route::post("/{id}/restore", [RoleController::class, "restore"])->middleware("permission:roles.restaurar");
+        Route::get("/", [RoleController::class, "index"])->middleware("permission:roles.view");
+        Route::get("/trashed", [RoleController::class, "trashed"])->middleware("permission:roles.view");
+        Route::get("/{id}", [RoleController::class, "show"])->middleware("permission:roles.view");
+        Route::post("/", [RoleController::class, "store"])->middleware("permission:roles.create");
+        Route::put("/{id}", [RoleController::class, "update"])->middleware("permission:roles.edit");
+        Route::delete("/{id}", [RoleController::class, "destroy"])->middleware("permission:roles.delete");
+        Route::post("/{id}/restore", [RoleController::class, "restore"])->middleware("permission:roles.restore");
     });
 
     Route::prefix("permissions")->group(function () {
-        Route::get("/", [PermissionController::class, "index"])->middleware("permission:permisos.ver");
-        Route::get("/trashed", [PermissionController::class, "trashed"])->middleware("permission:permisos.ver");
-        Route::get("/{id}", [PermissionController::class, "show"])->middleware("permission:permisos.ver");
-        Route::post("/", [PermissionController::class, "store"])->middleware("permission:permisos.crear");
-        Route::put("/{id}", [PermissionController::class, "update"])->middleware("permission:permisos.editar");
-        Route::delete("/{id}", [PermissionController::class, "destroy"])->middleware("permission:permisos.eliminar");
+        Route::get("/", [PermissionController::class, "index"])->middleware("permission:permissions.view");
+        Route::get("/trashed", [PermissionController::class, "trashed"])->middleware("permission:permissions.view");
+        Route::get("/{id}", [PermissionController::class, "show"])->middleware("permission:permissions.view");
+        Route::post("/", [PermissionController::class, "store"])->middleware("permission:permissions.create");
+        Route::put("/{id}", [PermissionController::class, "update"])->middleware("permission:permissions.edit");
+        Route::delete("/{id}", [PermissionController::class, "destroy"])->middleware("permission:permissions.delete");
         Route::post("/{id}/restore", [PermissionController::class, "restore"])->middleware(
-            "permission:permisos.restaurar",
+            "permission:permissions.restore",
         );
     });
 
     Route::prefix("users/{userId}/schedules")->group(function () {
-        Route::get("/", [UserScheduleController::class, "index"])->middleware("permission:horarios.ver");
-        Route::post("/", [UserScheduleController::class, "store"])->middleware("permission:horarios.crear");
+        Route::get("/", [UserScheduleController::class, "index"])->middleware("permission:schedules.view");
+        Route::post("/", [UserScheduleController::class, "store"])->middleware("permission:schedules.create");
     });
 
     Route::prefix("schedules")->group(function () {
-        Route::put("/{id}", [UserScheduleController::class, "update"])->middleware("permission:horarios.editar");
-        Route::delete("/{id}", [UserScheduleController::class, "destroy"])->middleware("permission:horarios.eliminar");
+        Route::put("/{id}", [UserScheduleController::class, "update"])->middleware("permission:schedules.edit");
+        Route::delete("/{id}", [UserScheduleController::class, "destroy"])->middleware("permission:schedules.delete");
     });
 
     Route::prefix("parameters")->group(function () {
-        Route::get("/", [ParameterController::class, "index"])->middleware("permission:parametros.ver");
-        Route::get("/trashed", [ParameterController::class, "trashed"])->middleware("permission:parametros.ver");
-        Route::get("/{id}", [ParameterController::class, "show"])->middleware("permission:parametros.ver");
-        Route::post("/", [ParameterController::class, "store"])->middleware("permission:parametros.crear");
-        Route::put("/{id}", [ParameterController::class, "update"])->middleware("permission:parametros.editar");
-        Route::delete("/{id}", [ParameterController::class, "destroy"])->middleware("permission:parametros.eliminar");
+        Route::get("/", [ParameterController::class, "index"])->middleware("permission:parameters.view");
+        Route::get("/trashed", [ParameterController::class, "trashed"])->middleware("permission:parameters.view");
+        Route::get("/{id}", [ParameterController::class, "show"])->middleware("permission:parameters.view");
+        Route::post("/", [ParameterController::class, "store"])->middleware("permission:parameters.create");
+        Route::put("/{id}", [ParameterController::class, "update"])->middleware("permission:parameters.edit");
+        Route::delete("/{id}", [ParameterController::class, "destroy"])->middleware("permission:parameters.delete");
         Route::post("/{id}/restore", [ParameterController::class, "restore"])->middleware(
-            "permission:parametros.restaurar",
+            "permission:parameters.restore",
         );
     });
 
     Route::prefix("products")->group(function () {
-        Route::get("/", [ProductController::class, "index"])->middleware("permission:catalogos.ver");
-        Route::get("/trashed", [ProductController::class, "trashed"])->middleware("permission:catalogos.ver");
-        Route::get("/{id}", [ProductController::class, "show"])->middleware("permission:catalogos.ver");
-        Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogos.crear");
-        Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogos.editar");
-        Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogos.eliminar");
+        Route::get("/", [ProductController::class, "index"])->middleware("permission:catalogs.view");
+        Route::get("/trashed", [ProductController::class, "trashed"])->middleware("permission:catalogs.view");
+        Route::get("/{id}", [ProductController::class, "show"])->middleware("permission:catalogs.view");
+        Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogs.create");
+        Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogs.edit");
+        Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogs.delete");
         Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware(
-            "permission:catalogos.restaurar",
+            "permission:catalogs.restore",
         );
     });
 
     Route::prefix("rates")->group(function () {
-        Route::get("/", [RateController::class, "index"])->middleware("permission:catalogos.ver");
-        Route::get("/trashed", [RateController::class, "trashed"])->middleware("permission:catalogos.ver");
-        Route::get("/{id}", [RateController::class, "show"])->middleware("permission:catalogos.ver");
-        Route::post("/", [RateController::class, "store"])->middleware("permission:catalogos.crear");
-        Route::put("/{id}", [RateController::class, "update"])->middleware("permission:catalogos.editar");
-        Route::delete("/{id}", [RateController::class, "destroy"])->middleware("permission:catalogos.eliminar");
-        Route::post("/{id}/restore", [RateController::class, "restore"])->middleware("permission:catalogos.restaurar");
+        Route::get("/", [RateController::class, "index"])->middleware("permission:catalogs.view");
+        Route::get("/trashed", [RateController::class, "trashed"])->middleware("permission:catalogs.view");
+        Route::get("/{id}", [RateController::class, "show"])->middleware("permission:catalogs.view");
+        Route::post("/", [RateController::class, "store"])->middleware("permission:catalogs.create");
+        Route::put("/{id}", [RateController::class, "update"])->middleware("permission:catalogs.edit");
+        Route::delete("/{id}", [RateController::class, "destroy"])->middleware("permission:catalogs.delete");
+        Route::post("/{id}/restore", [RateController::class, "restore"])->middleware("permission:catalogs.restore");
     });
 
     Route::prefix("sellers")->group(function () {
-        Route::get("/", [SellerController::class, "index"])->middleware("permission:catalogos.ver");
-        Route::get("/trashed", [SellerController::class, "trashed"])->middleware("permission:catalogos.ver");
-        Route::get("/{id}", [SellerController::class, "show"])->middleware("permission:catalogos.ver");
-        Route::post("/", [SellerController::class, "store"])->middleware("permission:catalogos.crear");
-        Route::put("/{id}", [SellerController::class, "update"])->middleware("permission:catalogos.editar");
-        Route::delete("/{id}", [SellerController::class, "destroy"])->middleware("permission:catalogos.eliminar");
+        Route::get("/", [SellerController::class, "index"])->middleware("permission:catalogs.view");
+        Route::get("/trashed", [SellerController::class, "trashed"])->middleware("permission:catalogs.view");
+        Route::get("/{id}", [SellerController::class, "show"])->middleware("permission:catalogs.view");
+        Route::post("/", [SellerController::class, "store"])->middleware("permission:catalogs.create");
+        Route::put("/{id}", [SellerController::class, "update"])->middleware("permission:catalogs.edit");
+        Route::delete("/{id}", [SellerController::class, "destroy"])->middleware("permission:catalogs.delete");
         Route::post("/{id}/restore", [SellerController::class, "restore"])->middleware(
-            "permission:catalogos.restaurar",
+            "permission:catalogs.restore",
         );
     });
 
     Route::prefix("call-reasons")->group(function () {
-        Route::get("/", [CallReasonController::class, "index"])->middleware("permission:catalogos.ver");
-        Route::get("/trashed", [CallReasonController::class, "trashed"])->middleware("permission:catalogos.ver");
-        Route::get("/{id}", [CallReasonController::class, "show"])->middleware("permission:catalogos.ver");
-        Route::post("/", [CallReasonController::class, "store"])->middleware("permission:catalogos.crear");
-        Route::put("/{id}", [CallReasonController::class, "update"])->middleware("permission:catalogos.editar");
-        Route::delete("/{id}", [CallReasonController::class, "destroy"])->middleware("permission:catalogos.eliminar");
+        Route::get("/", [CallReasonController::class, "index"])->middleware("permission:catalogs.view");
+        Route::get("/trashed", [CallReasonController::class, "trashed"])->middleware("permission:catalogs.view");
+        Route::get("/{id}", [CallReasonController::class, "show"])->middleware("permission:catalogs.view");
+        Route::post("/", [CallReasonController::class, "store"])->middleware("permission:catalogs.create");
+        Route::put("/{id}", [CallReasonController::class, "update"])->middleware("permission:catalogs.edit");
+        Route::delete("/{id}", [CallReasonController::class, "destroy"])->middleware("permission:catalogs.delete");
         Route::post("/{id}/restore", [CallReasonController::class, "restore"])->middleware(
-            "permission:catalogos.restaurar",
+            "permission:catalogs.restore",
         );
     });
 
     Route::prefix("states")->group(function () {
-        Route::get("/", [StateController::class, "index"])->middleware("permission:catalogos.ver");
-        Route::get("/{id}", [StateController::class, "show"])->middleware("permission:catalogos.ver");
+        Route::get("/", [StateController::class, "index"])->middleware("permission:catalogs.view");
+        Route::get("/{id}", [StateController::class, "show"])->middleware("permission:catalogs.view");
     });
 
     Route::prefix("activities")->group(function () {
-        Route::get("/", [ActivityController::class, "index"])->middleware("permission:auditoria.ver");
+        Route::get("/", [ActivityController::class, "index"])->middleware("permission:audit.view");
     });
 
     Route::prefix("login-audits")->group(function () {
-        Route::get("/", [LoginAuditController::class, "index"])->middleware("permission:accesos.ver");
+        Route::get("/", [LoginAuditController::class, "index"])->middleware("permission:access.view");
     });
 });

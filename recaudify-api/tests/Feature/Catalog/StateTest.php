@@ -19,7 +19,7 @@ class StateTest extends TestCase
     {
         parent::setUp();
 
-        Permission::create(["name" => "catalogos.ver", "guard_name" => "api"]);
+        Permission::create(["name" => "catalogs.view", "guard_name" => "api"]);
 
         $role = Role::create(["name" => "superadmin", "guard_name" => "api"]);
         $role->syncPermissions(Permission::all());

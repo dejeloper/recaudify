@@ -11,7 +11,7 @@ class UserScheduleTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PERMISSIONS = ["horarios.ver", "horarios.crear", "horarios.editar", "horarios.eliminar"];
+    private const PERMISSIONS = ["schedules.view", "schedules.create", "schedules.edit", "schedules.delete"];
 
     public function test_index_lists_schedules_for_user(): void
     {

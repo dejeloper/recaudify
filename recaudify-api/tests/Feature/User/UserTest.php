@@ -13,11 +13,11 @@ class UserTest extends TestCase
     use RefreshDatabase;
 
     private const PERMISSIONS = [
-        "usuarios.ver",
-        "usuarios.crear",
-        "usuarios.editar",
-        "usuarios.desactivar",
-        "usuarios.restaurar",
+        "users.view",
+        "users.create",
+        "users.edit",
+        "users.deactivate",
+        "users.restore",
     ];
 
     public function test_index_lists_users(): void
