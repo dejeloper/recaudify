@@ -52,13 +52,13 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ## Ramas → entornos
 
-| Rama      | Rol          | Destino                          |
-| --------- | ------------ | -------------------------------- |
-| `desa`    | Desarrollo   | *(local, no despliega)*          |
-| `develop` | Staging      | `staging-api.recaudify.cloud`    |
-| `main`    | Producción   | `api.recaudify.cloud`            |
+| Rama      | Rol        | Destino                       |
+| --------- | ---------- | ----------------------------- |
+| `local`   | Desarrollo | _(local, no despliega)_       |
+| `develop` | Staging    | `staging-api.recaudify.cloud` |
+| `main`    | Producción | `api.recaudify.cloud`         |
 
-**Flujo:** trabajar en `desa` → PR a `develop` → validar en staging → PR a `main` → prod
+**Flujo:** trabajar en `local` → PR a `develop` → validar en staging → PR a `main` → prod
 
 ---
 
@@ -79,13 +79,13 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ## Secrets requeridos en GitHub
 
-| Secret             | Descripción                             |
-| ------------------ | --------------------------------------- |
-| `VPS_HOST`         | IP del VPS (31.97.8.226)                |
-| `VPS_USER`         | `deploy`                                |
-| `VPS_SSH_KEY`      | Llave privada SSH (id_ed25519)          |
-| `VPS_STAGING_PATH` | `/var/www/recaudify-staging`            |
-| `VPS_PROD_PATH`    | `/var/www/recaudify-prod`               |
+| Secret             | Descripción                    |
+| ------------------ | ------------------------------ |
+| `VPS_HOST`         | IP del VPS (31.97.8.226)       |
+| `VPS_USER`         | `deploy`                       |
+| `VPS_SSH_KEY`      | Llave privada SSH (id_ed25519) |
+| `VPS_STAGING_PATH` | `/var/www/recaudify-staging`   |
+| `VPS_PROD_PATH`    | `/var/www/recaudify-prod`      |
 
 ---
 
@@ -125,7 +125,43 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ## Dominios
 
-| Entorno | Backend                          | Frontend                          |
-| ------- | -------------------------------- | --------------------------------- |
-| Staging | `staging-api.recaudify.cloud`    | `staging-app.recaudify.cloud`     |
-| Prod    | `api.recaudify.cloud`            | `app.recaudify.cloud`             |
+| Entorno | Backend                       | Frontend                      |
+| ------- | ----------------------------- | ----------------------------- |
+| Staging | `staging-api.recaudify.cloud` | `staging-app.recaudify.cloud` |
+| Prod    | `api.recaudify.cloud`         | `app.recaudify.cloud`         |
+
+---
+
+## Comandos útiles en el VPS
+
+### Como `root`
+
+```bash
+# Staging
+cd /var/www/recaudify-staging
+sudo -u deploy php artisan migrate --force
+sudo -u deploy php artisan l5-swagger:generate
+sudo -u deploy php artisan config:cache
+
+# Prod
+cd /var/www/recaudify-prod
+sudo -u deploy php artisan migrate --force
+sudo -u deploy php artisan l5-swagger:generate
+sudo -u deploy php artisan config:cache
+```
+
+### Como `deploy`
+
+```bash
+# Migración fresca con seeders — staging
+cd /var/www/recaudify-staging/recaudify-api && git pull origin develop && php artisan migrate:fresh --seed --force
+
+# Migración fresca con seeders — prod
+cd /var/www/recaudify-prod/recaudify-api && git pull origin main && php artisan migrate:fresh --seed --force
+
+# Swagger + config cache — staging
+cd /var/www/recaudify-staging/recaudify-api && php artisan l5-swagger:generate && php artisan config:cache
+
+# Swagger + config cache — prod
+cd /var/www/recaudify-prod/recaudify-api && php artisan l5-swagger:generate && php artisan config:cache
+```
