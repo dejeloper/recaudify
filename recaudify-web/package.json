@@ -28,6 +28,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "angular-eslint": "21.4.0",
     "autoprefixer": "^10.5.0",
     "eslint": "^10.3.0",
@@ -37,6 +38,6 @@
     "tailwindcss": "^4.3.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "8.59.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.1.9"
   }
 }
