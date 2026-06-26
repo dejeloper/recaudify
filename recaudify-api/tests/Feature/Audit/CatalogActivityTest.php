@@ -23,7 +23,7 @@ class CatalogActivityTest extends TestCase
     {
         parent::setUp();
 
-        Permission::create(["name" => "auditoria.ver", "guard_name" => "api"]);
+        Permission::create(["name" => "audit.view", "guard_name" => "api"]);
         $role = Role::create(["name" => "superadmin", "guard_name" => "api"]);
         $role->syncPermissions(Permission::all());
         $this->user = User::factory()->withRole("superadmin")->create();

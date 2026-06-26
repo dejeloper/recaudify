@@ -107,7 +107,7 @@ use OpenApi\Attributes as OA;
         Feed de **cambios de negocio** (creó/actualizó/eliminó/restauró) registrado automáticamente
         sobre los modelos auditados, con su autor, la entidad afectada y el diff de campos.
 
-        Solo lectura. Requiere el permiso `auditoria.ver`.
+        Solo lectura. Requiere el permiso `audit.view`.
         MD,
     ),
 ]
@@ -118,7 +118,7 @@ use OpenApi\Attributes as OA;
         Auditoría de **inicios de sesión** (exitosos y fallidos), con metadata autoritativa del servidor
         (IP, user-agent, SO, dispositivo) y la geolocalización del cliente en los exitosos.
 
-        Solo lectura. Requiere el permiso `accesos.ver`.
+        Solo lectura. Requiere el permiso `access.view`.
         MD,
     ),
 ]

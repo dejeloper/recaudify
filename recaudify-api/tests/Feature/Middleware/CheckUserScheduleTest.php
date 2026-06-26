@@ -15,18 +15,18 @@ class CheckUserScheduleTest extends TestCase
 
     private function makeCollector(): User
     {
-        Permission::firstOrCreate(["name" => "parametros.ver", "guard_name" => "api"]);
+        Permission::firstOrCreate(["name" => "parameters.view", "guard_name" => "api"]);
         $role = Role::firstOrCreate(["name" => "cobrador", "guard_name" => "api"]);
-        $role->givePermissionTo("parametros.ver");
+        $role->givePermissionTo("parameters.view");
 
         return User::factory()->afterCreating(fn(User $u) => $u->assignRole("cobrador"))->create();
     }
 
     public function test_superadmin_bypasses_schedule_check(): void
     {
-        Permission::firstOrCreate(["name" => "parametros.ver", "guard_name" => "api"]);
+        Permission::firstOrCreate(["name" => "parameters.view", "guard_name" => "api"]);
         $role = Role::firstOrCreate(["name" => "superadmin", "guard_name" => "api"]);
-        $role->givePermissionTo("parametros.ver");
+        $role->givePermissionTo("parameters.view");
         $user = User::factory()->afterCreating(fn(User $u) => $u->assignRole("superadmin"))->create();
 
         $this->actingAs($user, "api")->getJson("/api/parameters")->assertStatus(200);

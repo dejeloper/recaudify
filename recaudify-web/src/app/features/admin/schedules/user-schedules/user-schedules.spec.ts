@@ -19,7 +19,7 @@ const entry: Schedule = {
 } as Schedule;
 
 async function setup(
-  permissions: string[] = ['horarios.crear', 'horarios.editar', 'horarios.eliminar'],
+  permissions: string[] = ['schedules.create', 'schedules.edit', 'schedules.delete'],
 ) {
   const usersService = {
     items: signal([]),
@@ -66,7 +66,7 @@ describe('UserSchedules', () => {
   });
 
   it('exposes permission flags', async () => {
-    const { comp } = await setup(['horarios.crear']);
+    const { comp } = await setup(['schedules.create']);
     expect(comp.canCreate()).toBe(true);
     expect(comp.canEdit()).toBe(false);
     expect(comp.canDelete()).toBe(false);

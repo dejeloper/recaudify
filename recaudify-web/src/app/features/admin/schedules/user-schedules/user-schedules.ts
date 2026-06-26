@@ -40,11 +40,9 @@ export class UserSchedules implements OnInit {
   protected readonly loading = this.schedulesService.loading;
   protected readonly showStatusEnabled = this.schedulesService.showStatusEnabled;
 
-  protected readonly canCreate = computed(() => this.authService.hasPermission('horarios.crear'));
-  protected readonly canEdit = computed(() => this.authService.hasPermission('horarios.editar'));
-  protected readonly canDelete = computed(() =>
-    this.authService.hasPermission('horarios.eliminar'),
-  );
+  protected readonly canCreate = computed(() => this.authService.hasPermission('schedules.create'));
+  protected readonly canEdit = computed(() => this.authService.hasPermission('schedules.edit'));
+  protected readonly canDelete = computed(() => this.authService.hasPermission('schedules.delete'));
 
   protected readonly addingDay = signal<number | null>(null);
   protected readonly editingId = signal<number | null>(null);
