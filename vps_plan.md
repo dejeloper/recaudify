@@ -52,10 +52,13 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ## Ramas → entornos
 
-| Rama      | Entorno | Dominio                          |
-| --------- | ------- | -------------------------------- |
-| `develop` | Staging | `staging-api.recaudify.cloud`    |
-| `main`    | Prod    | `api.recaudify.cloud`            |
+| Rama      | Rol          | Destino                          |
+| --------- | ------------ | -------------------------------- |
+| `desa`    | Desarrollo   | *(local, no despliega)*          |
+| `develop` | Staging      | `staging-api.recaudify.cloud`    |
+| `main`    | Producción   | `api.recaudify.cloud`            |
+
+**Flujo:** trabajar en `desa` → PR a `develop` → validar en staging → PR a `main` → prod
 
 ---
 
@@ -113,9 +116,10 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ### Vercel
 
-- [ ] Conectar repositorio
-- [ ] Configurar `VITE_API_URL` para staging y prod
-- [ ] Verificar build del proyecto Angular
+- [x] Conectar repositorio
+- [x] Configurar dominios staging-app.recaudify.cloud y app.recaudify.cloud
+- [x] Configurar BUILD_CONFIG por entorno (prod/staging)
+- [x] Verificar build del proyecto Angular en staging y prod
 
 ---
 
