@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\LogsCatalogActivity;
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CallReason extends Model
 {
-    use LogsCatalogActivity, SoftDeletes;
+    use LogsModelActivity, SoftDeletes;
 
     protected $fillable = ["name", "color", "active"];
 
@@ -19,6 +19,11 @@ class CallReason extends Model
     protected $casts = [
         "active" => "boolean",
     ];
+
+    protected function logName(): string
+    {
+        return "catalogos";
+    }
 
     protected function activitylogFields(): array
     {

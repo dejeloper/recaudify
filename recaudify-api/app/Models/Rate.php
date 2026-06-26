@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\LogsCatalogActivity;
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Rate extends Model
 {
-    use LogsCatalogActivity, SoftDeletes;
+    use LogsModelActivity, SoftDeletes;
 
     protected $fillable = ["name", "product_id", "value", "installments", "installment_value", "discount", "active"];
 
@@ -29,6 +29,11 @@ class Rate extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    protected function logName(): string
+    {
+        return "catalogos";
     }
 
     protected function activitylogFields(): array
