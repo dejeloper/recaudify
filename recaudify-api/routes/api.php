@@ -96,9 +96,7 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogs.create");
         Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogs.edit");
         Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware(
-            "permission:catalogs.restore",
-        );
+        Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware("permission:catalogs.restore");
     });
 
     Route::prefix("rates")->group(function () {
@@ -118,9 +116,7 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::post("/", [SellerController::class, "store"])->middleware("permission:catalogs.create");
         Route::put("/{id}", [SellerController::class, "update"])->middleware("permission:catalogs.edit");
         Route::delete("/{id}", [SellerController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [SellerController::class, "restore"])->middleware(
-            "permission:catalogs.restore",
-        );
+        Route::post("/{id}/restore", [SellerController::class, "restore"])->middleware("permission:catalogs.restore");
     });
 
     Route::prefix("call-reasons")->group(function () {

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\LogsCatalogActivity;
+use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use LogsCatalogActivity, SoftDeletes;
+    use LogsModelActivity, SoftDeletes;
 
     protected $fillable = ["name", "value", "active"];
 
@@ -25,6 +25,11 @@ class Product extends Model
     public function rates(): HasMany
     {
         return $this->hasMany(Rate::class);
+    }
+
+    protected function logName(): string
+    {
+        return "catalogos";
     }
 
     protected function activitylogFields(): array

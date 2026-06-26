@@ -12,13 +12,7 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PERMISSIONS = [
-        "users.view",
-        "users.create",
-        "users.edit",
-        "users.deactivate",
-        "users.restore",
-    ];
+    private const PERMISSIONS = ["users.view", "users.create", "users.edit", "users.deactivate", "users.restore"];
 
     public function test_index_lists_users(): void
     {

@@ -8,6 +8,7 @@ recaudify-web/node_modules/
 recaudify-api/vendor/
 recaudify-api/storage/
 recaudify-api/bootstrap/cache/
+*.md
 
 # Datos Vps 
 Datos del VPS.txt
