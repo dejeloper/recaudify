@@ -606,8 +606,8 @@ instalación de PCOV ya entregadas; tras instalarlo: `php artisan test --coverag
 
 #### `core/guards/permission.guard.ts`
 
-- [ ] `permissionGuard('usuarios.ver')` retorna true si el usuario tiene el permiso
-- [ ] `permissionGuard('usuarios.ver')` redirige a /dashboard si no tiene el permiso
+- [ ] `permissionGuard('users.view')` retorna true si el usuario tiene el permiso
+- [ ] `permissionGuard('users.view')` redirige a /dashboard si no tiene el permiso
 
 ---
 
@@ -688,11 +688,11 @@ instalación de PCOV ya entregadas; tras instalarlo: `php artisan test --coverag
 
 #### `features/admin/admin-dashboard/admin-dashboard.ts`
 
-- [ ] `canSeeUsers` es true si tiene permiso usuarios.ver
+- [ ] `canSeeUsers` es true si tiene permiso users.view
 - [ ] `canSeeRoles` es true si tiene permiso roles.ver
-- [ ] `canSeePermissions` es true si tiene permiso permisos.ver
-- [ ] `canSeeSchedules` es true si tiene permiso horarios.ver
-- [ ] `canSeeParameters` es true si tiene permiso parametros.ver
+- [ ] `canSeePermissions` es true si tiene permiso permissions.view
+- [ ] `canSeeSchedules` es true si tiene permiso schedules.view
+- [ ] `canSeeParameters` es true si tiene permiso parameters.view
 
 #### `features/admin/users/users.ts`
 
@@ -880,7 +880,7 @@ IDs estables para referenciar casos. Estado: ✅ implementado · 🔵 manual/E2E
 | B-U05  | Crear usuario con username duplicado → 422         | Integration | ✅     |
 | B-U10  | Soft delete usuario → 200                          | Integration | ✅     |
 | B-U11  | Restaurar usuario eliminado → 200                  | Integration | ✅     |
-| B-U12  | Sin permiso `usuarios.ver` → 403                   | Integration | ✅     |
+| B-U12  | Sin permiso `users.view` → 403                   | Integration | ✅     |
 | B-R02  | Crear rol con permisos → 201                       | Integration | ✅     |
 | B-R03  | Crear rol con nombre duplicado → 422               | Integration | ✅     |
 | B-P02  | Crear permiso formato `modulo.accion` → 201        | Integration | ✅     |
