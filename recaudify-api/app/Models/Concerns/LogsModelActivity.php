@@ -5,21 +5,18 @@ namespace App\Models\Concerns;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
-/**
- * Auditoría legible para catálogos: registra create/update/delete/restore
- * con descripción en español, en el log "catalogos", guardando solo los
- * campos que cambian. Cada modelo declara sus campos en activitylogFields().
- */
-trait LogsCatalogActivity
+trait LogsModelActivity
 {
     use LogsActivity;
 
     abstract protected function activitylogFields(): array;
 
+    abstract protected function logName(): string;
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName("catalogos")
+            ->useLogName($this->logName())
             ->logOnly($this->activitylogFields())
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
