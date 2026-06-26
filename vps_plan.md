@@ -113,9 +113,71 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ### Vercel
 
-- [ ] Conectar repositorio
-- [ ] Configurar `VITE_API_URL` para staging y prod
-- [ ] Verificar build del proyecto Angular
+- [x] Conectar repositorio
+- [x] Configurar BUILD_CONFIG por entorno (prod/staging)
+- [x] Verificar build del proyecto Angular en staging y prod
+
+---
+
+## Comandos útiles en el VPS
+
+### Re-seedear permisos y regenerar Swagger (cuando cambian nombres de permisos)
+
+Como **root:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && sudo -u deploy git pull origin develop && php artisan migrate:fresh --seed --force && php artisan l5-swagger:generate && php artisan config:cache
+cd /var/www/recaudify-prod/recaudify-api && sudo -u deploy git pull origin main && php artisan migrate:fresh --seed --force && php artisan l5-swagger:generate && php artisan config:cache
+```
+
+Como **deploy:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && git pull origin develop && php artisan migrate:fresh --seed --force && php artisan l5-swagger:generate && php artisan config:cache
+cd /var/www/recaudify-prod/recaudify-api && git pull origin main && php artisan migrate:fresh --seed --force && php artisan l5-swagger:generate && php artisan config:cache
+```
+
+---
+
+### Re-seedear permisos (cuando cambian nombres de permisos)
+
+Como **root:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && sudo -u deploy git pull origin develop && php artisan migrate:fresh --seed --force
+cd /var/www/recaudify-prod/recaudify-api && sudo -u deploy git pull origin main && php artisan migrate:fresh --seed --force
+```
+
+Como **deploy:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && git pull origin develop && php artisan migrate:fresh --seed --force
+cd /var/www/recaudify-prod/recaudify-api && git pull origin main && php artisan migrate:fresh --seed --force
+```
+
+### Regenerar Swagger docs
+
+Como **root:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && php artisan l5-swagger:generate
+cd /var/www/recaudify-prod/recaudify-api && php artisan l5-swagger:generate
+```
+
+Como **deploy:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && php artisan l5-swagger:generate
+cd /var/www/recaudify-prod/recaudify-api && php artisan l5-swagger:generate
+```
+
+### Limpiar caché Laravel
+
+Como **root:**
+```bash
+cd /var/www/recaudify-staging/recaudify-api && php artisan config:cache && php artisan route:cache && php artisan view:cache
+cd /var/www/recaudify-prod/recaudify-api && php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+Como **deploy:** *(igual, sin diferencia)*
+```bash
+cd /var/www/recaudify-staging/recaudify-api && php artisan config:cache && php artisan route:cache && php artisan view:cache
+cd /var/www/recaudify-prod/recaudify-api && php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
 
 ---
 
