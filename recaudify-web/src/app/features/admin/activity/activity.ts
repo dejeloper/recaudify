@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
@@ -25,7 +25,7 @@ const MONEY_FIELDS = new Set(['value', 'installment_value', 'discount']);
 
 @Component({
   selector: 'app-activity',
-  imports: [Spinner, DatePipe, BtnDirective],
+  imports: [Spinner, DatePipe, TitleCasePipe, BtnDirective],
   templateUrl: './activity.html',
 })
 export class ActivityFeed implements OnInit {
