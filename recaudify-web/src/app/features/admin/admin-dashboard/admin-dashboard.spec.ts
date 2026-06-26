@@ -23,7 +23,7 @@ async function setup(permissions: string[]) {
 
 describe('AdminDashboard', () => {
   it('exposes permission flags from AuthService', async () => {
-    const comp = await setup(['usuarios.ver', 'catalogos.ver']);
+    const comp = await setup(['users.view', 'catalogs.view']);
 
     expect(comp.canSeeUsers()).toBe(true);
     expect(comp.canSeeCatalogs()).toBe(true);

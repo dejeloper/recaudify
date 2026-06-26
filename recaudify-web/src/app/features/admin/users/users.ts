@@ -27,14 +27,10 @@ export class Users implements OnInit {
   protected readonly deletingId = signal<number | null>(null);
   protected readonly restoringId = signal<number | null>(null);
 
-  protected readonly canCreate = computed(() => this.authService.hasPermission('usuarios.crear'));
-  protected readonly canEdit = computed(() => this.authService.hasPermission('usuarios.editar'));
-  protected readonly canDelete = computed(() =>
-    this.authService.hasPermission('usuarios.desactivar'),
-  );
-  protected readonly canRestore = computed(() =>
-    this.authService.hasPermission('usuarios.restaurar'),
-  );
+  protected readonly canCreate = computed(() => this.authService.hasPermission('users.create'));
+  protected readonly canEdit = computed(() => this.authService.hasPermission('users.edit'));
+  protected readonly canDelete = computed(() => this.authService.hasPermission('users.deactivate'));
+  protected readonly canRestore = computed(() => this.authService.hasPermission('users.restore'));
 
   ngOnInit() {
     this.service.load();

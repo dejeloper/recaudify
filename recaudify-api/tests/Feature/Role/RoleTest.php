@@ -11,7 +11,7 @@ class RoleTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PERMISSIONS = ["roles.ver", "roles.crear", "roles.editar", "roles.eliminar", "roles.restaurar"];
+    private const PERMISSIONS = ["roles.view", "roles.create", "roles.edit", "roles.delete", "roles.restore"];
 
     public function test_index_lists_roles(): void
     {
