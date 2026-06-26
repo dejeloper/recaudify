@@ -52,10 +52,13 @@ Se eligió setup manual (sin Docker, sin Dokploy/Coolify) porque:
 
 ## Ramas → entornos
 
-| Rama      | Entorno | Dominio                          |
-| --------- | ------- | -------------------------------- |
-| `develop` | Staging | `staging-api.recaudify.cloud`    |
-| `main`    | Prod    | `api.recaudify.cloud`            |
+| Rama      | Rol          | Destino                          |
+| --------- | ------------ | -------------------------------- |
+| `desa`    | Desarrollo   | *(local, no despliega)*          |
+| `develop` | Staging      | `staging-api.recaudify.cloud`    |
+| `main`    | Producción   | `api.recaudify.cloud`            |
+
+**Flujo:** trabajar en `desa` → PR a `develop` → validar en staging → PR a `main` → prod
 
 ---
 
