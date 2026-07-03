@@ -14,12 +14,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             UserScheduleSeeder::class,
             ParameterSeeder::class,
-            // Catálogos base (Fase 1)
-            StateSeeder::class,
-            ProductSeeder::class,
-            RateSeeder::class,
-            SellerSeeder::class,
-            CallReasonSeeder::class,
         ]);
     }
 }

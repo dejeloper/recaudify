@@ -45,13 +45,6 @@ class PermissionSeeder extends Seeder
             "parameters.delete",
             "parameters.restore",
 
-            // Catalogs (products, rates, sellers, call reasons, states)
-            "catalogs.view",
-            "catalogs.create",
-            "catalogs.edit",
-            "catalogs.delete",
-            "catalogs.restore",
-
             // Audit (activity feed)
             "audit.view",
 

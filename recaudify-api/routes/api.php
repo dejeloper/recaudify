@@ -2,15 +2,10 @@
 
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CallReasonController;
 use App\Http\Controllers\Api\LoginAuditController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\RateController;
 use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\SellerController;
-use App\Http\Controllers\Api\StateController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
@@ -89,52 +84,6 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         );
     });
 
-    Route::prefix("products")->group(function () {
-        Route::get("/", [ProductController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [ProductController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [ProductController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("rates")->group(function () {
-        Route::get("/", [RateController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [RateController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [RateController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [RateController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [RateController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [RateController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [RateController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("sellers")->group(function () {
-        Route::get("/", [SellerController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [SellerController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [SellerController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [SellerController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [SellerController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [SellerController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [SellerController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("call-reasons")->group(function () {
-        Route::get("/", [CallReasonController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [CallReasonController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [CallReasonController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [CallReasonController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [CallReasonController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [CallReasonController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [CallReasonController::class, "restore"])->middleware(
-            "permission:catalogs.restore",
-        );
-    });
-
-    Route::prefix("states")->group(function () {
-        Route::get("/", [StateController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [StateController::class, "show"])->middleware("permission:catalogs.view");
-    });
 
     Route::prefix("activities")->group(function () {
         Route::get("/", [ActivityController::class, "index"])->middleware("permission:audit.view");
