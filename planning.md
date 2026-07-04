@@ -21,19 +21,15 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [x] Definir formato estándar de respuestas API (recursos, paginación, errores).
 - [x] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
 - [x] Configurar auditoría (registro de cambios y acciones críticas).
-- [ ] Configurar carga y almacenamiento de archivos.
-- [ ] Configurar manejo de montos en enteros/decimales de precisión fija.
-- [ ] Configurar scheduler vía cron de cPanel.
-- [ ] Configurar cola con driver database + cron.
 
 ### Clientes
 
-- [x] Modelar cliente único (identidad por documento).
-- [x] Soportar múltiples contratos por cliente.
-- [x] Soportar múltiples teléfonos.
-- [x] Soportar múltiples direcciones.
-- [x] Soportar referencias.
-- [x] Crear cliente (con contrato + productos en una transacción).
+- [ ] Modelar cliente único (identidad por documento).
+- [ ] Soportar múltiples contratos por cliente.
+- [ ] Soportar múltiples teléfonos.
+- [ ] Soportar múltiples direcciones.
+- [ ] Soportar referencias.
+- [ ] Crear cliente (con contrato + productos en una transacción).
 - [ ] Editar cliente.
 - [ ] Buscar cliente (documento, nombre, teléfono, contrato).
 - [ ] Consultar cliente (ficha 360°).
@@ -45,7 +41,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ### Contratos y Productos
 
-- [x] Romper la relación 1:1 (cliente → muchos contratos).
+- [ ] Romper la relación 1:1 (cliente → muchos contratos).
 - [ ] Consolidar cartera por cliente.
 - [ ] Crear contrato.
 - [ ] Consultar contrato.
@@ -142,9 +138,9 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 #### Vendedores
 
-- [x] Crear vendedor.
-- [x] Editar vendedor.
-- [x] Listar vendedores.
+- [ ] Crear vendedor.
+- [ ] Editar vendedor.
+- [ ] Listar vendedores.
 
 ### Usuarios y Seguridad
 
@@ -186,7 +182,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] Gestionar tipos de documentos.
 - [ ] Gestionar tipos de vivienda.
 - [ ] Gestionar tipos de pago.
-- [x] Gestionar tarifas.
+- [ ] Gestionar tarifas.
 - [x] Gestionar parámetros de negocio (consecutivos, días de mora).
 - [ ] Gestionar parámetros de cartera (periodicidades).
 - [ ] Gestionar eventos del sistema.
@@ -243,6 +239,7 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 - [ ] CRM — Clientes: crear pantalla de listado de clientes (conectar con el módulo de Clientes del backend cuando esté listo).
 - [ ] CRM — Pedidos: crear pantalla de listado/gestión de pedidos (conectar con el módulo de Contratos/Pedidos del backend cuando esté listo).
 - [ ] Agregar campo de búsqueda en la pantalla `/admin/users` que consuma el endpoint `GET /api/users/search/{name}`.
+- [ ] Si entramos a "http://localhost:4200/admin/activity" podemos hacer que filtre por usuario y que lo filtre por un ?user=admin y que por defecto sea sistema (sin redireccionarlo)
 
 ---
 
@@ -271,4 +268,4 @@ Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración 
 
 ## Actualizado
 
-2026-06-26
+2026-07-04
