@@ -36,7 +36,7 @@ export class AuthService {
     () => this.currentUser()?.shift_countdown_enabled ?? false,
   );
   readonly geolocalizationLoginEnabled = computed(
-    () => this.currentUser()?.geolocalization_login_enabled ?? true,
+    () => this.currentUser()?.geolocalization_login_enabled ?? false,
   );
 
   hasPermission(permission: string): boolean {
@@ -83,7 +83,7 @@ export class AuthService {
           tap((res) => this.currentUser.set(res.user)),
           switchMap((res) => {
             const user = res.user;
-            if (!(user.geolocalization_login_enabled ?? true)) return of(user);
+            if (!(user.geolocalization_login_enabled ?? false)) return of(user);
             if (coords) return of(user);
             return this.geolocation.request().pipe(
               switchMap((newCoords) => this.sendLoginLocation(newCoords).pipe(map(() => user))),
