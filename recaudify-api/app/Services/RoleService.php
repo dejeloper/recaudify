@@ -3,33 +3,36 @@
 namespace App\Services;
 
 use App\Models\Role;
+use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class RoleService
 {
+    public function __construct(private readonly RoleRepository $repository) {}
+
     public function all(): Collection
     {
-        return Role::where("guard_name", "api")->with("permissions")->orderBy("name")->get();
+        return $this->repository->all();
     }
 
     public function find(int $id): ?Role
     {
-        return Role::where("guard_name", "api")->with("permissions")->find($id);
+        return $this->repository->find($id);
     }
 
     public function findTrashed(int $id): ?Role
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->find($id);
+        return $this->repository->findTrashed($id);
     }
 
     public function trashed(): Collection
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->with("permissions")->orderBy("name")->get();
+        return $this->repository->trashed();
     }
 
     public function create(string $name, array $permissions = []): Role
     {
-        $role = Role::create(["name" => $name, "guard_name" => "api"]);
+        $role = $this->repository->create(["name" => $name, "guard_name" => "api"]);
 
         if ($permissions) {
             $role->syncPermissions($permissions);
