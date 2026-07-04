@@ -148,5 +148,13 @@ return [
             "days" => env("LOG_SECURITY_DAYS", 90),
             "replace_placeholders" => true,
         ],
+
+        "http" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/http.log"),
+            "level" => "info",
+            "days" => env("LOG_HTTP_DAYS", 14),
+            "replace_placeholders" => true,
+        ],
     ],
 ];

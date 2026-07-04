@@ -8,6 +8,7 @@ class LoggingService
 {
     private const SENSITIVE_FIELDS = [
         "password",
+        "password_confirmation",
         "token",
         "access_token",
         "refresh_token",
@@ -23,6 +24,11 @@ class LoggingService
     public function logBusiness(string $event, array $context = []): void
     {
         Log::channel("business")->info($event, $context);
+    }
+
+    public function logRequest(array $context): void
+    {
+        Log::channel("http")->info("HTTP request", $context);
     }
 
     public function logError(\Throwable $e, array $context = []): void

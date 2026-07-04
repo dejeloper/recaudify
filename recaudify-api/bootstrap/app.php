@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Middleware\CheckUserSchedule;
+use App\Http\Middleware\LogHttpRequests;
 use App\Http\Middleware\SetJwtFromCookie;
 use App\Http\Responses\ApiResult;
+use App\Services\LoggingService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn() => null);
 
         $middleware->api(prepend: [HandleCors::class, SetJwtFromCookie::class]);
+        $middleware->api(append: [LogHttpRequests::class]);
 
         $middleware->alias([
             "role" => RoleMiddleware::class,
@@ -40,6 +44,24 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is("api/*")) {
                 return ApiResult::validationError($e->errors())->toResponse();
+            }
+        });
+
+        $exceptions->reportable(function (Throwable $e) {
+            $logging = app(LoggingService::class);
+
+            if ($e instanceof AuthenticationException || $e instanceof AuthorizationException) {
+                $logging->logSecurity($e->getMessage(), [
+                    "exception" => get_class($e),
+                    "file" => $e->getFile(),
+                    "line" => $e->getLine(),
+                ]);
+
+                return;
+            }
+
+            if (!($e instanceof ValidationException)) {
+                $logging->logError($e);
             }
         });
     })
