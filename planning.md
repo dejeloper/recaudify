@@ -266,6 +266,12 @@ ejecutivo/supervisor/vendedor, Inteligencia Artificial, Portal del Cliente.
 
 ---
 
+## Nuevas tareas
+
+- Use this format to add new tasks
+
+---
+
 ## Actualizado
 
 2026-07-04
