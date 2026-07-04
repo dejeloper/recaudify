@@ -124,5 +124,29 @@ return [
         "emergency" => [
             "path" => storage_path("logs/laravel.log"),
         ],
+
+        "business" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/business.log"),
+            "level" => "info",
+            "days" => env("LOG_BUSINESS_DAYS", 90),
+            "replace_placeholders" => true,
+        ],
+
+        "app-errors" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/errors.log"),
+            "level" => "error",
+            "days" => env("LOG_ERRORS_DAYS", 60),
+            "replace_placeholders" => true,
+        ],
+
+        "security" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/security.log"),
+            "level" => "warning",
+            "days" => env("LOG_SECURITY_DAYS", 90),
+            "replace_placeholders" => true,
+        ],
     ],
 ];
