@@ -47,9 +47,11 @@ class AuthController extends ApiController
             "password" => $request->password,
         ];
 
+        $location = $request->filled("latitude") ? $request->only("latitude", "longitude", "accuracy") : null;
+
         if (!($token = $this->guard()->attempt($credentials))) {
             $attempted = $this->userService->findByUsername($request->username);
-            $this->loginAudit->recordFailure($request->username, "invalid_credentials", $attempted, $request);
+            $this->loginAudit->recordFailure($request->username, "invalid_credentials", $attempted, $request, $location);
 
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
@@ -59,7 +61,7 @@ class AuthController extends ApiController
 
         if (!$user->active) {
             $this->guard()->logout();
-            $this->loginAudit->recordFailure($user->username, "inactive", $user, $request);
+            $this->loginAudit->recordFailure($user->username, "inactive", $user, $request, $location);
 
             return ApiResult::forbidden("Usuario inactivo.")->toResponse();
         }
@@ -68,12 +70,12 @@ class AuthController extends ApiController
 
         if ($error !== null) {
             $this->guard()->logout();
-            $this->loginAudit->recordFailure($user->username, "out_of_schedule", $user, $request);
+            $this->loginAudit->recordFailure($user->username, "out_of_schedule", $user, $request, $location);
 
             return ApiResult::forbidden($error)->toResponse();
         }
 
-        $this->loginAudit->recordSuccess($user, $request);
+        $this->loginAudit->recordSuccess($user, $request, $location);
 
         return $this->buildTokenResponse($token, $user);
     }

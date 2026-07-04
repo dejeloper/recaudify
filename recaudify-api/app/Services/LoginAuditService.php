@@ -17,7 +17,7 @@ class LoginAuditService
         return $this->repository->paginate($filters, $perPage);
     }
 
-    public function recordSuccess(User $user, Request $request): LoginAudit
+    public function recordSuccess(User $user, Request $request, ?array $location = null): LoginAudit
     {
         return $this->repository->create([
             "user_id" => $user->id,
@@ -25,10 +25,11 @@ class LoginAuditService
             "status" => "success",
             "reason" => null,
             ...$this->metadataFrom($request),
+            ...$this->locationFields($location),
         ]);
     }
 
-    public function recordFailure(string $username, string $reason, ?User $user, Request $request): LoginAudit
+    public function recordFailure(string $username, string $reason, ?User $user, Request $request, ?array $location = null): LoginAudit
     {
         return $this->repository->create([
             "user_id" => $user?->id,
@@ -36,6 +37,7 @@ class LoginAuditService
             "status" => "failed",
             "reason" => $reason,
             ...$this->metadataFrom($request),
+            ...$this->locationFields($location),
         ]);
     }
 
@@ -48,6 +50,19 @@ class LoginAuditService
             "longitude" => $coords["longitude"],
             "accuracy" => $coords["accuracy"] ?? null,
         ]);
+    }
+
+    private function locationFields(?array $location): array
+    {
+        if (!$location) {
+            return [];
+        }
+
+        return [
+            "latitude" => $location["latitude"],
+            "longitude" => $location["longitude"],
+            "accuracy" => $location["accuracy"] ?? null,
+        ];
     }
 
     private function metadataFrom(Request $request): array
