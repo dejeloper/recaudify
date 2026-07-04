@@ -29,6 +29,7 @@ recaudify-api/storage/*.key
 recaudify-api/database/database.sqlite
 recaudify-api/.playwright/*
 recaudify-api/.playwright-cli/*
+recaudify-web/.playwright-cli/*
 
 # Skills
 .playwright-cli/*
