@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { EMPTY, catchError, map, tap } from 'rxjs';
+import { EMPTY, catchError, map, Observable, shareReplay, tap } from 'rxjs';
 import { Parameter } from '@core/interfaces/parameter.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
@@ -8,6 +8,7 @@ import { ToastService } from '@core/services/toast.service';
 export class ParametersService {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  private readonly cache = new Map<string, Observable<Parameter[]>>();
 
   readonly items = signal<Parameter[]>([]);
   readonly trashed = signal<Parameter[]>([]);
@@ -19,6 +20,7 @@ export class ParametersService {
     this.loading.set(true);
     this.showTrashed.set(false);
     this.trashed.set([]);
+    this.cache.delete(type ?? '__all__');
     this.getAll(type).subscribe({
       next: (list) => {
         this.items.set(list);
@@ -43,9 +45,14 @@ export class ParametersService {
     }
   }
 
+  private clearCache(): void {
+    this.cache.clear();
+  }
+
   remove(parameter: Parameter) {
     return this.delete(parameter.id).pipe(
       tap(() => {
+        this.clearCache();
         const removed = this.items().find((p) => p.id === parameter.id)!;
         this.items.update((list) => list.filter((p) => p.id !== parameter.id));
         this.trashed.update((list) => [removed, ...list]);
@@ -61,6 +68,7 @@ export class ParametersService {
   restoreItem(parameter: Parameter) {
     return this.restore(parameter.id).pipe(
       tap(() => {
+        this.clearCache();
         this.trashed.update((list) => list.filter((p) => p.id !== parameter.id));
         this.items.update((list) =>
           [...list, parameter].sort((a, b) => a.key.localeCompare(b.key)),
@@ -87,9 +95,16 @@ export class ParametersService {
     );
   }
 
-  getAll(type?: string) {
-    const params = type ? { type } : undefined;
-    return this.api.get<Parameter[]>('parameters', undefined, params);
+  getAll(type?: string): Observable<Parameter[]> {
+    const key = type ?? '__all__';
+    if (!this.cache.has(key)) {
+      const params = type ? { type } : undefined;
+      this.cache.set(
+        key,
+        this.api.get<Parameter[]>('parameters', undefined, params).pipe(shareReplay(1)),
+      );
+    }
+    return this.cache.get(key)!;
   }
 
   getById(id: number) {
@@ -101,17 +116,21 @@ export class ParametersService {
   }
 
   create(key: string, value: string, description: string | null, type: string, cast = 'string') {
-    return this.api.post<Parameter>('parameters', undefined, {
-      key,
-      value,
-      description,
-      type,
-      cast,
-    });
+    return this.api
+      .post<Parameter>('parameters', undefined, {
+        key,
+        value,
+        description,
+        type,
+        cast,
+      })
+      .pipe(tap(() => this.clearCache()));
   }
 
   update(id: number, value: string) {
-    return this.api.put<Parameter>('parameters', String(id), { value });
+    return this.api
+      .put<Parameter>('parameters', String(id), { value })
+      .pipe(tap(() => this.clearCache()));
   }
 
   delete(id: number) {
