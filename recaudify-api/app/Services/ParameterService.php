@@ -40,11 +40,13 @@ class ParameterService
 
     public function getAll(ParameterType $type): Collection
     {
-        return Cache::remember(
+        $data = Cache::remember(
             "parameters.{$type->value}",
             self::CACHE_TTL,
-            fn() => $this->repository->allByType($type),
+            fn() => $this->repository->allByType($type)->toArray(),
         );
+
+        return Parameter::hydrate($data);
     }
 
     public function get(ParameterType $type, string $key): mixed

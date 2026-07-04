@@ -10,13 +10,9 @@ use Illuminate\Http\Request;
 
 class LoginAuditService
 {
-    public const DEFAULT_PER_PAGE = 25;
-
-    public const MAX_PER_PAGE = 100;
-
     public function __construct(private readonly LoginAuditRepository $repository) {}
 
-    public function getAll(array $filters = [], int $perPage = self::DEFAULT_PER_PAGE): LengthAwarePaginator
+    public function getAll(array $filters = [], int $perPage = 25): LengthAwarePaginator
     {
         return $this->repository->paginate($filters, $perPage);
     }

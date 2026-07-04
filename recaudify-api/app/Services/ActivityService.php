@@ -9,13 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ActivityService
 {
-    public const DEFAULT_PER_PAGE = 25;
-
-    public const MAX_PER_PAGE = 100;
-
     public function __construct(private readonly ActivityRepository $repository) {}
 
-    public function getAll(array $filters = [], int $perPage = self::DEFAULT_PER_PAGE): LengthAwarePaginator
+    public function getAll(array $filters = [], int $perPage = 25): LengthAwarePaginator
     {
         $paginator = $this->repository->paginate($filters, $perPage);
 

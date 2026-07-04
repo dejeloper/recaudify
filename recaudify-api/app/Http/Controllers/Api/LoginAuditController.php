@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ParameterType;
 use App\Http\Resources\LoginAuditResource;
 use App\Http\Responses\ApiResult;
 use App\Services\LoginAuditService;
+use App\Services\ParameterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LoginAuditController extends ApiController
 {
-    public function __construct(private readonly LoginAuditService $loginAudit) {}
+    public function __construct(
+        private readonly LoginAuditService $loginAudit,
+        private readonly ParameterService $parameterService,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -19,8 +24,11 @@ class LoginAuditController extends ApiController
             "status" => $request->query("status"),
         ];
 
-        $perPage = (int) $request->query("per_page", (string) LoginAuditService::DEFAULT_PER_PAGE);
-        $perPage = max(1, min($perPage, LoginAuditService::MAX_PER_PAGE));
+        $defaultPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_per_page");
+        $maxPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_max_per_page");
+
+        $perPage = (int) $request->query("per_page", (string) $defaultPerPage);
+        $perPage = max(1, min($perPage, $maxPerPage));
 
         $paginator = $this->loginAudit->getAll($filters, $perPage);
 
