@@ -1,8 +1,9 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {Router} from '@angular/router';
 import {
   catchError,
   finalize,
+  from,
   map,
   Observable,
   of,
@@ -11,13 +12,20 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { lower } from '@core/utils/text';
-import { ApiError } from '@core/interfaces/api-error.interface';
-import { CurrentShift, User } from '@core/interfaces/user.interface';
-import { ApiService } from '@core/services/api.service';
-import { GeolocationService } from '@core/services/geolocation.service';
+import {lower} from '@core/utils/text';
+import {ApiError} from '@core/interfaces/api-error.interface';
+import {CurrentShift, User} from '@core/interfaces/user.interface';
+import {ApiService} from '@core/services/api.service';
+import {GeolocationService} from '@core/services/geolocation.service';
 
-@Injectable({ providedIn: 'root' })
+interface LoginResponse {
+  token: string;
+  token_type: string;
+  expires_in: number;
+  user: User;
+}
+
+@Injectable({providedIn: 'root'})
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
@@ -64,26 +72,39 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    const data = { username: lower(username), password };
-    return this.api.post('auth', 'login', data).pipe(
-      switchMap(() => this.me()),
-      switchMap((user) => {
-        if (!(user.geolocalization_login_enabled ?? true)) {
-          return of(user);
+    return from(this.geolocation.getPermissionState()).pipe(
+      switchMap((state) =>
+        state === 'granted'
+          ? this.geolocation.request().pipe(catchError(() => of(null)))
+          : of(null),
+      ),
+      switchMap((coords: GeolocationCoordinates | null) => {
+        const data: Record<string, unknown> = {username: lower(username), password};
+        if (coords) {
+          data['latitude'] = coords.latitude;
+          data['longitude'] = coords.longitude;
+          data['accuracy'] = coords.accuracy;
         }
-        return this.geolocation.request().pipe(
-          // Geo concedida → la enviamos al backend (best-effort, no bloquea el login).
-          switchMap((coords) => this.sendLoginLocation(coords).pipe(map(() => user))),
-          catchError(() =>
-            this.api.post('auth', 'logout').pipe(
-              tap(() => this.currentUser.set(null)),
-              switchMap(() =>
-                throwError(
-                  () => new Error('Se requiere permiso de ubicación para usar la aplicación.'),
+        return this.api.post<LoginResponse>('auth', 'login', data).pipe(
+          tap((res) => this.currentUser.set(res.user)),
+          switchMap((res) => {
+            const user = res.user;
+            if (!(user.geolocalization_login_enabled ?? true)) return of(user);
+            if (coords) return of(user);
+            return this.geolocation.request().pipe(
+              switchMap((newCoords) => this.sendLoginLocation(newCoords).pipe(map(() => user))),
+              catchError(() =>
+                this.api.post('auth', 'logout').pipe(
+                  tap(() => this.currentUser.set(null)),
+                  switchMap(() =>
+                    throwError(
+                      () => new Error('Se requiere permiso de ubicación para usar la aplicación.'),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         );
       }),
     );
