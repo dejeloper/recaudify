@@ -87,12 +87,7 @@ class AuthController extends ApiController
                 "token" => $token,
                 "token_type" => "bearer",
                 "expires_in" => config("jwt.ttl") * 60,
-                "user" => [
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "username" => $user->username,
-                    "role" => $user->getRoleNames()->first(),
-                ],
+                "user" => $this->userPayload($user),
             ],
             "Sesion iniciada correctamente.",
         )
@@ -118,8 +113,13 @@ class AuthController extends ApiController
     {
         /** @var \App\Models\User $user */
         $user = $this->guard()->user();
-        $auth = ParameterType::Authentication;
 
+        return ApiResult::success($this->userPayload($user))->toResponse();
+    }
+
+    private function userPayload(\App\Models\User $user): array
+    {
+        $auth = ParameterType::Authentication;
         $data = (new UserResource($user))->toArray(request());
 
         $data["current_shift"] = $this->authService->getCurrentShift($user);
@@ -128,7 +128,7 @@ class AuthController extends ApiController
         $data["geolocalization_login_enabled"] = $this->parameterService->get($auth, "geolocalization_login_enabled");
         $data["ip_address"] = request()->ip();
 
-        return ApiResult::success($data)->toResponse();
+        return $data;
     }
 
     public function config(): JsonResponse
