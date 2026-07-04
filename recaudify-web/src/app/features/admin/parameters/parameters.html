@@ -55,7 +55,7 @@
     >
       Todas
     </button>
-    @for (type of types; track type) {
+    @for (type of availableTypes(); track type) {
       <button
         (click)="filterByType(type)"
         [class.bg-gray-900]="selectedType() === type"

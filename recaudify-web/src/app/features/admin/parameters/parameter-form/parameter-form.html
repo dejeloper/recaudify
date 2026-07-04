@@ -69,7 +69,7 @@
               [(ngModel)]="formType"
               class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
             >
-              @for (type of types; track type) {
+              @for (type of availableTypes(); track type) {
                 <option [value]="type">{{ typeLabels[type] }}</option>
               }
             </select>
@@ -86,7 +86,7 @@
               [(ngModel)]="formCast"
               class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
             >
-              @for (cast of casts; track cast) {
+              @for (cast of availableCasts(); track cast) {
                 <option [value]="cast">{{ cast }}</option>
               }
             </select>

@@ -8,7 +8,7 @@ import {
   Parameter,
   PARAMETER_TYPE_COLORS,
   PARAMETER_TYPE_LABELS,
-  PARAMETER_TYPES,
+  ParameterType,
 } from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { finalize } from 'rxjs';
@@ -32,11 +32,17 @@ export class Parameters implements OnInit {
 
   protected readonly typeLabels = PARAMETER_TYPE_LABELS;
   protected readonly typeColors = PARAMETER_TYPE_COLORS;
-  protected readonly types = PARAMETER_TYPES;
+  protected readonly availableTypes = signal<ParameterType[]>([]);
   protected readonly selectedType = signal('');
 
   ngOnInit() {
     this.service.load();
+    this.service
+      .getConfigValue<ParameterType[]>('parameter_types')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((types) => {
+        if (types) this.availableTypes.set(types);
+      });
   }
 
   protected filterByType(type: string) {

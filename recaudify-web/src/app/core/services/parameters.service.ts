@@ -78,6 +78,15 @@ export class ParametersService {
     return this.getAll().pipe(map((params) => params.find((p) => p.key === key)?.value === 'true'));
   }
 
+  getConfigValue<T>(key: string) {
+    return this.getAll('configuration').pipe(
+      map((params) => {
+        const param = params.find((p) => p.key === key);
+        return param ? (param.typed_value as T) : null;
+      }),
+    );
+  }
+
   getAll(type?: string) {
     const params = type ? { type } : undefined;
     return this.api.get<Parameter[]>('parameters', undefined, params);
