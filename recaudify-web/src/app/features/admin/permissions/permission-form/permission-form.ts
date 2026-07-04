@@ -46,8 +46,8 @@ export class PermissionForm implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar el permiso.');
-          this.loading.set(false);
+          this.toast.error('No se pudo cargar el permiso.');
+          this.router.navigate(['/admin/permissions']);
         },
       });
   }

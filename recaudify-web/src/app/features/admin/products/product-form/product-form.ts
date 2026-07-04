@@ -48,8 +48,8 @@ export class ProductForm implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar el producto.');
-          this.loading.set(false);
+          this.toast.error('No se pudo cargar el producto.');
+          this.router.navigate(['/admin/products']);
         },
       });
   }

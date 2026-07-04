@@ -61,7 +61,10 @@ export class RoleForm implements OnInit {
           this.formName = role.name;
           this.selected.set(new Set(role.permissions.map((p) => p.name)));
         },
-        error: () => this.error.set('No se pudo cargar el rol.'),
+        error: () => {
+          this.toast.error('No se pudo cargar el rol.');
+          this.router.navigate(['/admin/roles']);
+        },
       });
   }
 
