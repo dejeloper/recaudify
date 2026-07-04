@@ -4,7 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/interfaces/api-error.interface';
-import { PARAMETER_TYPE_LABELS, PARAMETER_TYPES } from '@core/interfaces/parameter.interface';
+import {
+  PARAMETER_TYPE_LABELS,
+  PARAMETER_TYPES,
+  ParameterType,
+} from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 
@@ -34,7 +38,7 @@ export class ParameterForm implements OnInit {
   protected formKey = '';
   protected formValue = '';
   protected formDescription = '';
-  protected formType = 'configuration';
+  protected formType: ParameterType = 'configuration';
   protected formCast = 'string';
 
   protected readonly isEdit = computed(() => !!this.id());

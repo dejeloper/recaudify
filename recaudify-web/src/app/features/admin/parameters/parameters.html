@@ -43,6 +43,32 @@
     </div>
   </div>
 
+  <!-- Type filter tabs -->
+  <div class="mb-4 flex flex-wrap gap-2">
+    <button
+      (click)="filterByType('')"
+      [class.bg-gray-900]="selectedType() === ''"
+      [class.text-white]="selectedType() === ''"
+      [class.bg-gray-100]="selectedType() !== ''"
+      [class.text-gray-700]="selectedType() !== ''"
+      class="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+    >
+      Todas
+    </button>
+    @for (type of types; track type) {
+      <button
+        (click)="filterByType(type)"
+        [class.bg-gray-900]="selectedType() === type"
+        [class.text-white]="selectedType() === type"
+        [class.bg-gray-100]="selectedType() !== type"
+        [class.text-gray-700]="selectedType() !== type"
+        class="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+      >
+        {{ typeLabels[type] }}
+      </button>
+    }
+  </div>
+
   <app-spinner [show]="loading()" />
 
   @if (!loading()) {
@@ -63,6 +89,7 @@
               <tr>
                 <th>Clave</th>
                 <th>Valor</th>
+                <th>Tipo</th>
                 <th>Descripción</th>
                 <th></th>
               </tr>
@@ -75,6 +102,15 @@
                   </td>
                   <td class="px-5 py-3.5">
                     <span class="text-sm text-gray-600">{{ param.value }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span
+                      class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {{
+                        typeColors[param.type]
+                      }}"
+                    >
+                      {{ typeLabels[param.type] }}
+                    </span>
                   </td>
                   <td class="px-5 py-3.5">
                     <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>
@@ -137,6 +173,7 @@
                     <tr>
                       <th>Clave</th>
                       <th>Valor</th>
+                      <th>Tipo</th>
                       <th>Descripción</th>
                       <th></th>
                     </tr>
@@ -151,6 +188,13 @@
                         </td>
                         <td class="px-5 py-3.5">
                           <span class="text-sm text-gray-400">{{ param.value }}</span>
+                        </td>
+                        <td class="px-5 py-3.5">
+                          <span
+                            class="inline-block rounded-full px-2 py-0.5 text-xs font-medium text-gray-400 bg-gray-100"
+                          >
+                            {{ typeLabels[param.type] }}
+                          </span>
                         </td>
                         <td class="px-5 py-3.5">
                           <span class="text-sm text-gray-400">{{ param.description ?? '—' }}</span>

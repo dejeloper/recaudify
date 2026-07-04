@@ -4,7 +4,12 @@ import { RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { TableDirective } from '@core/directives/table.directive';
 import { Spinner } from '@core/components/spinner/spinner';
-import { Parameter } from '@core/interfaces/parameter.interface';
+import {
+  Parameter,
+  PARAMETER_TYPE_COLORS,
+  PARAMETER_TYPE_LABELS,
+  PARAMETER_TYPES,
+} from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { finalize } from 'rxjs';
 
@@ -25,8 +30,18 @@ export class Parameters implements OnInit {
   protected readonly deletingId = signal<number | null>(null);
   protected readonly restoringId = signal<number | null>(null);
 
+  protected readonly typeLabels = PARAMETER_TYPE_LABELS;
+  protected readonly typeColors = PARAMETER_TYPE_COLORS;
+  protected readonly types = PARAMETER_TYPES;
+  protected readonly selectedType = signal('');
+
   ngOnInit() {
     this.service.load();
+  }
+
+  protected filterByType(type: string) {
+    this.selectedType.set(type);
+    this.service.load(type || undefined);
   }
 
   protected toggleTrashed() {

@@ -1,6 +1,6 @@
 export interface Parameter {
   id: number;
-  type: string;
+  type: ParameterType;
   type_label: string;
   key: string;
   value: string;
