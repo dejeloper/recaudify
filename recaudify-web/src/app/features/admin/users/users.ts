@@ -7,7 +7,7 @@ import { Spinner } from '@core/components/spinner/spinner';
 import { User } from '@core/interfaces/user.interface';
 import { AuthService } from '@core/services/auth.service';
 import { UsersService } from '@core/services/users.service';
-import { finalize } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -26,14 +26,25 @@ export class Users implements OnInit {
   protected readonly showDisabled = this.service.showDisabled;
   protected readonly deletingId = signal<number | null>(null);
   protected readonly restoringId = signal<number | null>(null);
+  protected readonly searchTerm = signal('');
 
   protected readonly canCreate = computed(() => this.authService.hasPermission('users.create'));
   protected readonly canEdit = computed(() => this.authService.hasPermission('users.edit'));
   protected readonly canDelete = computed(() => this.authService.hasPermission('users.deactivate'));
   protected readonly canRestore = computed(() => this.authService.hasPermission('users.restore'));
 
+  private readonly search$ = new Subject<string>();
+
   ngOnInit() {
     this.service.load();
+    this.search$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((term) => this.service.search(term));
+  }
+
+  protected onSearch(term: string) {
+    this.searchTerm.set(term);
+    this.search$.next(term);
   }
 
   protected toggleDisabled() {

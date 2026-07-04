@@ -5,6 +5,13 @@
       <p class="mt-0.5 text-sm text-gray-400">Gestión de accesos al sistema.</p>
     </div>
     <div class="flex items-center gap-2 sm:self-start self-stretch">
+      <input
+        type="search"
+        placeholder="Buscar por nombre o usuario..."
+        [value]="searchTerm()"
+        (input)="onSearch($any($event.target).value)"
+        class="w-full sm:w-56 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-slate-400 focus:outline-none"
+      />
       <button
         (click)="toggleDisabled()"
         appBtn="secondary"
