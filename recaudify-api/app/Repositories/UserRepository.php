@@ -3,28 +3,34 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Providers\AppServiceProvider;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository
 {
+    private function excludeSuperadmin($query)
+    {
+        return $query->whereDoesntHave("roles", fn($q) => $q->where("name", AppServiceProvider::SUPERADMIN_ROLE));
+    }
+
     public function all(): Collection
     {
-        return User::with("roles")->get();
+        return $this->excludeSuperadmin(User::with("roles"))->get();
     }
 
     public function allDisabled(): Collection
     {
-        return User::onlyTrashed()->with("roles")->get();
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles"))->get();
     }
 
     public function find(int $id): ?User
     {
-        return User::with("roles", "permissions")->find($id);
+        return $this->excludeSuperadmin(User::with("roles", "permissions"))->find($id);
     }
 
     public function findTrashed(int $id): ?User
     {
-        return User::onlyTrashed()->with("roles")->find($id);
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles"))->find($id);
     }
 
     public function findByUsername(string $username): ?User
@@ -34,9 +40,8 @@ class UserRepository
 
     public function search(string $term): Collection
     {
-        return User::with("roles")
-            ->where("name", "like", "%{$term}%")
-            ->orWhere("username", "like", "%{$term}%")
+        return $this->excludeSuperadmin(User::with("roles"))
+            ->where(fn($q) => $q->where("name", "like", "%{$term}%")->orWhere("username", "like", "%{$term}%"))
             ->get();
     }
 
