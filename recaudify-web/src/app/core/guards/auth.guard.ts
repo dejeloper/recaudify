@@ -11,6 +11,8 @@ export const authGuard: CanActivateFn = () => {
 
   if (!auth.isAuthenticated()) return router.createUrlTree(['/login']);
 
+  if (!auth.geolocalizationLoginEnabled()) return true;
+
   return from(geolocation.getPermissionState()).pipe(
     map((state) => {
       if (state === 'denied') {

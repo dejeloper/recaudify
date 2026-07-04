@@ -17,6 +17,7 @@ import { ApiError } from '@core/interfaces/api-error.interface';
 import { LoginResponse } from '@core/interfaces/auth.interface';
 import { CurrentShift, User } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
+import { ConfigService } from '@core/services/config.service';
 import { GeolocationService } from '@core/services/geolocation.service';
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +25,7 @@ export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly geolocation = inject(GeolocationService);
+  private readonly config = inject(ConfigService);
 
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
@@ -66,7 +68,12 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    return from(this.geolocation.getPermissionState()).pipe(
+    return this.config.getLoginConfig().pipe(
+      switchMap((cfg) =>
+        cfg.geolocalization_login
+          ? from(this.geolocation.getPermissionState())
+          : of<PermissionState>('denied'),
+      ),
       switchMap((state) =>
         state === 'granted'
           ? this.geolocation.request().pipe(catchError(() => of(null)))
