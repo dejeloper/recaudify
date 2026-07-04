@@ -1,6 +1,6 @@
 {
   "enableAllProjectMcpServers": true,
-  "permissions": {
+    "permissions": {
     "allow": [
       "Read",
       "Edit",
@@ -17,6 +17,9 @@
       "Bash(dir *)",
       "Bash(cat *)",
       "Bash(echo *)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
       "Bash(jq *)",
       "Bash(type *)",
       "Bash(Get-Content *)",
@@ -35,6 +38,18 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "Write-Output '## Documentación del proyecto'; Get-Content funcionalidades.md, Lista_test.md, plan-ejecucion.md, planning.md, vps_deploy_guide.md, vps_plan.md -ErrorAction SilentlyContinue",
+            "statusMessage": "Cargando documentación del proyecto..."
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -44,6 +59,41 @@
             "command": "$changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $webFiles = $changed | Where-Object { $_ -match '^recaudify-web/.*\\.(ts|html|scss|css)$' } | ForEach-Object { $_ -replace '^recaudify-web/', '' }; if ($webFiles.Count -gt 0) { pnpm --prefix recaudify-web exec prettier --write @($webFiles) --ignore-unknown 2>$null }; exit 0",
             "statusMessage": "Running Prettier on modified files...",
             "timeout": 60
+          },
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$excluded = @('planning.md','CLAUDE.md','AGENTS.md','Pendientes mios.md'); $changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $codeChanged = $changed | Where-Object { $excluded -notcontains $_ -and $_ -notmatch '^\\.claude/' }; $planChanged = $changed -contains 'planning.md'; if ($codeChanged.Count -gt 0 -and -not $planChanged) { [Console]::Error.WriteLine('Hay cambios de codigo sin reflejar en planning.md. Ejecuta /update-plan antes de terminar.'); exit 2 }; exit 0",
+            "statusMessage": "Verificando si planning.md está al día...",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $file = $json.tool_input.file_path; if ($file -match '\\.env(\\.|$)' -or $file -match '\\.(pem|key)$' -or $file -match 'id_rsa') { $reason = 'ADVERTENCIA DE AJUSTE: ARCHIVO SENSIBLE (credenciales/claves). Confirma que realmente quieres modificarlo.'; $out = @{ hookSpecificOutput = @{ hookEventName = 'PreToolUse'; permissionDecision = 'ask'; permissionDecisionReason = $reason } }; $out | ConvertTo-Json -Compress }; exit 0",
+            "statusMessage": "Revisando sensibilidad del archivo...",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $file = $json.tool_input.file_path; if (-not $file) { exit 0 }; if ($file -match '\\.php$') { php recaudify-api/vendor/bin/pint \"$file\" 2>$null } elseif ($file -match '\\.(ts|html|scss|css)$') { pnpm --prefix recaudify-web exec prettier --write \"$file\" --ignore-unknown 2>$null }; exit 0",
+            "statusMessage": "Formateando archivo...",
+            "timeout": 30
           }
         ]
       }

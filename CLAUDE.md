@@ -8,6 +8,19 @@ General Angular and Laravel conventions are defined in the global `~/.claude/CLA
 - **Never make git commits** unless the user explicitly asks with words like "commit", "hacer commit", or "guarda los cambios en git".
 - Be concise and direct. Do not ask unnecessary questions or over-explain. Provide short answers unless the user asks for detail.
 
+## Contexto del proyecto
+
+Antes de empezar cualquier tarea, revisa los siguientes archivos en la raíz del repo si son relevantes a la tarea:
+
+- `funcionalidades.md` — plan de trabajo oficial de la reescritura legacy → Recaudify (funcionalidades a implementar).
+- `Lista_test.md` — listado de pruebas/casos de test pendientes o realizados.
+- `plan-ejecucion.md` — plan de ejecución del proyecto.
+- `planning.md` — planificación general del proyecto.
+- `vps_deploy_guide.md` — guía de despliegue en el VPS.
+- `vps_plan.md` — plan de infraestructura/VPS.
+
+Úsalos como contexto para entender el estado y las decisiones del proyecto antes de proponer cambios.
+
 ## Project
 
 Recaudify is a SaaS for debt collection and payment management (cobranza). It is a rewrite of a legacy CodeIgniter 3 app. The monorepo contains two subprojects:
