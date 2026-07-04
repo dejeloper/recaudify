@@ -15,11 +15,11 @@ export class ParametersService {
   readonly loadingTrashed = signal(false);
   readonly showTrashed = signal(false);
 
-  load(): void {
+  load(type?: string): void {
     this.loading.set(true);
     this.showTrashed.set(false);
     this.trashed.set([]);
-    this.getAll().subscribe({
+    this.getAll(type).subscribe({
       next: (list) => {
         this.items.set(list);
         this.loading.set(false);
@@ -78,24 +78,37 @@ export class ParametersService {
     return this.getAll().pipe(map((params) => params.find((p) => p.key === key)?.value === 'true'));
   }
 
-  getAll() {
-    return this.api.get<Parameter[]>('parameters');
+  getAll(type?: string) {
+    const params = type ? { type } : undefined;
+    return this.api.get<Parameter[]>('parameters', undefined, params);
   }
+
   getById(id: number) {
     return this.api.get<Parameter>('parameters', String(id));
   }
-  create(key: string, value: string, description: string | null) {
-    return this.api.post<Parameter>('parameters', undefined, { key, value, description });
-  }
-  update(id: number, key: string, value: string, description: string | null) {
-    return this.api.put<Parameter>('parameters', String(id), { key, value, description });
-  }
-  delete(id: number) {
-    return this.api.delete('parameters', String(id));
-  }
+
   getTrashed() {
     return this.api.get<Parameter[]>('parameters', 'trashed');
   }
+
+  create(key: string, value: string, description: string | null, type: string, cast = 'string') {
+    return this.api.post<Parameter>('parameters', undefined, {
+      key,
+      value,
+      description,
+      type,
+      cast,
+    });
+  }
+
+  update(id: number, value: string) {
+    return this.api.put<Parameter>('parameters', String(id), { value });
+  }
+
+  delete(id: number) {
+    return this.api.delete('parameters', String(id));
+  }
+
   restore(id: number) {
     return this.api.post<void>('parameters', `${id}/restore`);
   }

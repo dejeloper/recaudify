@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use App\Repositories\ActivityRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Models\Activity;
 
 class ActivityService
 {
@@ -13,31 +13,17 @@ class ActivityService
 
     public const MAX_PER_PAGE = 100;
 
-    /**
-     * Filtros soportados: log_name, causer_id, model (basename), subject_id.
-     */
+    public function __construct(private readonly ActivityRepository $repository) {}
+
     public function getAll(array $filters = [], int $perPage = self::DEFAULT_PER_PAGE): LengthAwarePaginator
     {
-        $model = $filters["model"] ?? null;
-        $subjectType = $model ? "App\\Models\\" . $model : null;
-
-        $paginator = Activity::with("causer")
-            ->when($filters["log_name"] ?? null, fn($q, $v) => $q->where("log_name", $v))
-            ->when($filters["causer_id"] ?? null, fn($q, $v) => $q->where("causer_id", $v))
-            ->when($subjectType, fn($q, $v) => $q->where("subject_type", $v))
-            ->when($filters["subject_id"] ?? null, fn($q, $v) => $q->where("subject_id", $v))
-            ->orderByDesc("id")
-            ->paginate($perPage);
+        $paginator = $this->repository->paginate($filters, $perPage);
 
         $this->attachSubjectLabels($paginator->getCollection());
 
         return $paginator;
     }
 
-    /**
-     * Resuelve la etiqueta legible (nombre) del subject de cada actividad.
-     * Una consulta por tipo de modelo (incluye eliminados con softDelete).
-     */
     private function attachSubjectLabels(Collection $activities): void
     {
         $groups = $activities->whereNotNull("subject_type")->groupBy("subject_type");

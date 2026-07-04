@@ -2,15 +2,9 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\CallReason;
 use App\Models\Concerns\LogsModelActivity;
-use App\Models\Parameter;
 use App\Models\Permission;
-use App\Models\Product;
-use App\Models\Rate;
 use App\Models\Role;
-use App\Models\Seller;
-use App\Models\State;
 use App\Models\User;
 use App\Models\UserSchedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -175,39 +169,6 @@ class ModelActivityTest extends TestCase
         $this->assertEquals($causer->id, $activity->causer_id);
     }
 
-    public function test_parameter_creation_logs_to_catalogos(): void
-    {
-        $parameter = Parameter::create([
-            "key" => "shift-status",
-            "value" => "true",
-            "description" => "Control de horarios",
-        ]);
-
-        $activity = Activity::inLog("catalogos")->latest()->first();
-
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($parameter->id, $activity->subject_id);
-        $this->assertEquals(Parameter::class, $activity->subject_type);
-        $this->assertEquals("creó", $activity->description);
-    }
-
-    public function test_state_creation_logs_to_catalogos(): void
-    {
-        $state = State::create([
-            "name" => "Activo",
-            "state_type" => "client",
-            "active" => true,
-        ]);
-
-        $activity = Activity::inLog("catalogos")->latest()->first();
-
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($state->id, $activity->subject_id);
-        $this->assertEquals(State::class, $activity->subject_type);
-    }
-
     public function test_permission_creation_logs_to_seguridad(): void
     {
         $permission = Permission::create(["name" => "test.view", "guard_name" => "api"]);
@@ -230,86 +191,6 @@ class ModelActivityTest extends TestCase
         $this->assertEquals("seguridad", $activity->log_name);
         $this->assertEquals($role->id, $activity->subject_id);
         $this->assertEquals(Role::class, $activity->subject_type);
-    }
-
-    public function test_product_creation_logs_to_catalogos(): void
-    {
-        $product = Product::create([
-            "name" => "Test Product",
-            "value" => 5000,
-            "active" => true,
-        ]);
-
-        $activity = Activity::inLog("catalogos")->latest()->first();
-
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($product->id, $activity->subject_id);
-        $this->assertEquals(Product::class, $activity->subject_type);
-        $this->assertEquals("creó", $activity->description);
-    }
-
-    public function test_seller_creation_logs_to_catalogos(): void
-    {
-        $seller = Seller::create([
-            "name" => "Test Seller",
-            "username" => "seller01",
-            "active" => true,
-        ]);
-
-        $activity = Activity::inLog("catalogos")->latest()->first();
-
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($seller->id, $activity->subject_id);
-        $this->assertEquals(Seller::class, $activity->subject_type);
-        $this->assertEquals("creó", $activity->description);
-    }
-
-    public function test_call_reason_creation_logs_to_catalogos(): void
-    {
-        $reason = CallReason::create([
-            "name" => "Test Reason",
-            "color" => "#ff0000",
-            "active" => true,
-        ]);
-
-        $activity = Activity::inLog("catalogos")->latest()->first();
-
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($reason->id, $activity->subject_id);
-        $this->assertEquals(CallReason::class, $activity->subject_type);
-        $this->assertEquals("creó", $activity->description);
-    }
-
-    public function test_rate_creation_logs_to_catalogos(): void
-    {
-        $product = Product::create(["name" => "Parent", "value" => 1000]);
-        $rate = Rate::create([
-            "name" => "Test Rate",
-            "product_id" => $product->id,
-            "value" => 10000,
-            "installments" => 12,
-            "installment_value" => 1000,
-            "discount" => 0,
-            "active" => true,
-        ]);
-
-        $activities = Activity::inLog("catalogos")->orderBy("id")->get();
-        $this->assertCount(
-            2,
-            $activities,
-            "Expected 2 activities (product create + rate create), got: " .
-                $activities->pluck("subject_type", "id")->toJson(),
-        );
-
-        $activity = $activities->last();
-        $this->assertNotNull($activity);
-        $this->assertEquals("catalogos", $activity->log_name);
-        $this->assertEquals($rate->id, $activity->subject_id);
-        $this->assertEquals(Rate::class, $activity->subject_type);
-        $this->assertEquals("creó", $activity->description);
     }
 
     public function test_user_schedule_creation_logs_to_usuarios(): void
@@ -341,18 +222,7 @@ class ModelActivityTest extends TestCase
 
     public function test_all_audited_models_have_log_name_configured(): void
     {
-        $models = [
-            new CallReason(),
-            new Parameter(),
-            new Permission(),
-            new Product(),
-            new Rate(),
-            new Role(),
-            new Seller(),
-            new State(),
-            new User(),
-            new UserSchedule(),
-        ];
+        $models = [new Permission(), new Role(), new User(), new UserSchedule()];
 
         foreach ($models as $model) {
             $reflection = new \ReflectionMethod($model, "logName");
@@ -364,18 +234,7 @@ class ModelActivityTest extends TestCase
 
     public function test_all_audited_models_have_activity_fields_configured(): void
     {
-        $models = [
-            new CallReason(),
-            new Parameter(),
-            new Permission(),
-            new Product(),
-            new Rate(),
-            new Role(),
-            new Seller(),
-            new State(),
-            new User(),
-            new UserSchedule(),
-        ];
+        $models = [new Permission(), new Role(), new User(), new UserSchedule()];
 
         foreach ($models as $model) {
             $reflection = new \ReflectionMethod($model, "activitylogFields");

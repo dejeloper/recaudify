@@ -6,7 +6,6 @@ use App\Http\Requests\Schedule\StoreUserScheduleRequest;
 use App\Http\Requests\Schedule\UpdateUserScheduleRequest;
 use App\Http\Resources\UserScheduleResource;
 use App\Http\Responses\ApiResult;
-use App\Models\UserSchedule;
 use App\Services\UserScheduleService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -26,9 +25,9 @@ class UserScheduleController extends ApiController
             return ApiResult::notFound("Usuario no encontrado.")->toResponse();
         }
 
-        $schedules = $this->scheduleService->getForUser($user);
-
-        return ApiResult::success(UserScheduleResource::collection($schedules))->toResponse();
+        return ApiResult::success(
+            UserScheduleResource::collection($this->scheduleService->getForUser($user)),
+        )->toResponse();
     }
 
     public function store(StoreUserScheduleRequest $request, int $userId): JsonResponse
@@ -40,7 +39,7 @@ class UserScheduleController extends ApiController
         }
 
         if ($this->scheduleService->isDuplicateDay($user, $request->day_of_week)) {
-            return ApiResult::failure("Ya existe un horario para ese día.", 409)->toResponse();
+            return ApiResult::failure("Ya existe un horario para ese dia.", 409)->toResponse();
         }
 
         $schedule = $this->scheduleService->create($user, $request->validated());
@@ -50,7 +49,7 @@ class UserScheduleController extends ApiController
 
     public function update(UpdateUserScheduleRequest $request, int $id): JsonResponse
     {
-        $schedule = UserSchedule::find($id);
+        $schedule = $this->scheduleService->find($id);
 
         if (!$schedule) {
             return ApiResult::notFound("Horario no encontrado.")->toResponse();
@@ -66,7 +65,7 @@ class UserScheduleController extends ApiController
 
     public function destroy(int $id): JsonResponse
     {
-        $schedule = UserSchedule::find($id);
+        $schedule = $this->scheduleService->find($id);
 
         if (!$schedule) {
             return ApiResult::notFound("Horario no encontrado.")->toResponse();

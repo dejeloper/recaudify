@@ -4,8 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/interfaces/api-error.interface';
+import { PARAMETER_TYPE_LABELS, PARAMETER_TYPES } from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
+
+const PARAMETER_CASTS = ['string', 'boolean', 'integer', 'float', 'json'] as const;
 
 @Component({
   selector: 'app-parameter-form',
@@ -24,9 +27,15 @@ export class ParameterForm implements OnInit {
   protected readonly saving = signal(false);
   protected readonly error = signal('');
 
+  protected readonly types = PARAMETER_TYPES;
+  protected readonly typeLabels = PARAMETER_TYPE_LABELS;
+  protected readonly casts = PARAMETER_CASTS;
+
   protected formKey = '';
   protected formValue = '';
   protected formDescription = '';
+  protected formType = 'configuration';
+  protected formCast = 'string';
 
   protected readonly isEdit = computed(() => !!this.id());
 
@@ -45,6 +54,8 @@ export class ParameterForm implements OnInit {
           this.formKey = param.key;
           this.formValue = param.value;
           this.formDescription = param.description ?? '';
+          this.formType = param.type;
+          this.formCast = param.cast;
           this.loading.set(false);
         },
         error: () => {
@@ -65,8 +76,8 @@ export class ParameterForm implements OnInit {
     const description = this.formDescription.trim() || null;
 
     const req$ = id
-      ? this.parametersService.update(+id, key, value, description)
-      : this.parametersService.create(key, value, description);
+      ? this.parametersService.update(+id, value)
+      : this.parametersService.create(key, value, description, this.formType, this.formCast);
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {

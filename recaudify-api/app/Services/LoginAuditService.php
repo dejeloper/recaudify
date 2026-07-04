@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\LoginAudit;
 use App\Models\User;
+use App\Repositories\LoginAuditRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -13,21 +14,16 @@ class LoginAuditService
 
     public const MAX_PER_PAGE = 100;
 
-    /**
-     * Listado paginado de accesos. Filtros: user_id, status.
-     */
+    public function __construct(private readonly LoginAuditRepository $repository) {}
+
     public function getAll(array $filters = [], int $perPage = self::DEFAULT_PER_PAGE): LengthAwarePaginator
     {
-        return LoginAudit::with("user")
-            ->when($filters["user_id"] ?? null, fn($q, $v) => $q->where("user_id", $v))
-            ->when($filters["status"] ?? null, fn($q, $v) => $q->where("status", $v))
-            ->orderByDesc("id")
-            ->paginate($perPage);
+        return $this->repository->paginate($filters, $perPage);
     }
 
     public function recordSuccess(User $user, Request $request): LoginAudit
     {
-        return LoginAudit::create([
+        return $this->repository->create([
             "user_id" => $user->id,
             "username" => $user->username,
             "status" => "success",
@@ -38,7 +34,7 @@ class LoginAuditService
 
     public function recordFailure(string $username, string $reason, ?User $user, Request $request): LoginAudit
     {
-        return LoginAudit::create([
+        return $this->repository->create([
             "user_id" => $user?->id,
             "username" => $username,
             "status" => "failed",
@@ -47,17 +43,9 @@ class LoginAuditService
         ]);
     }
 
-    /**
-     * Enriquece el último acceso exitoso del usuario (de hoy) con la geolocalización
-     * provista por el cliente. La IP/UA ya las fijó el servidor en el login.
-     */
     public function attachLocation(User $user, array $coords): void
     {
-        $audit = LoginAudit::where("user_id", $user->id)
-            ->where("status", "success")
-            ->whereDate("logged_at", now()->toDateString())
-            ->latest("id")
-            ->first();
+        $audit = $this->repository->findLatestSuccessToday($user);
 
         $audit?->update([
             "latitude" => $coords["latitude"],
@@ -66,10 +54,6 @@ class LoginAuditService
         ]);
     }
 
-    /**
-     * Metadata tomada del request (autoritativa del servidor): IP, user-agent
-     * y derivados (SO y tipo de dispositivo).
-     */
     private function metadataFrom(Request $request): array
     {
         $userAgent = $request->userAgent() ?? "";
@@ -110,6 +94,7 @@ class LoginAuditService
         if (preg_match("/iPad|Android(?!.*Mobile)|Tablet/i", $ua)) {
             return "tablet";
         }
+
         if (preg_match("/Mobile|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i", $ua)) {
             return "mobile";
         }

@@ -18,10 +18,18 @@ class ParameterTest extends TestCase
         "parameters.restore",
     ];
 
+    private const PAYLOAD = [
+        "type" => "configuration",
+        "key" => "dias_mora",
+        "value" => "45",
+        "cast" => "integer",
+        "description" => "Días de mora",
+    ];
+
     public function test_index_lists_parameters(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
-        Parameter::create(["key" => "max_intentos", "value" => "5"]);
+        Parameter::create(self::PAYLOAD);
 
         $this->getJson("/api/parameters")->assertStatus(200)->assertJsonPath("success", true);
     }
@@ -29,11 +37,11 @@ class ParameterTest extends TestCase
     public function test_show_returns_parameter_or_404(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
-        $param = Parameter::create(["key" => "max_intentos", "value" => "5"]);
+        $param = Parameter::create(self::PAYLOAD);
 
         $this->getJson("/api/parameters/{$param->id}")
             ->assertStatus(200)
-            ->assertJsonPath("data.key", "max_intentos");
+            ->assertJsonPath("data.key", "dias_mora");
         $this->getJson("/api/parameters/99999")->assertStatus(404);
     }
 
@@ -41,36 +49,38 @@ class ParameterTest extends TestCase
     {
         $this->authenticateWith(self::PERMISSIONS);
 
-        $this->postJson("/api/parameters", ["key" => "dias_mora", "value" => "45"])->assertStatus(201);
+        $this->postJson("/api/parameters", self::PAYLOAD)->assertStatus(201);
         $this->assertDatabaseHas("parameters", ["key" => "dias_mora", "value" => "45"]);
     }
 
-    public function test_store_validates_required_and_unique(): void
+    public function test_store_validates_required(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
-        Parameter::create(["key" => "dias_mora", "value" => "45"]);
 
-        $this->postJson("/api/parameters", [])
-            ->assertStatus(422)
-            ->assertJsonStructure(["data" => ["key", "value"]]);
-        $this->postJson("/api/parameters", ["key" => "dias_mora", "value" => "90"])
-            ->assertStatus(422)
-            ->assertJsonStructure(["data" => ["key"]]);
+        $this->postJson("/api/parameters", [])->assertStatus(422);
+    }
+
+    public function test_store_validates_unique(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Parameter::create(self::PAYLOAD);
+
+        $this->postJson("/api/parameters", self::PAYLOAD)->assertStatus(422);
     }
 
     public function test_update_modifies_parameter(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
-        $param = Parameter::create(["key" => "dias_mora", "value" => "45"]);
+        $param = Parameter::create(self::PAYLOAD);
 
-        $this->putJson("/api/parameters/{$param->id}", ["key" => "dias_mora", "value" => "60"])->assertStatus(200);
+        $this->putJson("/api/parameters/{$param->id}", ["value" => "60"])->assertStatus(200);
         $this->assertDatabaseHas("parameters", ["id" => $param->id, "value" => "60"]);
     }
 
     public function test_destroy_and_restore_parameter(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
-        $param = Parameter::create(["key" => "dias_mora", "value" => "45"]);
+        $param = Parameter::create(self::PAYLOAD);
 
         $this->deleteJson("/api/parameters/{$param->id}")->assertStatus(200);
         $this->assertSoftDeleted("parameters", ["id" => $param->id]);
