@@ -14,16 +14,10 @@ import {
 } from 'rxjs';
 import {lower} from '@core/utils/text';
 import {ApiError} from '@core/interfaces/api-error.interface';
+import {LoginResponse} from '@core/interfaces/auth.interface';
 import {CurrentShift, User} from '@core/interfaces/user.interface';
 import {ApiService} from '@core/services/api.service';
 import {GeolocationService} from '@core/services/geolocation.service';
-
-interface LoginResponse {
-  token: string;
-  token_type: string;
-  expires_in: number;
-  user: User;
-}
 
 @Injectable({providedIn: 'root'})
 export class AuthService {

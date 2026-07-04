@@ -1,13 +1,7 @@
 import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { BtnVariant } from '@core/interfaces/btn.interface';
 
-export type BtnVariant =
-  | 'primary'
-  | 'secondary'
-  | 'table-edit'
-  | 'table-danger'
-  | 'table-restore'
-  | 'inline-save'
-  | 'inline-cancel';
+export type { BtnVariant };
 
 const VARIANT_CLASS: Record<BtnVariant, string> = {
   primary: 'btn-primary',
