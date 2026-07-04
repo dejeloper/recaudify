@@ -9,22 +9,36 @@ class ParameterSeeder extends Seeder
 {
     public function run(): void
     {
-        Parameter::firstOrCreate(
-            ["key" => "shift-status"],
-            ["value" => "true", "description" => "Muestra el widget de estado de turno al usuario."],
-        );
-
-        Parameter::firstOrCreate(
-            ["key" => "shift-status-countdown"],
-            ["value" => "true", "description" => "Muestra el contador regresivo de tiempo restante del turno."],
-        );
-
-        Parameter::firstOrCreate(
-            ["key" => "geolocalization_login"],
+        $parameters = [
+            // Authentication
             [
+                "type" => "authentication",
+                "key" => "shift_status_enabled",
                 "value" => "true",
-                "description" => "Requiere permiso de geolocalización al iniciar sesión.",
+                "cast" => "boolean",
+                "description" => "Habilita la verificación de horario al iniciar sesión",
+                "is_editable" => true,
             ],
-        );
+            [
+                "type" => "authentication",
+                "key" => "shift_countdown_enabled",
+                "value" => "true",
+                "cast" => "boolean",
+                "description" => "Muestra el contador regresivo del turno activo",
+                "is_editable" => true,
+            ],
+            [
+                "type" => "authentication",
+                "key" => "geolocalization_login_enabled",
+                "value" => "true",
+                "cast" => "boolean",
+                "description" => "Solicita geolocalización al momento del login",
+                "is_editable" => true,
+            ],
+        ];
+
+        foreach ($parameters as $param) {
+            Parameter::firstOrCreate(["type" => $param["type"], "key" => $param["key"]], $param);
+        }
     }
 }

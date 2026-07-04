@@ -43,12 +43,11 @@ class PermissionSeeder extends Seeder
             "parameters.create",
             "parameters.edit",
             "parameters.delete",
-            "parameters.restore",
 
-            // Audit (activity feed)
+            // Activity model log (Spatie)
             "audit.view",
 
-            // Access (login audit)
+            // Login audit
             "access.view",
         ];
 

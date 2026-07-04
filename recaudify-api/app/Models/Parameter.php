@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\LogsModelActivity;
+use App\Enums\ParameterCast;
+use App\Enums\ParameterType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Parameter extends Model
 {
-    use LogsModelActivity, SoftDeletes;
+    use SoftDeletes;
 
-    protected $fillable = ["key", "value", "description"];
+    protected $fillable = ["type", "key", "value", "cast", "description", "is_editable"];
 
-    protected function logName(): string
+    protected function casts(): array
     {
-        return "catalogos";
-    }
-
-    protected function activitylogFields(): array
-    {
-        return ["key", "value", "description"];
+        return [
+            "type" => ParameterType::class,
+            "cast" => ParameterCast::class,
+            "is_editable" => "boolean",
+        ];
     }
 }

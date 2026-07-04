@@ -2,83 +2,85 @@
 
 namespace App\Services;
 
+use App\Enums\ParameterCast;
+use App\Enums\ParameterType;
 use App\Models\Parameter;
+use App\Repositories\ParameterRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Cache;
 
 class ParameterService
 {
-    private const CACHE_KEY = "parameters.all";
+    private const CACHE_TTL = 300;
 
-    private const TTL = 86400;
+    public function __construct(private readonly ParameterRepository $repository) {}
 
-    // --- Cache helpers (static, usable without injection) ---
-
-    public static function get(string $key, mixed $default = null): mixed
+    public function all(?ParameterType $type = null): Collection
     {
-        return self::all()->get($key, $default);
-    }
-
-    public static function all(): SupportCollection
-    {
-        $data = Cache::remember(self::CACHE_KEY, self::TTL, function () {
-            return Parameter::pluck("value", "key")->all();
-        });
-
-        return collect($data);
-    }
-
-    public static function clearCache(): void
-    {
-        Cache::forget(self::CACHE_KEY);
-    }
-
-    // --- CRUD (instance methods, inject via constructor) ---
-
-    public function getAll(): Collection
-    {
-        return Parameter::orderBy("key")->get();
-    }
-
-    public function getTrashed(): Collection
-    {
-        return Parameter::onlyTrashed()->orderBy("key")->get();
+        return $this->repository->all($type);
     }
 
     public function find(int $id): ?Parameter
     {
-        return Parameter::find($id);
+        return $this->repository->find($id);
     }
 
-    public function findTrashed(int $id): ?Parameter
+    public function findOrFail(int $id): Parameter
     {
-        return Parameter::onlyTrashed()->find($id);
+        return $this->repository->findOrFail($id);
     }
 
     public function create(array $data): Parameter
     {
-        $parameter = Parameter::create($data);
-        self::clearCache();
+        $parameter = $this->repository->create($data);
+        $this->flushCache($parameter->type);
 
         return $parameter;
     }
 
-    public function update(Parameter $parameter, array $data): void
+    public function getAll(ParameterType $type): Collection
     {
-        $parameter->update($data);
-        self::clearCache();
+        return Cache::remember(
+            "parameters.{$type->value}",
+            self::CACHE_TTL,
+            fn() => $this->repository->allByType($type),
+        );
+    }
+
+    public function get(ParameterType $type, string $key): mixed
+    {
+        $param = $this->getAll($type)->firstWhere("key", $key);
+
+        return $param ? $this->resolveValue($param->value, $param->cast) : null;
+    }
+
+    public function update(Parameter $parameter, string $value): Parameter
+    {
+        $parameter->update(["value" => $value]);
+        $this->flushCache($parameter->type);
+
+        return $parameter->fresh();
     }
 
     public function delete(Parameter $parameter): void
     {
         $parameter->delete();
-        self::clearCache();
+        $this->flushCache($parameter->type);
     }
 
-    public function restore(Parameter $parameter): void
+    public function flushCache(ParameterType $type): void
     {
-        $parameter->restore();
-        self::clearCache();
+        Cache::forget("parameters.{$type->value}");
+    }
+
+    public function resolveValue(string $value, ParameterCast $cast): mixed
+    {
+        return match ($cast) {
+            ParameterCast::Boolean => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+            ParameterCast::Integer => (int) $value,
+            ParameterCast::Float => (float) $value,
+            ParameterCast::Json => json_decode($value, true),
+            ParameterCast::String => $value,
+        };
     }
 }
