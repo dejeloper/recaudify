@@ -18,7 +18,7 @@ class ParameterServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new ParameterService();
+        $this->service = $this->app->make(ParameterService::class);
     }
 
     public function test_get_returns_resolved_value(): void

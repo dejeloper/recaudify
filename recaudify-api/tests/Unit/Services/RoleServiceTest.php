@@ -17,7 +17,7 @@ class RoleServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new RoleService();
+        $this->service = $this->app->make(RoleService::class);
         Permission::firstOrCreate(["name" => "clientes.ver", "guard_name" => "api"]);
         Permission::firstOrCreate(["name" => "clientes.crear", "guard_name" => "api"]);
     }

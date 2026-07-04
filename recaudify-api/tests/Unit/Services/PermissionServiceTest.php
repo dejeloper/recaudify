@@ -16,7 +16,7 @@ class PermissionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PermissionService();
+        $this->service = $this->app->make(PermissionService::class);
     }
 
     public function test_create_uses_api_guard(): void

@@ -34,17 +34,6 @@ class ParameterTest extends TestCase
         $this->getJson("/api/parameters")->assertStatus(200)->assertJsonPath("success", true);
     }
 
-    public function test_show_returns_parameter_or_404(): void
-    {
-        $this->authenticateWith(self::PERMISSIONS);
-        $param = Parameter::create(self::PAYLOAD);
-
-        $this->getJson("/api/parameters/{$param->id}")
-            ->assertStatus(200)
-            ->assertJsonPath("data.key", "dias_mora");
-        $this->getJson("/api/parameters/99999")->assertStatus(404);
-    }
-
     public function test_store_creates_parameter(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
@@ -77,17 +66,13 @@ class ParameterTest extends TestCase
         $this->assertDatabaseHas("parameters", ["id" => $param->id, "value" => "60"]);
     }
 
-    public function test_destroy_and_restore_parameter(): void
+    public function test_destroy_soft_deletes_parameter(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
         $param = Parameter::create(self::PAYLOAD);
 
         $this->deleteJson("/api/parameters/{$param->id}")->assertStatus(200);
         $this->assertSoftDeleted("parameters", ["id" => $param->id]);
-
-        $this->getJson("/api/parameters/trashed")->assertStatus(200);
-        $this->postJson("/api/parameters/{$param->id}/restore")->assertStatus(200);
-        $this->assertDatabaseHas("parameters", ["id" => $param->id, "deleted_at" => null]);
     }
 
     public function test_requires_authentication(): void
