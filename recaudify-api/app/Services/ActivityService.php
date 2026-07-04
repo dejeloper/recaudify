@@ -16,7 +16,7 @@ class ActivityService
     {
         $paginator = $this->repository->paginate($filters, $perPage);
 
-        $this->attachSubjectLabels($paginator->getCollection());
+        $this->attachSubjectLabels(new Collection($paginator->items()));
 
         return $paginator;
     }
