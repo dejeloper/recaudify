@@ -5,6 +5,7 @@
 api-docs.json
 node_modules/
 recaudify-web/node_modules/
+recaudify-web/.angular/
 recaudify-api/vendor/
 recaudify-api/storage/
 recaudify-api/bootstrap/cache/
