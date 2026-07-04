@@ -40,6 +40,7 @@ class ParameterSeeder extends Seeder
                 "value" => "25",
                 "cast" => "integer",
                 "description" => "Registros por página en listados",
+                "is_editable" => false,
             ],
             [
                 "type" => "application",
@@ -47,6 +48,7 @@ class ParameterSeeder extends Seeder
                 "value" => "100",
                 "cast" => "integer",
                 "description" => "Máximo de registros por página permitido",
+                "is_editable" => false,
             ],
             [
                 "type" => "application",

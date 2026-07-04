@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,5 +16,7 @@ class DatabaseSeeder extends Seeder
             UserScheduleSeeder::class,
             ParameterSeeder::class,
         ]);
+
+        Cache::flush();
     }
 }
