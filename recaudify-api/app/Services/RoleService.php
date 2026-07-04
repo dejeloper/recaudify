@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Role;
 use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class RoleService
 {
@@ -35,7 +36,7 @@ class RoleService
         $role = $this->repository->create(["name" => $name, "guard_name" => "api"]);
 
         if ($permissions) {
-            $role->syncPermissions($permissions);
+            $this->syncPermissionsWithLog($role, $permissions);
         }
 
         return $role->load("permissions");
@@ -48,7 +49,7 @@ class RoleService
         }
 
         if ($permissions !== null) {
-            $role->syncPermissions($permissions);
+            $this->syncPermissionsWithLog($role, $permissions);
         }
 
         return $role->load("permissions");
@@ -63,5 +64,28 @@ class RoleService
     public function restore(Role $role): void
     {
         $role->restore();
+    }
+
+    private function syncPermissionsWithLog(Role $role, array $permissions): void
+    {
+        $before = $role->permissions()->pluck("name")->sort()->values()->all();
+
+        $role->syncPermissions($permissions);
+
+        $after = $role->permissions()->pluck("name")->sort()->values()->all();
+
+        if ($before === $after) {
+            return;
+        }
+
+        activity($role->getActivitylogOptions()->logName)
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->event("updated")
+            ->withChanges([
+                "attributes" => ["permissions" => $after],
+                "old" => ["permissions" => $before],
+            ])
+            ->log("actualizó los permisos");
     }
 }

@@ -12,6 +12,7 @@ class ActivityResource extends JsonResource
         "UserSchedule" => "horario",
         "Role" => "rol",
         "Permission" => "permiso",
+        "Parameter" => "parámetro",
     ];
 
     public function toArray(Request $request): array

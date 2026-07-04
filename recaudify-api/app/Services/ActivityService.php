@@ -6,6 +6,7 @@ use App\Repositories\ActivityRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 
 class ActivityService
 {
@@ -26,6 +27,12 @@ class ActivityService
 
         foreach ($groups as $type => $group) {
             if (!class_exists($type)) {
+                continue;
+            }
+
+            $model = new $type();
+
+            if (!Schema::hasColumn($model->getTable(), "name")) {
                 continue;
             }
 
