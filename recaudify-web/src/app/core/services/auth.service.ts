@@ -1,5 +1,5 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {Router} from '@angular/router';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   catchError,
   finalize,
@@ -12,14 +12,14 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import {lower} from '@core/utils/text';
-import {ApiError} from '@core/interfaces/api-error.interface';
-import {LoginResponse} from '@core/interfaces/auth.interface';
-import {CurrentShift, User} from '@core/interfaces/user.interface';
-import {ApiService} from '@core/services/api.service';
-import {GeolocationService} from '@core/services/geolocation.service';
+import { lower } from '@core/utils/text';
+import { ApiError } from '@core/interfaces/api-error.interface';
+import { LoginResponse } from '@core/interfaces/auth.interface';
+import { CurrentShift, User } from '@core/interfaces/user.interface';
+import { ApiService } from '@core/services/api.service';
+import { GeolocationService } from '@core/services/geolocation.service';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
@@ -73,7 +73,7 @@ export class AuthService {
           : of(null),
       ),
       switchMap((coords: GeolocationCoordinates | null) => {
-        const data: Record<string, unknown> = {username: lower(username), password};
+        const data: Record<string, unknown> = { username: lower(username), password };
         if (coords) {
           data['latitude'] = coords.latitude;
           data['longitude'] = coords.longitude;
