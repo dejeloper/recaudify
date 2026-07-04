@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityRepository
@@ -13,7 +13,11 @@ class ActivityRepository
 
         return Activity::with("causer")
             ->when($filters["log_name"] ?? null, fn($q, $v) => $q->where("log_name", $v))
-            ->when($filters["causer_id"] ?? null, fn($q, $v) => $q->where("causer_id", $v))
+            ->when($filters["causer_is_null"] ?? false, fn($q) => $q->whereNull("causer_id"))
+            ->when(
+                !($filters["causer_is_null"] ?? false) && ($filters["causer_id"] ?? null),
+                fn($q) => $q->where("causer_id", $filters["causer_id"]),
+            )
             ->when($subjectType, fn($q, $v) => $q->where("subject_type", $v))
             ->when($filters["subject_id"] ?? null, fn($q, $v) => $q->where("subject_id", $v))
             ->orderByDesc("id")

@@ -22,6 +22,7 @@ class ActivityController extends ApiController
         $filters = [
             "log_name" => $request->query("log_name"),
             "causer_id" => $request->query("causer_id"),
+            "user" => $request->query("user"),
             "model" => $request->query("model"),
             "subject_id" => $request->query("subject_id"),
         ];

@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\LoginAudit;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LoginAuditRepository
 {

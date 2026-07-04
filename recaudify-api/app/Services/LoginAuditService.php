@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\LoginAudit;
 use App\Models\User;
 use App\Repositories\LoginAuditRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LoginAuditService
 {
