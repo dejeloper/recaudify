@@ -15,22 +15,22 @@ class UserRepository
 
     public function all(): Collection
     {
-        return $this->excludeSuperadmin(User::with("roles"))->get();
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))->get();
     }
 
     public function allDisabled(): Collection
     {
-        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles"))->get();
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions"))->get();
     }
 
     public function find(int $id): ?User
     {
-        return $this->excludeSuperadmin(User::with("roles", "permissions"))->find($id);
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))->find($id);
     }
 
     public function findTrashed(int $id): ?User
     {
-        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles"))->find($id);
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions"))->find($id);
     }
 
     public function findByUsername(string $username): ?User
@@ -40,7 +40,7 @@ class UserRepository
 
     public function search(string $term): Collection
     {
-        return $this->excludeSuperadmin(User::with("roles"))
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))
             ->where(fn($q) => $q->where("name", "like", "%{$term}%")->orWhere("username", "like", "%{$term}%"))
             ->get();
     }
