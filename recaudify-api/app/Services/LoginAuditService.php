@@ -29,8 +29,13 @@ class LoginAuditService
         ]);
     }
 
-    public function recordFailure(string $username, string $reason, ?User $user, Request $request, ?array $location = null): LoginAudit
-    {
+    public function recordFailure(
+        string $username,
+        string $reason,
+        ?User $user,
+        Request $request,
+        ?array $location = null,
+    ): LoginAudit {
         return $this->repository->create([
             "user_id" => $user?->id,
             "username" => $username,

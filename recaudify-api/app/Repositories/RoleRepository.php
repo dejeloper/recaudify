@@ -25,12 +25,20 @@ class RoleRepository
 
     public function findTrashed(int $id): ?Role
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->where("name", "!=", AppServiceProvider::SUPERADMIN_ROLE)->find($id);
+        return Role::onlyTrashed()
+            ->where("guard_name", "api")
+            ->where("name", "!=", AppServiceProvider::SUPERADMIN_ROLE)
+            ->find($id);
     }
 
     public function trashed(): Collection
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->where("name", "!=", AppServiceProvider::SUPERADMIN_ROLE)->with("permissions")->orderBy("name")->get();
+        return Role::onlyTrashed()
+            ->where("guard_name", "api")
+            ->where("name", "!=", AppServiceProvider::SUPERADMIN_ROLE)
+            ->with("permissions")
+            ->orderBy("name")
+            ->get();
     }
 
     public function create(array $data): Role

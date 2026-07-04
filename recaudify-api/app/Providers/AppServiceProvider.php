@@ -7,7 +7,7 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public const SUPERADMIN_ROLE = 'superadmin';
+    public const SUPERADMIN_ROLE = "superadmin";
 
     public function register(): void {}
 

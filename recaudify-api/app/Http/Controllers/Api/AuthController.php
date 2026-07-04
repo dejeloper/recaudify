@@ -51,7 +51,13 @@ class AuthController extends ApiController
 
         if (!($token = $this->guard()->attempt($credentials))) {
             $attempted = $this->userService->findByUsername($request->username);
-            $this->loginAudit->recordFailure($request->username, "invalid_credentials", $attempted, $request, $location);
+            $this->loginAudit->recordFailure(
+                $request->username,
+                "invalid_credentials",
+                $attempted,
+                $request,
+                $location,
+            );
 
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
