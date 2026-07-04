@@ -1,268 +1,268 @@
-# Recaudify
+# Recaudify — Planning
 
-Plataforma SaaS de gestión de cobranza y pagos (Laravel + Angular). Migración y reescritura de Católikas Cobranza (CodeIgniter 3).
+Plataforma de gestión de cobranza y pagos (Laravel + Angular). Reescritura y desacople de
+Católikas Cobranza (CodeIgniter 3).
 
----
-
-## Backend (recaudify-api)
-
-### Infraestructura
-
-- [x] Crear estructura inicial del proyecto (Laravel, PHP 8.3+).
-- [x] Configurar conexión MySQL y convención de migraciones.
-- [x] Configurar autenticación JWT (HS256, TTL 15 min, refresh 4 h).
-- [x] Configurar renovación y expiración de tokens (refresh).
-- [x] Configurar CORS para el dominio de Vercel.
-- [x] Configurar autorización por roles (policies/gates).
-- [x] Documentar la API con Swagger/OpenAPI.
-- [x] Configurar validación centralizada (Form Requests).
-- [x] Configurar soft deletes en entidades de negocio.
-- [x] Crear seeders de catálogos base (estados, tipos, roles).
-- [x] Definir formato estándar de respuestas API (recursos, paginación, errores).
-- [x] Soportar paginación en el formato estándar de respuestas API: `data: { items: [], meta: { total, page, perPage, lastPage } }`
-- [x] Configurar auditoría (registro de cambios y acciones críticas).
-
-### Clientes
-
-- [ ] Modelar cliente único (identidad por documento).
-- [ ] Soportar múltiples contratos por cliente.
-- [ ] Soportar múltiples teléfonos.
-- [ ] Soportar múltiples direcciones.
-- [ ] Soportar referencias.
-- [ ] Crear cliente (con contrato + productos en una transacción).
-- [ ] Editar cliente.
-- [ ] Buscar cliente (documento, nombre, teléfono, contrato).
-- [ ] Consultar cliente (ficha 360°).
-- [ ] Historial de cliente.
-- [ ] Log de actividad por cliente.
-- [ ] Detectar duplicados.
-- [ ] Fusionar duplicados.
-- [ ] Asignar estado de cliente (catálogo).
-
-### Contratos y Productos
-
-- [ ] Romper la relación 1:1 (cliente → muchos contratos).
-- [ ] Consolidar cartera por cliente.
-- [ ] Crear contrato.
-- [ ] Consultar contrato.
-- [ ] Editar contrato.
-- [ ] Cerrar contrato.
-- [ ] Cancelar/anular contrato.
-- [ ] Asociar descripción de lo financiado.
-- [ ] Asignación de productos a clientes.
-- [ ] Cambio de tarifa.
-- [ ] Cambio de fecha de pago.
-
-### Cartera
-
-- [ ] Generar plan de pagos al crear el contrato.
-- [ ] Configurar periodicidad (semanal, quincenal, mensual).
-- [ ] Configurar número de cuotas.
-- [ ] Calcular valor de cuota.
-- [ ] Calcular saldo pendiente por contrato.
-- [ ] Calcular saldo total por cliente.
-- [ ] Recalcular saldos al registrar/anular pagos.
-
-### Cobranza
-
-- [ ] Registrar gestión: llamada.
-- [ ] Registrar gestión: visita.
-- [ ] Registrar acuerdo de pago.
-- [ ] Registrar promesa de pago (con fecha comprometida).
-- [ ] Registrar observación.
-- [ ] Gestionar tipos de gestión (catálogo).
-- [ ] Gestionar resultados de gestión (catálogo).
-- [ ] Consultar historial por cliente.
-- [ ] Consultar historial por contrato.
-- [ ] Consultar historial por usuario.
-- [ ] Clasificar estado de cobranza por mora: al día.
-- [ ] Clasificar estado de cobranza por mora: próximo vencimiento.
-- [ ] Clasificar estado de cobranza por mora: mora temprana.
-- [ ] Clasificar estado de cobranza por mora: mora avanzada.
-- [ ] Clasificar estado de cobranza por mora: prejurídico.
-- [ ] Clasificar estado de cobranza por mora: jurídico.
-- [ ] Generar bandeja de trabajo del cobrador.
-- [ ] Gestión de cobros diarios.
-- [ ] Llamadas del día.
-- [ ] Rellamar cliente.
-- [ ] Hacer seguimiento de promesas (cumplidas/incumplidas).
-
-### Pagos
-
-- [ ] Registrar pago.
-- [ ] Registrar abono parcial.
-- [ ] Registrar pago total.
-- [ ] Permitir pagos menores a la cuota.
-- [ ] Permitir pagos mayores a la cuota.
-- [ ] Definir regla de aplicación del pago a cuotas.
-- [ ] Actualizar saldos automáticamente.
-- [ ] Anular/reversar pago (con auditoría).
-- [ ] Generar recibo (consecutivo).
-- [ ] Adjuntar comprobantes.
-- [ ] Consultar historial de pagos por cliente y contrato.
-- [ ] Listado de cobros pendientes.
-
-### Devoluciones
-
-- [ ] Registrar devolución.
-- [ ] Consultar devoluciones.
-
-### Verificaciones
-
-- [ ] Registrar verificación de cliente/contrato.
-- [ ] Gestionar estados de verificación (pendiente, aprobado, rechazado).
-- [ ] Asociar evidencias a la verificación.
-- [ ] Consultar historial de verificaciones.
-
-### Documentos y Evidencias
-
-- [ ] Cargar contratos escaneados.
-- [ ] Cargar fotografías.
-- [ ] Cargar comprobantes.
-- [ ] Cargar documentos adicionales.
-- [ ] Asociar al cliente.
-- [ ] Asociar al contrato.
-- [ ] Asociar a pagos.
-- [ ] Asociar a gestiones.
-- [ ] Asociar a verificaciones.
-- [ ] Validar tipo y tamaño de archivo.
-
-### Personal
-
-#### Cobradores
-
-- [ ] Crear cobrador.
-- [ ] Editar cobrador.
-- [ ] Gestión de cobrador.
-- [ ] Asignación de clientes a cobrador.
-
-#### Vendedores
-
-- [ ] Crear vendedor.
-- [ ] Editar vendedor.
-- [ ] Listar vendedores.
-
-### Usuarios y Seguridad
-
-- [x] Crear usuarios.
-- [x] Editar usuarios.
-- [x] Desactivar usuarios.
-- [x] Restaurar usuario desactivado.
-- [x] Crear rol administrador.
-- [x] Crear rol supervisor.
-- [x] Crear rol verificador.
-- [x] Crear rol vendedor.
-- [x] Crear rol cobrador.
-- [x] Crear rol auxiliar.
-- [x] Definir permisos por rol sobre cada módulo.
-- [x] Registrar accesos (login/logout).
-- [x] Registrar cambios.
-- [x] Registrar eliminaciones.
-- [x] Registrar acciones críticas.
-
-### Reportes
-
-- [ ] Reporte de cartera / cuentas por cobrar.
-- [ ] Reporte contable / resumen financiero.
-- [ ] Reporte de ventas por período.
-
-### Importación de Datos
-
-- [ ] Importar clientes desde archivo.
-- [ ] Importar pagos desde archivo.
-
-### Configuración (catálogos)
-
-- [ ] Gestionar estados de clientes.
-- [ ] Gestionar estados de contratos.
-- [ ] Gestionar estados de cobranza.
-- [ ] Gestionar estados de verificación.
-- [ ] Gestionar tipos de gestión.
-- [ ] Gestionar resultados de gestión.
-- [ ] Gestionar tipos de documentos.
-- [ ] Gestionar tipos de vivienda.
-- [ ] Gestionar tipos de pago.
-- [ ] Gestionar tarifas.
-- [x] Gestionar parámetros de negocio (consecutivos, días de mora).
-- [ ] Gestionar parámetros de cartera (periodicidades).
-- [ ] Gestionar eventos del sistema.
-
-### Backup
-
-- [ ] Generar backup de base de datos.
-- [ ] Descargar backup.
-- [ ] Restaurar backup.
+> **Este archivo no es un checklist para tachar.** Es la memoria de "esto se debe hacer" para que
+> no se pierda de vista el plan mientras se avanza módulo a módulo (parte del trabajo lo hace la IA,
+> parte lo vas a hacer vos directamente en los casos más específicos/complejos). Se usa como
+> contexto junto con:
+>
+> - `funcionalidades.md` — inventario literal de qué hace el legacy hoy (fuente de verdad de reglas
+>   de negocio a no perder).
+> - `NEGOCIO.md` — el análisis módulo por módulo de cómo se desacopla cada pieza del legacy, con el
+>   detalle y el razonamiento completo. **Este archivo no repite ese detalle**, solo prioriza y
+>   resume qué construir en qué orden. Si falta contexto de un ítem, está desarrollado en `NEGOCIO.md`.
+>
+> Los ítems marcados `[x]` son hechos ya construidos (registro, no checklist). Todo lo demás son
+> bullets de intención, no casillas para marcar.
 
 ---
 
-## Frontend (recaudify-web)
+## Ya implementado (base de plataforma)
 
-### Configuración inicial
+**Backend:**
 
-- [x] Crear estructura inicial (Angular).
-- [x] Configurar entorno para apuntar a la API.
-- [x] Crear sistema de autenticación (login, token Bearer, expiración).
-- [x] Crear sistema de navegación.
-- [x] Crear sistema de permisos por rol.
-- [x] Crear interceptores HTTP (token, errores, logout).
-- [ ] Crear componentes compartidos (tablas, formularios, modales, subida de archivos).
-- [x] Crear diseño responsive.
-- [x] Implementar `AuthService.can('modulo.accion')` para validar permisos desde el signal `currentUser`
-- [ ] Crear directiva estructural `*appHasPermission="'modulo.accion'"` para condicionar elementos del DOM
-- [x] Crear `permissionGuard` para proteger rutas según permiso requerido
-- [x] Ocultar ítems de navegación según permisos del usuario autenticado
-- [x] Corregir bug NG0955: cambiar `track item.route` por `track item.label` en `app-shell.html:132` para eliminar warning de claves duplicadas en el sidebar.
-- [ ] Implementar acciones del menú de perfil de usuario: "Mi resumen", "Notificaciones" (conectar a datos reales, quitar badge hardcodeado), "Cambio de contraseña" y "Configuración".
+- [x] Estructura Laravel, PHP 8.3, MySQL, migraciones.
+- [x] JWT + Refresh Tokens, CORS, Policies/Gates.
+- [x] Swagger, Form Requests, Soft Deletes, formato estándar de respuestas + paginación.
+- [x] Auditoría genérica (`spatie/activitylog`) y seeders iniciales.
+- [x] Usuarios (crear/editar/desactivar/restaurar), Roles (administrador, supervisor, verificador,
+      cobrador, vendedor, auxiliar), Permisos (CRUD), Login/Logout/Refresh.
+- [x] Auditoría de accesos (login/logout), cambios, eliminaciones, acciones críticas.
+- [x] Parámetros de negocio: días de mora, consecutivos.
 
-### Pantallas
+**Frontend:**
 
-- [x] Login.
-- [x] Dashboard.
-- [ ] Ficha 360° del cliente.
-- [ ] Listado / búsqueda de clientes.
-- [ ] Crear / editar cliente.
-- [ ] Detalle de contrato + plan de pagos.
-- [ ] Registro de pagos.
-- [ ] Devoluciones.
-- [ ] Bandeja de cobranza / registro de gestiones.
-- [ ] Llamadas del día.
-- [ ] Verificaciones.
-- [ ] Carga y visualización de evidencias.
-- [ ] Reportes (cartera, contable, ventas).
-- [ ] Importación de datos.
-- [x] Administración de usuarios (listar, crear, editar, desactivar, restaurar).
-- [ ] Asignar/revocar permisos directos a un usuario desde su pantalla de detalle.
-- [x] Administración de roles (listar, crear, editar, eliminar, asignar permisos al rol).
-- [x] Administración de permisos (listar, crear, editar, eliminar).
-- [ ] Administración de catálogos.
-- [ ] Backup.
-- [ ] CRM — Clientes: crear pantalla de listado de clientes (conectar con el módulo de Clientes del backend cuando esté listo).
-- [ ] CRM — Pedidos: crear pantalla de listado/gestión de pedidos (conectar con el módulo de Contratos/Pedidos del backend cuando esté listo).
-- [ ] Agregar campo de búsqueda en la pantalla `/admin/users` que consuma el endpoint `GET /api/users/search/{name}`.
-- [ ] Si entramos a "http://localhost:4200/admin/activity" podemos hacer que filtre por usuario y que lo filtre por un ?user=admin y que por defecto sea sistema (sin redireccionarlo)
+- [x] Angular, Login, JWT, Guards, Interceptors, diseño responsive.
+- [x] Administración: Usuarios, Roles, Permisos (listar/crear/editar/desactivar/restaurar).
+ 
+---
+
+## Fases (orden de construcción del Core, por prioridad y dependencia)
+
+Basado en el orden sugerido en `NEGOCIO.md` §Resumen. Cada fase depende de que la anterior exista.
+
+### Fase 1 — Catálogos base y parametrización
+
+Catálogos simples, CRUD completo (index/show/store/update/destroy/trashed/restore, soft delete, sin
+lógica de negocio). Buen punto de partida para fijar el patrón estándar antes de tocar algo con
+reglas de negocio reales.
+
+- Tipos de documento.
+- Tipos de vivienda.
+- Canal/Organización (lo que el legacy llama "iglesia").
+- Zonas/Barrios.
+- Motivos de gestión.
+- Resultados de gestión.
+
+**Parámetros nuevos a crear** en el módulo `Parameters` (adicional a días de mora / consecutivos ya
+existentes) — todo esto está hardcodeado en el legacy y no debe volver a estarlo:
+
+- Umbrales de mora para clasificar cartera (al día / próximo vencimiento / mora temprana / mora
+  avanzada / prejurídico / jurídico / castigado / paz y salvo). El legacy solo tiene 4 umbrales fijos
+  (≤10 / 11–44 / 45–89 / ≥90 días); el nuevo catálogo de estados es más granular y configurable.
+- Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy: 60 días
+  fijos).
+- Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy: 1–8 días según
+  motivo, fijo).
+- Redondeo del pago mínimo por mora (legacy: al millar, fijo).
+- Password por defecto al resetear contraseña — **solo si se decide implementar esa función**; no
+  debe quedar un valor fijo en código como en el legacy (`Cobranza123`).
 
 ---
 
-## Migración de Datos (Católikas → Recaudify)
+### Fase 2 — Vendedores, Productos y Tarifas
 
-- [ ] Mapear el modelo viejo (1:1) al nuevo (cliente → contratos).
-- [ ] Migrar clientes (con consolidación de duplicados).
-- [ ] Migrar contratos (reasociados al cliente correcto).
-- [ ] Migrar cuotas / plan de pagos.
-- [ ] Migrar pagos.
-- [ ] Migrar devoluciones.
-- [ ] Migrar evidencias.
-- [ ] Migrar usuarios.
-- [ ] Validar consistencia (totales).
-- [ ] Validar saldos (migrado = calculado).
-- [ ] Validar historial completo.
-- [ ] Validar que ningún contrato quede huérfano.
+- **CRUD Vendedores** independiente (ya existe la pantalla en el frontend como catálogo de
+  referencia; falta el modelo backend real).
+- **CRUD Productos** — importante: incluir explícitamente **crear + editar/actualizar** (el legacy
+  nunca tuvo un `update` de producto, solo alta y lookup por código; no repetir ese hueco), listar,
+  activar/desactivar, categoría.
+- **CRUD Tarifas** por producto (cuotas, valor, descuento) **con historial de cambios** — el legacy
+  solo sobreescribe la tarifa, nosotros versionamos.
+- La vinculación Vendedor↔Contrato se resuelve en la Fase 4 (vía Evento de venta) — acá solo el
+  catálogo, sin vincular todavía nada operativo.
 
 ---
 
-## Nuevas tareas
+### Fase 3 — Clientes (identidad, sin pedido/contrato)
 
-- Use this format to add new tasks
+- **CRUD Cliente**: documento único por tenant, nombre, tipo de documento, tipo de vivienda,
+  observaciones **versionadas** (historial de observaciones, no concatenar un string como el
+  legacy).
+- Sub-recursos como relación real 1\:N (el legacy fuerza 1 dirección y 3 teléfonos/referencias
+  fijos — acá no hay ese límite duro):
+  - Direcciones.
+  - Teléfonos.
+  - Referencias.
+- **Detección y fusión de duplicados** — no existe en el legacy, es nuevo pero necesario: al
+  desacoplar la identidad del cliente del pedido, se vuelve más fácil crear un cliente duplicado por
+  error.
+- **Búsqueda unificada** (nombre/documento/teléfono/dirección/estado) — un único endpoint de
+  búsqueda con filtros, no las 3 variantes que tiene el legacy (`Buscar`/`SearchJson`/
+  `SearchJsonAsignado`).
+- **Vista 360° / Timeline** de solo lectura: agregación de contratos, pagos, gestiones, documentos y
+  cambios de estado en una sola consulta cronológica (reemplaza el log crudo de `Clientes::Log()`).
+- **Asignación Cliente↔Cobrador** (no Cliente↔Usuario directo) — ver el detalle completo en la
+  Fase 6. Anotado acá porque es donde vive el campo/relación, aunque el concepto de "Cobrador" como
+  entidad se construye después.
+
+---
+
+### Fase 4 — Evento de venta y Contratos
+
+- Entidad **Evento de venta** = Vendedor + Canal/Organización + Zona + Fecha, vinculada al
+  **Contrato** (no al Cliente). Los catálogos que usa (Canal, Zona) ya existen desde la Fase 1.
+- **CRUD Contratos, N por cliente.** Este es el cambio estructural más importante de todo el plan:
+  **el legacy fuerza un 1:1 cliente↔pedido de facto y eso no aplica más.** Un cliente puede tener 0,
+  1 o varios contratos (activos o cerrados) simultáneamente. No se debe modelar ni pensar "el pedido
+  del cliente" en singular en ningún lado del nuevo sistema.
+- Ciclo de vida del contrato explícito: borrador / activo / suspendido / cancelado / finalizado — en
+  vez de inferirlo de combinaciones de códigos numéricos como hace el legacy (110/111/112/113/114/
+  125/127).
+- Acciones propias del contrato: cambiar tarifa (dispara recálculo en el Motor Financiero, Fase 5),
+  cambiar fecha de cobro, agregar/quitar producto del contrato (recalcula el total vía Motor
+  Financiero, nunca sumando a mano como hace `AddProducto()` en el legacy).
+- **Explícitamente fuera de esta fase** (no meterlo ahora, aunque el ciclo de vida deja el lugar
+  natural para agregarlo después): refinanciación, reestructuración, congelación de contrato. Son
+  funcionalidades que no existen en el legacy — quedan para otra fase futura, no forman parte de
+  este plan.
+
+---
+
+### Fase 5 — Motor Financiero (cartera / deuda)
+
+Servicio único, fuente de verdad de todo cálculo financiero — ningún otro módulo recalcula saldo
+por su cuenta (el legacy repite la misma fórmula "saldo ≤ 0 → estado 111/114" en `conf()`,
+`Reverse()`, `changeRate()` e `Importar::conf()`; acá se hace una sola vez).
+
+- Calcular saldo, cuota, capital, interés, descuento y mora de un contrato.
+- Recalcular saldo de contrato/cliente/cartera tras un pago, un reverso, un cambio de tarifa o una
+  devolución.
+- Clasificar el estado de cartera de cada contrato según los umbrales parametrizados en la Fase 1.
+- Job programado en background que recalcula cartera y cambia estados automáticamente — reemplaza
+  el side-effect de `Deuda()` ejecutándose en cada carga de pantalla (Clientes/Pagos/LlamadasDia) del
+  legacy.
+- DataCrédito es una transición de estado más del Motor, no un flujo aparte.
+- El cálculo de pago mínimo por mora vive acá, no en el controlador de Pagos.
+
+---
+
+### Fase 6 — Cartera / Cobranza — Cobrador como entidad, no como rol de usuario
+
+**Este es el cambio de modelo más importante junto con el de Contratos (Fase 4).**
+
+Un **Cobrador** es una entidad de negocio: una cartera/bolsa de clientes. **No está vinculado 1:1 a
+un Usuario.** Un Usuario se **asigna** para operar uno (o varios) Cobradores en un momento dado; los
+**Clientes se asignan al Cobrador**, no al Usuario directamente. Si el Usuario que operaba un
+Cobrador se va o se reasigna, el Cobrador — con toda su cartera de clientes — se reasigna a otro
+Usuario en una sola operación, sin tener que tocar cliente por cliente. Esto reemplaza tanto:
+
+- el uso del Role "cobrador" de Spatie como si fuera identidad operativa (el Role sigue existiendo,
+  pero pasa a ser **solo permiso de sistema**, separado de qué cartera opera), como
+- la tabla `ClientesUsuarios` del legacy, que asigna el cliente directo al usuario que lo creó.
+
+Ítems concretos:
+
+- **CRUD Cobrador** (la "cesta"/cartera): nombre o código identificador, estado activo/inactivo.
+- **Asignación Usuario↔Cobrador**: qué usuario opera esa cartera ahora mismo, con historial de quién
+  la operó antes (para trazabilidad, no para borrar el rastro al reasignar).
+- **Asignación Cliente↔Cobrador**: a qué cartera pertenece cada cliente.
+- Catálogo de Motivos/Resultados de gestión ya construido en la Fase 1.
+- **CRUD Gestión** (llamada/visita/correo/WhatsApp/SMS/observación): registrar, listar por
+  cliente/contrato/usuario.
+- **Compromisos** (promesa de pago, acuerdo, reprogramación) como entidad propia vinculada a la
+  gestión — explícita, no inferida del motivo como hace el legacy (`AddCall()` decide "¿esto
+  programa un pago?" con un `if` sobre el id del motivo).
+- **Agenda del cobrador** (bandeja diaria/semanal, clientes prioritarios, promesas por vencer/
+  vencidas) — vista agregada de solo lectura sobre Contratos + Pagos Programados + Gestiones, no una
+  tabla ni estado propio.
+
+---
+
+### Fase 7 — Pagos
+
+- **CRUD Pago** (registro confirmado): crear, listar, consultar, filtrar por usuario/cobrador/rango
+  de fechas.
+- **Pago Programado** como entidad propia (no un estado del Pago): programar, confirmar (crea el
+  Pago real y notifica al Motor Financiero), descartar (manual o automático por vencimiento, vía el
+  job de la Fase 5).
+- **Reverso de pago**: acción con permiso elevado — mantener el mismo nivel de exigencia que el
+  legacy (hoy pide "superusuario").
+- **Recibos**: generación/impresión individual y por lote, control de copias impresas — es una capa
+  de presentación sobre el Pago Programado, no lógica de negocio.
+- **Listados "cobro del día" / "sin llamar" / "volver a llamar"**: vistas agregadas de solo lectura
+  sobre Contratos + Pagos Programados + Gestiones, no tablas ni estados nuevos.
+
+---
+
+### Fase 8 — Devoluciones
+
+- **CRUD Devolución**: registrar, aprobar/rechazar (nuevo respecto al legacy, que genera la
+  devolución directo sin paso de aprobación), consultar, listar por fecha/usuario.
+- Al generarse, notifica al Motor Financiero para que recalcule — no escribe el estado del contrato
+  directamente (a diferencia del legacy, que sí lo hace).
+
+---
+
+### Fase 9 — Reportes (solo lectura)
+
+Construir siempre sobre las entidades ya modularizadas de las fases anteriores, nunca sobre tablas
+transaccionales crudas.
+
+- Conteo de clientes por estado.
+- Conteo de pagos por estado (programados/confirmados/descartados).
+- Cartera por usuario/cobrador (pagos, programados, descartados, totales).
+- Totales de cartera por estado.
+
+---
+
+### Fase 10 — Importación
+
+- Reusar los mismos Services de Clientes (Fase 3), Contratos (Fase 4) y Pagos (Fase 7) fila por
+  fila para importar desde CSV.
+- **No reimplementar** la creación de cliente+contrato+pago a mano — el legacy comete ese error tres
+  veces distintas (`Clientes::NewClient`, `Importar::ClientesUp`, `Backup::import_clients_backup`,
+  cada una con su propia copia de la lógica de saldo/estado). No repetirlo acá.
+- Migración de datos legacy → Recaudify (clientes, contratos, cuotas, pagos, devoluciones, usuarios)
+  usa este mismo mecanismo de importación, no un proceso aparte.
+
+---
+
+## Frontend (recaudify-web) — screens por fase
+
+Mismo orden que el backend; cada entidad sigue el patrón ya usado en Users/Roles/Permissions/
+Parameters (servicio con signals + componente de listado + componente de formulario, permisos por
+`módulo.acción`).
+
+- Fase 1: pantallas de catálogos (genérico, reutilizable entre todos).
+- Fase 2: Vendedores, Productos (con edición), Tarifas (con historial).
+- Fase 3: Listado/búsqueda de clientes, ficha de cliente (datos + sub-recursos), vista 360°/timeline,
+  flujo de detección/fusión de duplicados.
+- Fase 4: Evento de venta (como parte del formulario de contrato), listado/detalle de contratos,
+  plan de pagos.
+- Fase 5: sin pantalla propia (motor interno); sí una vista de solo lectura del estado de cartera
+  dentro de la ficha del contrato/cliente.
+- Fase 6: administración de Cobradores (CRUD + asignación de Usuario↔Cobrador), asignación
+  Cliente↔Cobrador, bandeja de gestión/cobranza, agenda del cobrador.
+- Fase 7: registro de pagos, pagos programados (programar/confirmar/descartar), reverso, recibos.
+- Fase 8: devoluciones (registrar/aprobar/consultar).
+- Fase 9: pantallas de reportes.
+- Fase 10: importación (subir CSV, ver resultado).
+
+---
+
+## Explícitamente fuera de este documento (fase futura — no tocar todavía)
+
+Estas son las funcionalidades del roadmap de producto (`demo.md`) que **no vienen del legacy** y que
+se decidió no incluir en este plan por ahora. No se detallan acá a propósito — cuando llegue el
+momento se retoman desde `demo.md`, no desde este archivo:
+
+Multi Tenancy, SaaS (onboarding, suscripciones, marketplace), Integraciones (API pública, webhooks,
+pasarelas de pago, facturación electrónica), Automatizaciones avanzadas (notificaciones, plantillas,
+eventos del sistema como automatización), Verificaciones, Documentos/Evidencias, Dashboards
+ejecutivo/supervisor/vendedor, Inteligencia Artificial, Portal del Cliente.
 
 ---
 
