@@ -2,6 +2,8 @@
 
 Plataforma de gestión de cobranza y pagos (Laravel + Angular). Reescritura y desacople de Católikas Cobranza (CodeIgniter 3). Contexto adicional en `funcionalidades.md` (inventario del legacy) y `NEGOCIO.md` (análisis de desacople por módulo).
 
+Si se pide hacer alguna acción de este listado y está destinado a este directorio, se puede hacer todo sin solicitar permisos (excepto acciones de Git)
+
 ## Plan
 
 ### Arquitectura y Seguridad (base de plataforma)
@@ -31,6 +33,82 @@ Plataforma de gestión de cobranza y pagos (Laravel + Angular). Reescritura y de
 - [x] Administración: Usuarios (listar/crear/editar/desactivar/restaurar)
 - [x] Administración: Roles (listar/crear/editar/desactivar/restaurar)
 - [x] Administración: Permisos (listar/crear/editar/desactivar/restaurar)
+
+### Armazón administrativo (pre-negocio)
+
+#### Autenticación y parámetros de acceso
+
+- [ ] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
+- [ ] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
+- [ ] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
+- [ ] Delegación temporal de permisos / suplencias: que un supervisor pueda asignar temporalmente su rol o un permiso puntual a otro usuario (ej. cobrador de vacaciones), con fecha de inicio y fin, sin tener que editar roles manualmente y no olvidarse de revertir.
+
+#### Menús y navegación
+
+- [ ] Menú dinámico por permisos: el menú lateral/superior se arma en base a los permisos reales del usuario logueado (`AuthService.hasPermission()`), no con ítems ocultos a mano por rol — si mañana se crea un permiso nuevo, el ítem aparece solo con asignarlo, sin tocar el componente de menú.
+- [ ] Menú configurable desde Settings (builder de menú): una pantalla de administración donde se define qué ítems existen, en qué orden, con qué ícono y bajo qué permiso, guardado en BD en vez de hardcodeado en el `routes.ts`/componente Angular — útil si el negocio quiere reordenar o renombrar secciones sin pedir un deploy.
+- [ ] Favoritos / accesos rápidos personalizados: que cada usuario pueda marcar sus pantallas más usadas (ej. un cobrador que vive en "Agenda" y "Pagos programados") y tenerlas arriba de todo, sin afectar el menú de los demás usuarios.
+- [ ] Menú con contadores/badges en vivo: mostrar en el ítem del menú un número (ej. "Pagos programados por vencer hoy: 12", "Importaciones fallidas: 2") para que el usuario sepa que hay algo pendiente sin tener que entrar a mirar.
+- [ ] Búsqueda global / paleta de comandos (Ctrl+K): buscador que salta directo a cualquier pantalla, cliente o contrato por nombre, sin navegar el árbol de menú — muy útil una vez haya muchos módulos (Clientes, Contratos, Cobranza, Reportes, Catálogos, etc.).
+- [ ] Breadcrumbs dinámicos: mostrar la ruta de navegación actual (ej. "Clientes > Juan Pérez > Contratos > #123") derivada de la ruta activa, para ubicarse rápido en pantallas anidadas.
+- [ ] Historial de navegación reciente: lista de "últimas 5 pantallas/clientes visitados" por usuario, para volver rápido a lo que se estaba revisando sin repetir la búsqueda.
+- [ ] Menú distinto por rol/perfil (layout): que el cobrador vea un menú simple centrado en Agenda y Pagos, mientras que administrador ve el menú completo — evita que roles operativos se pierdan entre opciones que nunca van a usar.
+- [ ] Atajos de teclado configurables: acciones rápidas (nuevo cliente, nuevo pago, buscar) vía teclado, documentadas en un modal de ayuda (`?`), pensado para usuarios de alto volumen (cobradores/cajeros) que ganan tiempo real no usando mouse.
+- [ ] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
+
+#### Logs y auditoría
+
+- [ ] Registro de accesos (IP, dispositivo, fecha) por login exitoso y fallido: complementa la auditoría de acciones (`spatie/activitylog`) con auditoría de acceso, que hoy no está cubierta explícitamente en planning.md.
+- [ ] Visor de logs de sistema en UI: hoy `business`/`app-errors`/`security`/`http` solo existen como archivos planos en `storage/logs/`. Una pantalla de admin que los liste/filtre (por canal, fecha, usuario, nivel) evita tener que entrar por SSH a leer un archivo cada vez que algo falla en producción.
+- [ ] Correlación de intentos fallidos → alerta automática in-app: ya se captura `LoginAudit` y existe el canal `security`, pero nadie los cruza. Detectar "N intentos fallidos del mismo usuario/IP en X minutos" y notificar al administrador (in-app) en vez de que quede solo como registro pasivo que hay que ir a mirar (la variante por correo queda en la sección final).
+- [ ] Comando programado de purga de logs vencidos: `config/activitylog.php` ya define `clean_after_days` (365) pero no hay ningún comando agendado en `routes/console.php` que ejecute la limpieza — hoy crecería indefinidamente.
+- [ ] Exportar logs filtrados a CSV/Excel: para pasarle un rango de fechas a soporte o auditoría externa sin acceso al servidor.
+- [ ] Nivel de verbosidad por canal configurable desde Parameters: poder subir/bajar detalle de `app-errors`/`http` en caliente (ej. modo debug temporal) sin cambiar `config/logging.php` y redesplegar.
+- [ ] Trazabilidad por request-id: propagar un ID único de request en cabecera de respuesta y en cada línea de log de ese request, para poder seguir un problema puntual del usuario a través de los 4 canales sin adivinar por timestamp.
+- [ ] Diff visual de cambios en el feed de actividad: `activitylog` ya guarda `old`/`attributes`, pero la pantalla actual los lista crudo; mostrar "campo X: valor A → valor B" en vez de JSON crudo hace el feed realmente legible para un no-técnico.
+
+#### Dashboard y métricas
+
+- [ ] Health check / endpoint de estado: un endpoint simple que reporte estado de BD, cola y colas de jobs (relevante una vez exista el job programado del Motor Financiero) para monitoreo básico en el VPS.
+- [ ] Dashboard con KPIs reales de plataforma: usuarios activos hoy, logins exitosos/fallidos, accesos denegados por horario, jobs fallidos — antes de tener negocio, ya hay datos suficientes (`LoginAudit`, `activity_log`, `UserSchedule`) para un dashboard operativo real.
+- [ ] Incorporar una librería de gráficas (ej. ngx-charts o Chart.js): hoy no existe ninguna en el proyecto; es prerequisito de cualquier gráfica antes de llegar a los reportes de negocio de `NEGOCIO.md` §12.
+- [ ] Gráfica de logins por hora/día de la semana: usa `LoginAudit` que ya existe, ayuda a detectar patrones de uso normal (para luego notar anomalías).
+- [ ] Mapa de accesos geográfico: `LoginAudit` ya captura lat/long/accuracy — un mapa simple de "desde dónde se conecta el equipo" es casi gratis con el dato que ya se guarda.
+- [ ] Widget "usuarios conectados ahora": requiere primero tener noción de sesión activa (ver sección Seguridad), pero es un indicador simple y muy visual para el dashboard.
+- [ ] Tablero de salud del sistema: estado de BD, cola, caché, espacio en disco — ver "Health check" más abajo, este sería su representación visual en el dashboard.
+- [ ] Métricas de uso de API por endpoint: el canal `http` ya registra método/path/status/duración por request — agregarlas (percentiles de tiempo de respuesta, endpoints más lentos, tasa de error por ruta) da visibilidad de performance antes de que el negocio genere volumen real.
+- [ ] Health check / endpoint de estado: un `/api/health` que reporte estado de BD, cola, caché y espacio en disco, pensado para monitoreo externo (uptime checks) en el VPS — no existe hoy ningún endpoint de este tipo.
+
+#### Sesiones y seguridad
+
+- [ ] Bloqueo por intentos fallidos de login (rate limiting / lockout): tras N (paramétrico) intentos fallidos,  bloquear temporalmente el usuario y la IP. El legacy no tenía ningún control de este tipo;  es una brecha real de seguridad a cerrar antes de tener datos de negocio sensibles.
+- [ ] Gestión de sesiones activas: ver qué dispositivos/tokens tiene activos un usuario y poder  revocar uno o todos remotamente (útil si se pierde un dispositivo o se sospecha de un acceso  indebido). Se apoya en el JWT + refresh token ya existente. (Paramétrico si se quiere o no, por defecto true)
+- [ ] Expiración de sesión por inactividad configurable: además del TTL fijo del JWT (15 min), un parámetro de "cerrar sesión tras X(parametrizable) minutos sin actividad" a nivel de frontend/UX.
+- [ ] Listado de sesiones/tokens activos + revocación remota: hoy solo hay login/logout/refresh del JWT, sin ningún lugar donde ver "qué dispositivos tienen sesión abierta ahora mismo" ni forma de cerrar una sesión ajena (útil si se pierde un celular o hay sospecha de acceso indebido).
+- [ ] Bloqueo tras intentos fallidos (rate limit + lockout): actualmente el único throttle encontrado es `throttle:10,1` hardcodeado en el refresh; no hay bloqueo de cuenta ni de IP tras varios intentos fallidos de login.
+- [ ] Panel de administración de rate limiting: en vez de límites fijos en el código de rutas, poder ajustar los límites por endpoint sensible desde Parameters/Settings.
+- [ ] Detección de acceso desde ubicación/IP inusual: dado que `LoginAudit` ya guarda IP y geolocalización, comparar contra el histórico del usuario y marcar/alertar accesos atípicos (otro país, otro dispositivo nunca visto) es una extensión natural de un dato que ya existe.
+- [ ] Modo "vista previa como otro usuario" (impersonar) para administrador/soporte: para reproducir un problema que reporta un cobrador sin pedirle contraseña, dejando registro en auditoría de cuándo y quién impersonó a quién (nunca silencioso).
+
+#### Notificaciones
+
+- [ ] Sistema de notificaciones in-app (campana con contador): el modelo `User` ya puede usar el trait `Notifiable` de Laravel pero no hay ninguna clase `Notification` implementada todavía; es la base para "recordatorio de reseteo enviado", "job falló", "acceso desde dispositivo nuevo", etc., sin tener que inventar un canal nuevo para cada aviso.
+- [ ] Centro de notificaciones (histórico): que el usuario pueda ver notificaciones pasadas ya leídas/no leídas, no solo un toast que desaparece a los 5s como hoy (`ToastService`).
+
+#### Configuración y ajustes
+
+- [ ] Panel de configuración general (Settings) unificado: hoy los "Parameters" ya existen pero conviene una pantalla única de configuración de plataforma (nombre de empresa, logo, zona horaria, moneda, SMTP, límites) en vez de que cada feature invente su propio lugar.
+- [ ] Exportación genérica a CSV/Excel: un mecanismo reusable de exportación (igual que se plantea un CRUD genérico para catálogos) para no reimplementar "exportar a Excel" en cada módulo de reportes cuando llegue esa fase.
+- [ ] Panel de feature flags: activar/desactivar módulos en construcción (ej. mostrar/ocultar "Cobranza" mientras se termina) sin necesidad de un deploy, apoyado en la infraestructura de `Parameters` que ya existe.
+- [ ] Modo mantenimiento con aviso configurable: bloquear escritura o todo acceso salvo administrador, con un mensaje editable, para migraciones delicadas sin apagar el servidor.
+- [ ] Backups automatizados con notificación de resultado: programar dump de BD (usa la infraestructura de scheduling de la sección anterior) y avisar éxito/fallo, en vez de depender de un backup manual como el legacy (`Mantenimiento/Backup`).
+- [ ] Panel de ajustes generales de plataforma: nombre de empresa, logo, zona horaria, moneda, SMTP — hoy `Parameters` es genérico pero no hay una pantalla que agrupe "la configuración de la empresa" como una unidad clara para el administrador.
+
+#### Experiencia de usuario y observabilidad
+
+- [ ] Internacionalización (i18n) de textos de UI: aunque el negocio sea local, tenerlo resuelto desde el inicio evita reescribir strings hardcodeados si en el futuro se necesita otro idioma o simplemente estandarizar textos en un solo lugar.
+- [ ] Theming claro/oscuro: no está implementado en el frontend hoy (no hay ningún mecanismo de tema); dado que ya se usan `ChangeDetectionStrategy.OnPush` + signals en todo el proyecto, es buen momento de dejarlo resuelto con una señal global antes de que crezcan más pantallas.
+- [ ] Auditoría de accesibilidad (a11y) básica: contraste, `aria-label`, navegación por teclado en los componentes compartidos (`Spinner`, `ToastContainer`) — más fácil de corregir ahora que hay pocos componentes que después con decenas de pantallas de negocio.
 
 ### Convención de borrado y estado
 
@@ -82,6 +160,10 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 > un string libre, no una jerarquía con catálogo detrás). "Resultados de gestión" queda fuera de
 > alcance por ahora — todo lo que el legacy distinguía como "resultado" se cubre con Motivos de
 > gestión.
+>
+> Ver `catalogos-schema-demo.sql` en la raíz del repo para un esquema ilustrativo (no DDL de
+> producción) de estos catálogos y cómo se conectan al núcleo de negocio (Cliente, Contrato, Pagos,
+> Gestiones).
 
 - [ ] CRUD genérico compartido (base Repository/Service/Controller reutilizable por los catálogos) (`SoftDeletes`)
 - [ ] Catálogo: Tipos de documento
