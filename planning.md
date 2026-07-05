@@ -1,277 +1,324 @@
-# Recaudify — Planning
+# Recaudify
 
-Plataforma de gestión de cobranza y pagos (Laravel + Angular). Reescritura y desacople de
-Católikas Cobranza (CodeIgniter 3).
+Plataforma de gestión de cobranza y pagos (Laravel + Angular). Reescritura y desacople de Católikas Cobranza (CodeIgniter 3). Contexto adicional en `funcionalidades.md` (inventario del legacy) y `NEGOCIO.md` (análisis de desacople por módulo).
 
-> **Este archivo no es un checklist para tachar.** Es la memoria de "esto se debe hacer" para que
-> no se pierda de vista el plan mientras se avanza módulo a módulo (parte del trabajo lo hace la IA,
-> parte lo vas a hacer vos directamente en los casos más específicos/complejos). Se usa como
-> contexto junto con:
+## Plan
+
+### Arquitectura y Seguridad (base de plataforma)
+
+#### Backend
+
+- [x] Estructura Laravel, PHP 8.3, MySQL, migraciones
+- [x] JWT + Refresh Tokens
+- [x] CORS, Policies, Gates
+- [x] Swagger
+- [x] Form Requests
+- [x] Soft Deletes
+- [x] Formato estándar de respuestas + paginación
+- [x] Auditoría genérica (spatie/activitylog) — inmutable por diseño, sin ningún mecanismo de borrado (ver "Convención de borrado y estado", punto 3)
+- [x] Seeders iniciales
+- [x] Usuarios: crear, editar, desactivar, restaurar
+- [x] Roles: administrador, supervisor, verificador, cobrador, vendedor, auxiliar
+- [x] Permisos: CRUD
+- [x] Login, Logout, Refresh
+- [x] Auditoría de accesos, cambios, eliminaciones, acciones críticas
+- [x] Parámetros de negocio: días de mora, consecutivos
+
+#### Frontend
+
+- [x] Angular, Login, JWT, Guards, Interceptors
+- [x] Diseño responsive
+- [x] Administración: Usuarios (listar/crear/editar/desactivar/restaurar)
+- [x] Administración: Roles (listar/crear/editar/desactivar/restaurar)
+- [x] Administración: Permisos (listar/crear/editar/desactivar/restaurar)
+
+### Convención de borrado y estado
+
+Fijar esto antes de construir el resto de módulos — evita repetir el error del legacy de mezclar
+"ocultar", "estado de negocio" y "auditoría" en una sola columna (`Habilitado`).
+
+#### SoftDeletes (cuando "eliminar" es solo "dejar de aparecer en listados activos, recuperable")
+
+- [ ] Aplicar `SoftDeletes` a: Cliente, Producto, Tarifa y todos los catálogos genéricos de la Fase
+      "Catálogos base y parametrización" (Tipos de documento, Tipo de contrato, Motivos de gestión,
+      Vendedores, Eventos, Tipo de producto, Tipo de eventos, Cobradores, Métodos de pago,
+      Sucursales, Días de cambio de estado) — es el equivalente mejorado del `Habilitado` del legacy
+- [ ] Resolver el gotcha de `unique` + `SoftDeletes` en Cliente (`documento`): índice único
+      compuesto con `deleted_at`, o validación en el Service contra solo registros no borrados
+
+#### Cuando NO aplica SoftDeletes — usar estado explícito o no borrar nunca
+
+- [ ] Punto 1 — Contrato: campo de estado explícito (borrador/activo/suspendido/cancelado/
+      finalizado) como mecanismo principal; `SoftDeletes` solo como salvavidas para el caso de
+      "se creó por error y nunca debió existir", nunca para representar cancelación/finalización
+- [ ] Punto 2 — Pago, Pago Programado: sin borrado lógico ni booleano; reverso/descarte se modelan
+      como evento propio vinculado al registro original, que nunca se oculta de los listados
+- [ ] Punto 2 — Devolución, Gestión/Llamada, Compromiso: sin borrado lógico; son eventos de
+      historial, se corrigen con otro evento (no se ocultan ni se marcan como borrados)
+- [ ] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
+      de borrado (ni `SoftDeletes` ni booleano) bajo ninguna circunstancia
+
+#### Cuando SÍ se puede borrar físico (datos sin realidad de negocio todavía)
+
+- [ ] Punto 4 — Definir política de limpieza para datos verdaderamente transitorios que nunca
+      llegaron a confirmarse como hecho de negocio: borradores de contrato nunca activados, archivos
+      o filas de importación fallidas. Estos sí aceptan DELETE físico porque no hay nada que auditar
+      todavía (no contradice la regla de "nada se elimina", que aplica a información que ya existió)
+
+### Catálogos base y parametrización
+
+#### Catálogos
+
+> Una tabla/modelo por catálogo (los campos no son iguales entre todos: Motivos necesita color,
+> "Días de cambio de estado" necesita rango de días + color/ícono), pero **una sola implementación de CRUD
+> compartida** para todos — no repetir Controller/Service/Repository por catálogo. Dos permisos
+> para todos: `catalogos.ver` y `catalogos.gestionar` (implica crear/editar/eliminar/restaurar), no
+> uno por catálogo. Frontend: **un componente de listado/formulario que se dibuja según el
+> modelo** (metadata: qué columnas, qué campos y de qué tipo — texto, color, etc.), no una pantalla
+> por catálogo; agrupados en una sola pantalla `/admin/catalogos` con selector.
 >
-> - `funcionalidades.md` — inventario literal de qué hace el legacy hoy (fuente de verdad de reglas
->   de negocio a no perder).
-> - `NEGOCIO.md` — el análisis módulo por módulo de cómo se desacopla cada pieza del legacy, con el
->   detalle y el razonamiento completo. **Este archivo no repite ese detalle**, solo prioriza y
->   resume qué construir en qué orden. Si falta contexto de un ítem, está desarrollado en `NEGOCIO.md`.
->
-> Los ítems marcados `[x]` son hechos ya construidos (registro, no checklist). Todo lo demás son
-> bullets de intención, no casillas para marcar.
+> "Tipos de vivienda" queda fuera de alcance (no aporta valor real). Canal/Organización y Zona **no**
+> son catálogos propios: quedan absorbidos como campos del catálogo/entidad Eventos (barrio/zona es
+> un string libre, no una jerarquía con catálogo detrás). "Resultados de gestión" queda fuera de
+> alcance por ahora — todo lo que el legacy distinguía como "resultado" se cubre con Motivos de
+> gestión.
 
----
+- [ ] CRUD genérico compartido (base Repository/Service/Controller reutilizable por los catálogos) (`SoftDeletes`)
+- [ ] Catálogo: Tipos de documento
+- [ ] Catálogo: Tipo de contrato
+- [ ] Catálogo: Motivos de gestión (con campo color)
+- [ ] Catálogo: Vendedores (CRUD básico vía el motor genérico; la vinculación con Evento de venta vive en la Fase de Contratos)
+- [ ] Catálogo: Eventos (registro de Vendedor + Canal/Organización + Zona/Barrio (string libre) + Tipo de evento + Fecha — ver Fase "Evento de venta y Contratos")
+- [ ] Catálogo: Tipo de producto
+- [ ] Catálogo: Tipo de eventos
+- [ ] Catálogo: Cobradores (CRUD básico vía el motor genérico; la asignación Usuario↔Cobrador y Cliente↔Cobrador vive en la Fase de Cartera/Cobranza)
+- [ ] Catálogo: Métodos de pago
+- [ ] Catálogo: Clasificación de clientes — **bajo revisión, no confirmado**: riesgo de solaparse con la clasificación de cartera que calcula el Motor Financiero; no construir hasta tener un caso de uso concreto que no sea redundante
+- [ ] Catálogo: Sucursales (una sola empresa con varias sedes físicas — no confundir con Multi Tenancy, que sigue fuera de este documento)
+- [ ] Catálogo: Días de cambio de estado (reglas de mora 15/30/45/90 días → estado de cartera; reemplaza el punto de "Umbrales de mora" que antes estaba pensado como Parámetro suelto). Cada regla: `día_desde`/`día_hasta` (rango explícito, no un solo umbral ambiguo), `estado_resultante`, `color` e `icono` (sin campo `orden` — se deriva de `día_desde`). El color/ícono de la regla vigente es lo que pinta el estado de cartera en listados y en la Vista 360° del cliente sin mapear el nombre del estado a un color a mano en cada pantalla
 
-## Ya implementado (base de plataforma)
+#### Parámetros nuevos
 
-**Backend:**
+> Los umbrales de mora ya no van acá — son el catálogo "Días de cambio de estado" de arriba (una
+> lista de reglas relacionadas, no un valor escalar suelto).
 
-- [x] Estructura Laravel, PHP 8.3, MySQL, migraciones.
-- [x] JWT + Refresh Tokens, CORS, Policies/Gates.
-- [x] Swagger, Form Requests, Soft Deletes, formato estándar de respuestas + paginación.
-- [x] Auditoría genérica (`spatie/activitylog`) y seeders iniciales.
-- [x] Usuarios (crear/editar/desactivar/restaurar), Roles (administrador, supervisor, verificador,
-      cobrador, vendedor, auxiliar), Permisos (CRUD), Login/Logout/Refresh.
-- [x] Auditoría de accesos (login/logout), cambios, eliminaciones, acciones críticas.
-- [x] Parámetros de negocio: días de mora, consecutivos.
+- [ ] Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy: 60 días fijos)
+- [ ] Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy: 1–8 días según motivo, fijo)
+- [ ] Redondeo del pago mínimo por mora (legacy: al millar, fijo)
+- [ ] Password por defecto al resetear contraseña, parametrizable (solo si se implementa esa función; legacy usa `Cobranza123` hardcodeado)
 
-**Frontend:**
+### Vendedores, Productos y Tarifas
 
-- [x] Angular, Login, JWT, Guards, Interceptors, diseño responsive.
-- [x] Administración: Usuarios, Roles, Permisos (listar/crear/editar/desactivar/restaurar).
- 
----
+#### Vendedores
 
-## Fases (orden de construcción del Core, por prioridad y dependencia)
+- [ ] Ya cubierto por el catálogo genérico (ver "Catálogos base y parametrización") — acá no hay tarea adicional de CRUD, solo la vinculación con Evento de venta más abajo
 
-Basado en el orden sugerido en `NEGOCIO.md` §Resumen. Cada fase depende de que la anterior exista.
+#### Productos
 
-### Fase 1 — Catálogos base y parametrización
+- [ ] Crear producto
+- [ ] Editar/actualizar producto (el legacy nunca tuvo `update`, solo alta y lookup por código — no repetir ese hueco)
+- [ ] Listar productos
+- [ ] Activar/desactivar producto (`SoftDeletes`)
+- [ ] Categoría de producto (catálogo Tipo de producto, Fase 1)
 
-Catálogos simples, CRUD completo (index/show/store/update/destroy/trashed/restore, soft delete, sin
-lógica de negocio). Buen punto de partida para fijar el patrón estándar antes de tocar algo con
-reglas de negocio reales.
+#### Tarifas
 
-- Tipos de documento.
-- Tipos de vivienda.
-- Canal/Organización (lo que el legacy llama "iglesia").
-- Zonas/Barrios.
-- Motivos de gestión.
-- Resultados de gestión.
+- [ ] CRUD Tarifas por producto (cuotas, valor, descuento) (`SoftDeletes`)
+- [ ] Historial de cambios de tarifa (el legacy solo sobreescribe, acá se versiona)
 
-**Parámetros nuevos a crear** en el módulo `Parameters` (adicional a días de mora / consecutivos ya
-existentes) — todo esto está hardcodeado en el legacy y no debe volver a estarlo:
+### Clientes
 
-- Umbrales de mora para clasificar cartera (al día / próximo vencimiento / mora temprana / mora
-  avanzada / prejurídico / jurídico / castigado / paz y salvo). El legacy solo tiene 4 umbrales fijos
-  (≤10 / 11–44 / 45–89 / ≥90 días); el nuevo catálogo de estados es más granular y configurable.
-- Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy: 60 días
-  fijos).
-- Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy: 1–8 días según
-  motivo, fijo).
-- Redondeo del pago mínimo por mora (legacy: al millar, fijo).
-- Password por defecto al resetear contraseña — **solo si se decide implementar esa función**; no
-  debe quedar un valor fijo en código como en el legacy (`Cobranza123`).
+#### CRUD Cliente
 
----
+- [ ] `SoftDeletes` con índice único compuesto (`documento` + `deleted_at`) para no bloquear alta de un cliente nuevo con el mismo documento de uno ya desactivado
+- [ ] Documento único por tenant
+- [ ] Nombre, tipo de documento
+- [ ] Observaciones versionadas (historial, no concatenar un string como el legacy)
 
-### Fase 2 — Vendedores, Productos y Tarifas
+#### Sub-recursos de Cliente
 
-- **CRUD Vendedores** independiente (ya existe la pantalla en el frontend como catálogo de
-  referencia; falta el modelo backend real).
-- **CRUD Productos** — importante: incluir explícitamente **crear + editar/actualizar** (el legacy
-  nunca tuvo un `update` de producto, solo alta y lookup por código; no repetir ese hueco), listar,
-  activar/desactivar, categoría.
-- **CRUD Tarifas** por producto (cuotas, valor, descuento) **con historial de cambios** — el legacy
-  solo sobreescribe la tarifa, nosotros versionamos.
-- La vinculación Vendedor↔Contrato se resuelve en la Fase 4 (vía Evento de venta) — acá solo el
-  catálogo, sin vincular todavía nada operativo.
+- [ ] Direcciones (relación 1\:N real — el legacy fuerza 1 sola; barrio/zona es un campo de texto libre, no un catálogo)
+- [ ] Teléfonos (relación 1\:N real — el legacy fuerza 3 campos fijos)
+- [ ] Referencias (relación 1\:N real — el legacy limita a 3)
 
----
+#### Identidad y búsqueda
 
-### Fase 3 — Clientes (identidad, sin pedido/contrato)
+- [ ] Detección de duplicados (no existe en el legacy)
+- [ ] Fusión de duplicados
+- [ ] Búsqueda unificada por nombre/documento/teléfono/dirección/estado (un único endpoint, no las 3 variantes del legacy)
+- [ ] Vista 360° / Timeline de solo lectura (contratos, pagos, Interacciones con el detalle de Gestión por contrato adentro, documentos, cambios de estado)
+- [ ] Indicador agregado de estado de cartera (valor calculado de lectura, no columna propia): gana el peor estado entre los contratos activos del cliente — no un promedio, no exige que todos estén al día
+- [ ] Asignación Cliente↔Cobrador (no Cliente↔Usuario directo — ver módulo Cartera/Cobranza)
 
-- **CRUD Cliente**: documento único por tenant, nombre, tipo de documento, tipo de vivienda,
-  observaciones **versionadas** (historial de observaciones, no concatenar un string como el
-  legacy).
-- Sub-recursos como relación real 1\:N (el legacy fuerza 1 dirección y 3 teléfonos/referencias
-  fijos — acá no hay ese límite duro):
-  - Direcciones.
-  - Teléfonos.
-  - Referencias.
-- **Detección y fusión de duplicados** — no existe en el legacy, es nuevo pero necesario: al
-  desacoplar la identidad del cliente del pedido, se vuelve más fácil crear un cliente duplicado por
-  error.
-- **Búsqueda unificada** (nombre/documento/teléfono/dirección/estado) — un único endpoint de
-  búsqueda con filtros, no las 3 variantes que tiene el legacy (`Buscar`/`SearchJson`/
-  `SearchJsonAsignado`).
-- **Vista 360° / Timeline** de solo lectura: agregación de contratos, pagos, gestiones, documentos y
-  cambios de estado en una sola consulta cronológica (reemplaza el log crudo de `Clientes::Log()`).
-- **Asignación Cliente↔Cobrador** (no Cliente↔Usuario directo) — ver el detalle completo en la
-  Fase 6. Anotado acá porque es donde vive el campo/relación, aunque el concepto de "Cobrador" como
-  entidad se construye después.
+### Evento de venta y Contratos
 
----
+#### Evento de venta
 
-### Fase 4 — Evento de venta y Contratos
+- [ ] Entidad Evento de venta (catálogo "Eventos" — ver Fase 1) = Vendedor + Canal/Organización (campo propio) + Zona/Barrio (string libre) + Tipo de evento (catálogo Fase 1) + Fecha, vinculada al Contrato (no al Cliente)
 
-- Entidad **Evento de venta** = Vendedor + Canal/Organización + Zona + Fecha, vinculada al
-  **Contrato** (no al Cliente). Los catálogos que usa (Canal, Zona) ya existen desde la Fase 1.
-- **CRUD Contratos, N por cliente.** Este es el cambio estructural más importante de todo el plan:
-  **el legacy fuerza un 1:1 cliente↔pedido de facto y eso no aplica más.** Un cliente puede tener 0,
-  1 o varios contratos (activos o cerrados) simultáneamente. No se debe modelar ni pensar "el pedido
-  del cliente" en singular en ningún lado del nuevo sistema.
-- Ciclo de vida del contrato explícito: borrador / activo / suspendido / cancelado / finalizado — en
-  vez de inferirlo de combinaciones de códigos numéricos como hace el legacy (110/111/112/113/114/
-  125/127).
-- Acciones propias del contrato: cambiar tarifa (dispara recálculo en el Motor Financiero, Fase 5),
-  cambiar fecha de cobro, agregar/quitar producto del contrato (recalcula el total vía Motor
-  Financiero, nunca sumando a mano como hace `AddProducto()` en el legacy).
-- **Explícitamente fuera de esta fase** (no meterlo ahora, aunque el ciclo de vida deja el lugar
-  natural para agregarlo después): refinanciación, reestructuración, congelación de contrato. Son
-  funcionalidades que no existen en el legacy — quedan para otra fase futura, no forman parte de
-  este plan.
+#### Contratos
 
----
+- [ ] CRUD Contratos, N por cliente — incluye Tipo de contrato (catálogo Fase 1); elimina el 1:1 cliente/pedido del legacy; un cliente puede tener 0, 1 o varios contratos simultáneos
+- [ ] Nunca fusionar una compra nueva dentro de un contrato existente con saldo (regla confirmada): aunque el cliente ya tenga deuda, cada compra nueva es siempre un Contrato nuevo. La consolidación del cobro entre varios contratos del mismo cliente se resuelve en Cobranza, no fusionando contratos
+- [ ] Ciclo de vida explícito: borrador / activo / suspendido / cancelado / finalizado — NO usar `SoftDeletes` como mecanismo de estado (ver "Convención de borrado y estado", punto 1); `SoftDeletes` solo aplica como salvavidas si el contrato se creó por error y nunca debió existir
+- [ ] Cambiar tarifa (dispara recálculo en el Motor Financiero)
+- [ ] Cambiar fecha de cobro
+- [ ] Agregar/quitar producto del contrato (recalcula total vía Motor Financiero, no a mano)
 
-### Fase 5 — Motor Financiero (cartera / deuda)
+### Motor Financiero
 
-Servicio único, fuente de verdad de todo cálculo financiero — ningún otro módulo recalcula saldo
-por su cuenta (el legacy repite la misma fórmula "saldo ≤ 0 → estado 111/114" en `conf()`,
-`Reverse()`, `changeRate()` e `Importar::conf()`; acá se hace una sola vez).
+#### Cálculo
 
-- Calcular saldo, cuota, capital, interés, descuento y mora de un contrato.
-- Recalcular saldo de contrato/cliente/cartera tras un pago, un reverso, un cambio de tarifa o una
-  devolución.
-- Clasificar el estado de cartera de cada contrato según los umbrales parametrizados en la Fase 1.
-- Job programado en background que recalcula cartera y cambia estados automáticamente — reemplaza
-  el side-effect de `Deuda()` ejecutándose en cada carga de pantalla (Clientes/Pagos/LlamadasDia) del
-  legacy.
-- DataCrédito es una transición de estado más del Motor, no un flujo aparte.
-- El cálculo de pago mínimo por mora vive acá, no en el controlador de Pagos.
+- [ ] Calcular saldo, cuota, capital, interés, descuento y mora de un contrato
+- [ ] Recalcular saldo tras pago, reverso, cambio de tarifa o devolución
+- [ ] Clasificar estado de cartera de cada contrato según las reglas del catálogo "Días de cambio de estado" (Fase 1) — no umbrales sueltos en Parámetros
 
----
+#### Automatización
 
-### Fase 6 — Cartera / Cobranza — Cobrador como entidad, no como rol de usuario
+- [ ] Job programado en background que recalcula cartera y cambia estados (reemplaza el side-effect de `Deuda()` en cada request del legacy)
+- [ ] DataCrédito como transición de estado más del Motor
+- [ ] Cálculo de pago mínimo por mora (vive acá, no en Pagos)
 
-**Este es el cambio de modelo más importante junto con el de Contratos (Fase 4).**
+### Cartera / Cobranza
 
-Un **Cobrador** es una entidad de negocio: una cartera/bolsa de clientes. **No está vinculado 1:1 a
-un Usuario.** Un Usuario se **asigna** para operar uno (o varios) Cobradores en un momento dado; los
-**Clientes se asignan al Cobrador**, no al Usuario directamente. Si el Usuario que operaba un
-Cobrador se va o se reasigna, el Cobrador — con toda su cartera de clientes — se reasigna a otro
-Usuario en una sola operación, sin tener que tocar cliente por cliente. Esto reemplaza tanto:
+#### Cobrador (entidad independiente del Usuario)
 
-- el uso del Role "cobrador" de Spatie como si fuera identidad operativa (el Role sigue existiendo,
-  pero pasa a ser **solo permiso de sistema**, separado de qué cartera opera), como
-- la tabla `ClientesUsuarios` del legacy, que asigna el cliente directo al usuario que lo creó.
+- [ ] CRUD básico de Cobrador ya cubierto por el catálogo genérico (ver "Catálogos base y parametrización") — acá vive la lógica de asignación:
+- [ ] Asignación Usuario↔Cobrador con historial (permite reasignar personal sin tocar cliente por cliente)
+- [ ] Asignación Cliente↔Cobrador
+- [ ] Mantener el Role Spatie "cobrador" solo como permiso de sistema, separado de la identidad operativa
+- [ ] **Invariante confirmada, sin excepción**: todos los contratos de un mismo cliente viven siempre en la misma cartera (mismo Cobrador) — nunca se reparten entre carteras distintas, ni siquiera si un contrato llega a estado jurídico/castigado (ese caso se gestiona distinto por el propio estado de cartera del contrato, no moviendo al cliente de cobrador). Se valida en el Service al asignar, no hace falta constraint de base de datos
 
-Ítems concretos:
+#### Gestión
 
-- **CRUD Cobrador** (la "cesta"/cartera): nombre o código identificador, estado activo/inactivo.
-- **Asignación Usuario↔Cobrador**: qué usuario opera esa cartera ahora mismo, con historial de quién
-  la operó antes (para trazabilidad, no para borrar el rastro al reasignar).
-- **Asignación Cliente↔Cobrador**: a qué cartera pertenece cada cliente.
-- Catálogo de Motivos/Resultados de gestión ya construido en la Fase 1.
-- **CRUD Gestión** (llamada/visita/correo/WhatsApp/SMS/observación): registrar, listar por
-  cliente/contrato/usuario.
-- **Compromisos** (promesa de pago, acuerdo, reprogramación) como entidad propia vinculada a la
-  gestión — explícita, no inferida del motivo como hace el legacy (`AddCall()` decide "¿esto
-  programa un pago?" con un `if` sobre el id del motivo).
-- **Agenda del cobrador** (bandeja diaria/semanal, clientes prioritarios, promesas por vencer/
-  vencidas) — vista agregada de solo lectura sobre Contratos + Pagos Programados + Gestiones, no una
-  tabla ni estado propio.
+> Sin borrado lógico (ver "Convención de borrado y estado", punto 2): Interacciones, Gestiones y
+> Compromisos son eventos de historial, se corrigen con otro evento, nunca se ocultan.
 
----
+- [ ] **Interacción** (el contacto real): Cliente, Usuario, medio (llamada/visita/correo/WhatsApp/SMS), fecha, observación general — una sola fila por contacto real, sin importar cuántos contratos toque
+- [ ] **Gestión por contrato** (el efecto de la Interacción sobre un Contrato puntual): motivo, resultado, referencia a la Interacción y al Contrato — necesaria como fila separada porque el cliente puede responder distinto por cada deuda en la misma llamada (promete pagar el contrato A, rechaza el B)
+- [ ] Listado de Gestiones por cliente/contrato/usuario
+- [ ] Compromisos (promesa de pago, acuerdo, reprogramación) como entidad propia vinculada a la Gestión (por contrato, no a la Interacción), no inferida del motivo — una sola Interacción puede generar varios Compromisos a la vez
+- [ ] Cadencia de cobro consolidada por Cliente: una Interacción por mes por cliente como ciclo regular, sin importar cuántos contratos tenga — no una llamada por contrato
 
-### Fase 7 — Pagos
+#### Agenda
 
-- **CRUD Pago** (registro confirmado): crear, listar, consultar, filtrar por usuario/cobrador/rango
-  de fechas.
-- **Pago Programado** como entidad propia (no un estado del Pago): programar, confirmar (crea el
-  Pago real y notifica al Motor Financiero), descartar (manual o automático por vencimiento, vía el
-  job de la Fase 5).
-- **Reverso de pago**: acción con permiso elevado — mantener el mismo nivel de exigencia que el
-  legacy (hoy pide "superusuario").
-- **Recibos**: generación/impresión individual y por lote, control de copias impresas — es una capa
-  de presentación sobre el Pago Programado, no lógica de negocio.
-- **Listados "cobro del día" / "sin llamar" / "volver a llamar"**: vistas agregadas de solo lectura
-  sobre Contratos + Pagos Programados + Gestiones, no tablas ni estados nuevos.
+- [ ] Bandeja diaria/semanal del cobrador, agrupada **por Cliente** (no por Contrato): un cliente con 3 contratos vencidos aparece como una sola tarea, con el detalle de los 3 contratos adentro
+- [ ] Clientes prioritarios
+- [ ] Promesas por vencer / vencidas
 
----
+### Pagos
 
-### Fase 8 — Devoluciones
+> Sin borrado lógico en ningún sub-módulo (ver "Convención de borrado y estado", punto 2): un pago
+> nunca se oculta, se corrige con un evento de reverso/descarte que queda vinculado y visible junto
+> al original.
 
-- **CRUD Devolución**: registrar, aprobar/rechazar (nuevo respecto al legacy, que genera la
-  devolución directo sin paso de aprobación), consultar, listar por fecha/usuario.
-- Al generarse, notifica al Motor Financiero para que recalcule — no escribe el estado del contrato
-  directamente (a diferencia del legacy, que sí lo hace).
+#### Registro
 
----
+- [ ] CRUD Pago: crear, listar, consultar — incluye Método de pago (catálogo Fase 1)
+- [ ] Filtrar pagos por usuario/cobrador/rango de fechas
 
-### Fase 9 — Reportes (solo lectura)
+#### Pagos programados
 
-Construir siempre sobre las entidades ya modularizadas de las fases anteriores, nunca sobre tablas
-transaccionales crudas.
+- [ ] Programar pago
+- [ ] Confirmar pago (crea el Pago real y notifica al Motor Financiero)
+- [ ] Descartar pago (manual y automático por vencimiento vía job programado)
 
-- Conteo de clientes por estado.
-- Conteo de pagos por estado (programados/confirmados/descartados).
-- Cartera por usuario/cobrador (pagos, programados, descartados, totales).
-- Totales de cartera por estado.
+#### Reversos
 
----
+- [ ] Reverso de pago con permiso elevado (mismo nivel de exigencia que el legacy)
 
-### Fase 10 — Importación
+#### Recibos
 
-- Reusar los mismos Services de Clientes (Fase 3), Contratos (Fase 4) y Pagos (Fase 7) fila por
-  fila para importar desde CSV.
-- **No reimplementar** la creación de cliente+contrato+pago a mano — el legacy comete ese error tres
-  veces distintas (`Clientes::NewClient`, `Importar::ClientesUp`, `Backup::import_clients_backup`,
-  cada una con su propia copia de la lógica de saldo/estado). No repetirlo acá.
-- Migración de datos legacy → Recaudify (clientes, contratos, cuotas, pagos, devoluciones, usuarios)
-  usa este mismo mecanismo de importación, no un proceso aparte.
+- [ ] Generación/impresión individual de recibo
+- [ ] Generación/impresión por lote
+- [ ] Control de copias impresas
 
----
+#### Consultas
 
-## Frontend (recaudify-web) — screens por fase
+- [ ] Listado "cobro del día" — agrupado **por Cliente** (ver Cartera/Cobranza, Agenda), no una fila por Contrato
+- [ ] Listado "sin llamar"
+- [ ] Listado "volver a llamar"
 
-Mismo orden que el backend; cada entidad sigue el patrón ya usado en Users/Roles/Permissions/
-Parameters (servicio con signals + componente de listado + componente de formulario, permisos por
-`módulo.acción`).
+### Devoluciones
 
-- Fase 1: pantallas de catálogos (genérico, reutilizable entre todos).
-- Fase 2: Vendedores, Productos (con edición), Tarifas (con historial).
-- Fase 3: Listado/búsqueda de clientes, ficha de cliente (datos + sub-recursos), vista 360°/timeline,
-  flujo de detección/fusión de duplicados.
-- Fase 4: Evento de venta (como parte del formulario de contrato), listado/detalle de contratos,
-  plan de pagos.
-- Fase 5: sin pantalla propia (motor interno); sí una vista de solo lectura del estado de cartera
-  dentro de la ficha del contrato/cliente.
-- Fase 6: administración de Cobradores (CRUD + asignación de Usuario↔Cobrador), asignación
-  Cliente↔Cobrador, bandeja de gestión/cobranza, agenda del cobrador.
-- Fase 7: registro de pagos, pagos programados (programar/confirmar/descartar), reverso, recibos.
-- Fase 8: devoluciones (registrar/aprobar/consultar).
-- Fase 9: pantallas de reportes.
-- Fase 10: importación (subir CSV, ver resultado).
+> Sin borrado lógico (ver "Convención de borrado y estado", punto 2): es un evento de historial, no
+> se oculta ni se marca como borrado.
 
----
+- [ ] CRUD Devolución: registrar
+- [ ] Aprobar/rechazar devolución (nuevo respecto al legacy, que genera directo)
+- [ ] Consultar devolución
+- [ ] Listar por fecha/usuario
+- [ ] Notificar al Motor Financiero al generarse (no escribir el estado del contrato directamente)
 
-## Explícitamente fuera de este documento (fase futura — no tocar todavía)
+### Reportes
 
-Estas son las funcionalidades del roadmap de producto (`demo.md`) que **no vienen del legacy** y que
-se decidió no incluir en este plan por ahora. No se detallan acá a propósito — cuando llegue el
-momento se retoman desde `demo.md`, no desde este archivo:
+- [ ] Conteo de clientes por estado — cuenta personas, usa el indicador agregado por Cliente (peor estado entre sus contratos activos)
+- [ ] Conteo de pagos por estado (programados/confirmados/descartados)
+- [ ] Cartera por usuario/cobrador (pagos, programados, descartados, totales)
+- [ ] Totales de cartera por estado — suma valores, siempre por Contrato, nunca por Cliente. "Clientes en mora" (personas) y "cartera en mora" (dinero) son dos métricas distintas, no mezclarlas en un solo número
 
-Multi Tenancy, SaaS (onboarding, suscripciones, marketplace), Integraciones (API pública, webhooks,
-pasarelas de pago, facturación electrónica), Automatizaciones avanzadas (notificaciones, plantillas,
-eventos del sistema como automatización), Verificaciones, Documentos/Evidencias, Dashboards
-ejecutivo/supervisor/vendedor, Inteligencia Artificial, Portal del Cliente.
+### Importación
 
----
+- [ ] Importar clientes desde CSV reusando el Service de Clientes
+- [ ] Importar contratos desde CSV reusando el Service de Contratos
+- [ ] Importar pagos desde CSV reusando el Service de Pagos
+- [ ] Migración de datos legacy → Recaudify (clientes, contratos, cuotas, pagos, devoluciones, usuarios)
+
+### Frontend — pantallas por módulo
+
+#### Catálogos
+
+- [ ] Pantallas de catálogos (componente genérico reutilizable)
+
+#### Vendedores, Productos, Tarifas
+
+- [ ] Pantalla Vendedores
+- [ ] Pantalla Productos (con edición)
+- [ ] Pantalla Tarifas (con historial)
+
+#### Clientes
+
+- [ ] Listado/búsqueda de clientes
+- [ ] Ficha de cliente (datos + sub-recursos)
+- [ ] Vista 360°/timeline
+- [ ] Flujo de detección/fusión de duplicados
+
+#### Contratos
+
+- [ ] Formulario de contrato (con Evento de venta)
+- [ ] Listado/detalle de contratos
+- [ ] Plan de pagos
+
+#### Cartera / Cobranza
+
+- [ ] Administración de Cobradores (CRUD + asignación Usuario↔Cobrador)
+- [ ] Asignación Cliente↔Cobrador
+- [ ] Bandeja de gestión/cobranza — registro de Interacción (contacto) con el detalle de Gestión por cada contrato del cliente adentro del mismo formulario
+- [ ] Agenda del cobrador (agrupada por Cliente)
+
+#### Pagos
+
+- [ ] Registro de pagos
+- [ ] Pagos programados (programar/confirmar/descartar)
+- [ ] Reverso
+- [ ] Recibos
+
+#### Devoluciones
+
+- [ ] Pantalla de devoluciones (registrar/aprobar/consultar)
+
+#### Reportes
+
+- [ ] Pantallas de reportes
+
+#### Importación
+
+- [ ] Pantalla de importación (subir CSV, ver resultado)
 
 ## Nuevas tareas
 
 - Use this format to add new tasks
 
----
-
 ## Actualizado
 
-2026-07-04
+2026-07-05
