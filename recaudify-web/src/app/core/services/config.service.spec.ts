@@ -6,7 +6,17 @@ import { ApiService } from '@core/services/api.service';
 import { ConfigService } from '@core/services/config.service';
 
 function loginConfig(overrides: Partial<LoginConfig> = {}): LoginConfig {
-  return { geolocalization_login: false, login_field: 'username', ...overrides };
+  return {
+    geolocalization_login: false,
+    login_field: 'username',
+    password_policy: {
+      min_length: 8,
+      require_uppercase: false,
+      require_numbers: false,
+      require_symbols: false,
+    },
+    ...overrides,
+  };
 }
 
 function setup() {

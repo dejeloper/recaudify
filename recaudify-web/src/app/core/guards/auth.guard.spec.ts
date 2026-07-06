@@ -19,6 +19,7 @@ function setupGuard(authenticated: boolean, permission: PermissionState = 'grant
   const auth = {
     isAuthenticated: signal(authenticated),
     geolocalizationLoginEnabled: signal(true),
+    passwordExpired: signal(false),
     expireSession: vi.fn(),
   };
   const geo = { getPermissionState: vi.fn().mockResolvedValue(permission) };
