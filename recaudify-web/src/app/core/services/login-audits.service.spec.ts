@@ -21,7 +21,10 @@ function audit(id: number): LoginAudit {
   };
 }
 
-function page(items: LoginAudit[], meta: Partial<Paginated<LoginAudit>['meta']> = {}): Paginated<LoginAudit> {
+function page(
+  items: LoginAudit[],
+  meta: Partial<Paginated<LoginAudit>['meta']> = {},
+): Paginated<LoginAudit> {
   return {
     items,
     meta: { total: items.length, page: 1, perPage: 25, lastPage: 1, ...meta },

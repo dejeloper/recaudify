@@ -27,7 +27,9 @@ async function setup(id?: string) {
   };
   const permissionsService = {
     getAll: vi.fn().mockReturnValue(of(perms)),
-    groupByModuleNames: vi.fn().mockReturnValue([{ module: 'clientes', perms: ['clientes.crear', 'clientes.editar'] }]),
+    groupByModuleNames: vi
+      .fn()
+      .mockReturnValue([{ module: 'clientes', perms: ['clientes.crear', 'clientes.editar'] }]),
     actionLabel: vi.fn((name: string) => name.split('.')[1] ?? name),
   };
   const toast = { success: vi.fn(), error: vi.fn() };
@@ -50,7 +52,14 @@ async function setup(id?: string) {
   const router = TestBed.inject(Router);
   const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
-  return { fixture, comp: fixture.componentInstance as any, rolesService, permissionsService, toast, navigate };
+  return {
+    fixture,
+    comp: fixture.componentInstance as any,
+    rolesService,
+    permissionsService,
+    toast,
+    navigate,
+  };
 }
 
 describe('RoleForm', () => {

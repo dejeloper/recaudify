@@ -48,7 +48,14 @@ async function setup(id?: string) {
   const router = TestBed.inject(Router);
   const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
-  return { fixture, comp: fixture.componentInstance as any, ratesService, productsService, toast, navigate };
+  return {
+    fixture,
+    comp: fixture.componentInstance as any,
+    ratesService,
+    productsService,
+    toast,
+    navigate,
+  };
 }
 
 describe('RateForm', () => {

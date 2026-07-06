@@ -8,7 +8,9 @@ import { CallReasonForm } from './call-reason-form';
 
 async function setup(id?: string) {
   const service = {
-    getById: vi.fn().mockReturnValue(of({ id: 5, name: 'Ausente', color: '#ff0000', active: true })),
+    getById: vi
+      .fn()
+      .mockReturnValue(of({ id: 5, name: 'Ausente', color: '#ff0000', active: true })),
     create: vi.fn().mockReturnValue(of({})),
     update: vi.fn().mockReturnValue(of({})),
   };

@@ -75,13 +75,20 @@ describe('PermissionsService', () => {
   it('grouped computes permissions grouped by module', () => {
     const { service, api } = setup();
     api.get.mockReturnValue(
-      of([permission(1, 'clientes.ver'), permission(2, 'ventas.crear'), permission(3, 'clientes.crear')]),
+      of([
+        permission(1, 'clientes.ver'),
+        permission(2, 'ventas.crear'),
+        permission(3, 'clientes.crear'),
+      ]),
     );
 
     service.load();
 
     expect(service.grouped()).toEqual([
-      { module: 'clientes', perms: [permission(1, 'clientes.ver'), permission(3, 'clientes.crear')] },
+      {
+        module: 'clientes',
+        perms: [permission(1, 'clientes.ver'), permission(3, 'clientes.crear')],
+      },
       { module: 'ventas', perms: [permission(2, 'ventas.crear')] },
     ]);
   });

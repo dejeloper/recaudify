@@ -84,10 +84,20 @@ describe('AppShell', () => {
     const { comp } = await setup(makeUser(), ['users.view']);
 
     expect(
-      comp.isItemVisible({ label: 'Usuarios', icons: [], route: '/admin/users', permission: 'users.view' }),
+      comp.isItemVisible({
+        label: 'Usuarios',
+        icons: [],
+        route: '/admin/users',
+        permission: 'users.view',
+      }),
     ).toBe(true);
     expect(
-      comp.isItemVisible({ label: 'Roles', icons: [], route: '/admin/roles', permission: 'roles.view' }),
+      comp.isItemVisible({
+        label: 'Roles',
+        icons: [],
+        route: '/admin/roles',
+        permission: 'roles.view',
+      }),
     ).toBe(false);
   });
 

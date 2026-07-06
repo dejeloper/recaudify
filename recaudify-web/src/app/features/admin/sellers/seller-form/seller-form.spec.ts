@@ -8,7 +8,9 @@ import { SellerForm } from './seller-form';
 
 async function setup(id?: string) {
   const service = {
-    getById: vi.fn().mockReturnValue(of({ id: 5, name: 'Juan Vendedor', username: 'juan.v', active: true })),
+    getById: vi
+      .fn()
+      .mockReturnValue(of({ id: 5, name: 'Juan Vendedor', username: 'juan.v', active: true })),
     create: vi.fn().mockReturnValue(of({})),
     update: vi.fn().mockReturnValue(of({})),
   };
