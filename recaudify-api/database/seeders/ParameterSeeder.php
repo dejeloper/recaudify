@@ -39,6 +39,22 @@ class ParameterSeeder extends Seeder
                 "cast" => "string",
                 "description" => "Campo usado para autenticar al usuario: username o email",
             ],
+            [
+                "type" => "authentication",
+                "key" => "reset_password_mode",
+                "value" => "fixed",
+                "cast" => "string",
+                "description" =>
+                    "Modo de contraseña al resetear un usuario: fixed (valor fijo) o random (auto-generada)",
+            ],
+            [
+                "type" => "authentication",
+                "key" => "reset_password_fixed_value",
+                "value" => "Cobranza123",
+                "cast" => "string",
+                "description" =>
+                    "Valor fijo usado al resetear contraseña cuando reset_password_mode=fixed. Si está vacío, se genera una contraseña aleatoria como salvaguarda",
+            ],
 
             //  Application ─
             [

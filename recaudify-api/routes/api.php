@@ -35,6 +35,9 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::put("/{id}", [UserController::class, "update"])->middleware("permission:users.edit");
         Route::delete("/{id}", [UserController::class, "destroy"])->middleware("permission:users.deactivate");
         Route::post("/{id}/restore", [UserController::class, "restore"])->middleware("permission:users.restore");
+        Route::post("/{id}/reset-password", [UserController::class, "resetPassword"])->middleware(
+            "permission:users.reset-password",
+        );
         Route::post("/{id}/permissions", [UserController::class, "syncPermissions"])->middleware(
             "permission:users.edit",
         );
