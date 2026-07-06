@@ -16,7 +16,11 @@ const mockRoute = {} as ActivatedRouteSnapshot;
 const mockState = {} as RouterStateSnapshot;
 
 function setupGuard(authenticated: boolean, permission: PermissionState = 'granted') {
-  const auth = { isAuthenticated: signal(authenticated), expireSession: vi.fn() };
+  const auth = {
+    isAuthenticated: signal(authenticated),
+    geolocalizationLoginEnabled: signal(true),
+    expireSession: vi.fn(),
+  };
   const geo = { getPermissionState: vi.fn().mockResolvedValue(permission) };
 
   TestBed.configureTestingModule({

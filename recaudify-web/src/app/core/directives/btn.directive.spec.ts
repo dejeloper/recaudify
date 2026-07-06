@@ -33,4 +33,14 @@ describe('BtnDirective', () => {
     expect(button.classList.contains('btn-primary')).toBe(false);
     expect(button.classList.contains('btn-table-danger')).toBe(true);
   });
+
+  it('applies btn-table-neutral for the table-neutral variant', () => {
+    const { fixture, button } = setup();
+
+    fixture.componentInstance.variant.set('table-neutral');
+    fixture.detectChanges();
+
+    expect(button.classList.contains('btn-primary')).toBe(false);
+    expect(button.classList.contains('btn-table-neutral')).toBe(true);
+  });
 });

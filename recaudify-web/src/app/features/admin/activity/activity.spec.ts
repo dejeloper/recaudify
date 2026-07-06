@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ActivitiesService } from '@core/services/activities.service';
 import { ActivityFeed } from './activity';
 
@@ -19,6 +20,11 @@ async function setup() {
     providers: [
       provideZonelessChangeDetection(),
       { provide: ActivitiesService, useValue: service },
+      {
+        provide: ActivatedRoute,
+        useValue: { snapshot: { queryParamMap: convertToParamMap({}) } },
+      },
+      { provide: Router, useValue: { navigate: vi.fn() } },
     ],
   }).compileComponents();
 
