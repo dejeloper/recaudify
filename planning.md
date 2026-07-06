@@ -39,7 +39,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 #### Autenticación y parámetros de acceso
 
 - [x] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
-- [ ] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
+- [x] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
 - [ ] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
 - [ ] Delegación temporal de permisos / suplencias: que un supervisor pueda asignar temporalmente su rol o un permiso puntual a otro usuario (ej. cobrador de vacaciones), con fecha de inicio y fin, sin tener que editar roles manualmente y no olvidarse de revertir.
 
@@ -65,7 +65,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Exportar logs filtrados a CSV/Excel: para pasarle un rango de fechas a soporte o auditoría externa sin acceso al servidor.
 - [ ] Nivel de verbosidad por canal configurable desde Parameters: poder subir/bajar detalle de `app-errors`/`http` en caliente (ej. modo debug temporal) sin cambiar `config/logging.php` y redesplegar.
 - [ ] Trazabilidad por request-id: propagar un ID único de request en cabecera de respuesta y en cada línea de log de ese request, para poder seguir un problema puntual del usuario a través de los 4 canales sin adivinar por timestamp.
-- [ ] Diff visual de cambios en el feed de actividad: `activitylog` ya guarda `old`/`attributes`, pero la pantalla actual los lista crudo; mostrar "campo X: valor A → valor B" en vez de JSON crudo hace el feed realmente legible para un no-técnico.
+- [x] Diff visual de cambios en el feed de actividad: `activitylog` ya guarda `old`/`attributes`, pero la pantalla actual los lista crudo; mostrar "campo X: valor A → valor B" en vez de JSON crudo hace el feed realmente legible para un no-técnico.
 
 #### Dashboard y métricas
 
@@ -403,4 +403,4 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 ## Actualizado
 
-2026-07-05
+2026-07-06
