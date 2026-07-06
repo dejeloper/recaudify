@@ -112,4 +112,7 @@ export class UsersService {
   restore(id: number) {
     return this.api.post<void>('users', `${id}/restore`);
   }
+  resetPassword(id: number) {
+    return this.api.post<{ password: string }>('users', `${id}/reset-password`);
+  }
 }

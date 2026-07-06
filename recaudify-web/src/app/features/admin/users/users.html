@@ -116,6 +116,19 @@
                           >Editar</a
                         >
                       }
+                      @if (canResetPassword()) {
+                        <button
+                          (click)="resetPassword(user)"
+                          [disabled]="resettingId() === user.id"
+                          appBtn="table-neutral"
+                        >
+                          @if (resettingId() === user.id) {
+                            Reseteando...
+                          } @else {
+                            Resetear contraseña
+                          }
+                        </button>
+                      }
                       @if (canDelete()) {
                         <button
                           (click)="delete(user)"
@@ -233,5 +246,25 @@
         }
       </div>
     }
+  }
+
+  @if (generatedPassword(); as reset) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
+        <h2 class="text-base font-semibold text-gray-900">Contraseña reseteada</h2>
+        <p class="mt-1 text-sm text-gray-500">
+          Nueva contraseña de <span class="font-medium text-gray-700">{{ reset.user.name }}</span
+          >. Compártela con el usuario, no se volverá a mostrar.
+        </p>
+        <div
+          class="mt-4 select-all rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-center font-mono text-sm text-gray-800"
+        >
+          {{ reset.password }}
+        </div>
+        <div class="mt-5 flex justify-end">
+          <button (click)="closePasswordModal()" appBtn="primary">Cerrar</button>
+        </div>
+      </div>
+    </div>
   }
 </div>
