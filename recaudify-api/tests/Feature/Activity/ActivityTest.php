@@ -31,14 +31,16 @@ class ActivityTest extends TestCase
 
     private function makeActivity(array $attributes = []): Activity
     {
-        return Activity::create(array_merge(
-            [
-                "log_name" => "default",
-                "description" => "evento de prueba",
-                "event" => "created",
-            ],
-            $attributes,
-        ));
+        return Activity::create(
+            array_merge(
+                [
+                    "log_name" => "default",
+                    "description" => "evento de prueba",
+                    "event" => "created",
+                ],
+                $attributes,
+            ),
+        );
     }
 
     public function test_requires_authentication(): void

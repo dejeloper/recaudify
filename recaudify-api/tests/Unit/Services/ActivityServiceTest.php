@@ -22,14 +22,16 @@ class ActivityServiceTest extends TestCase
 
     private function makeActivity(array $attributes = []): Activity
     {
-        return Activity::create(array_merge(
-            [
-                "log_name" => "default",
-                "description" => "evento de prueba",
-                "event" => "created",
-            ],
-            $attributes,
-        ));
+        return Activity::create(
+            array_merge(
+                [
+                    "log_name" => "default",
+                    "description" => "evento de prueba",
+                    "event" => "created",
+                ],
+                $attributes,
+            ),
+        );
     }
 
     public function test_get_all_filters_by_causer_username(): void
