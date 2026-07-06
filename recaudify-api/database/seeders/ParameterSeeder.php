@@ -117,6 +117,41 @@ class ParameterSeeder extends Seeder
                 "cast" => "integer",
                 "description" => "Minutos de inactividad antes de cerrar la sesión automáticamente",
             ],
+            [
+                "type" => "security",
+                "key" => "password_min_length",
+                "value" => "8",
+                "cast" => "integer",
+                "description" => "Longitud mínima exigida para las contraseñas",
+            ],
+            [
+                "type" => "security",
+                "key" => "password_require_uppercase",
+                "value" => "false",
+                "cast" => "boolean",
+                "description" => "Exige al menos una letra mayúscula en la contraseña",
+            ],
+            [
+                "type" => "security",
+                "key" => "password_require_numbers",
+                "value" => "false",
+                "cast" => "boolean",
+                "description" => "Exige al menos un número en la contraseña",
+            ],
+            [
+                "type" => "security",
+                "key" => "password_require_symbols",
+                "value" => "false",
+                "cast" => "boolean",
+                "description" => "Exige al menos un símbolo en la contraseña",
+            ],
+            [
+                "type" => "security",
+                "key" => "password_expiration_days",
+                "value" => "0",
+                "cast" => "integer",
+                "description" => "Días antes de forzar el cambio de contraseña (0 = nunca expira)",
+            ],
 
             //  Configuration ─
             [
