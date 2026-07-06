@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\ParameterType;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginLocationRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -12,6 +13,8 @@ use App\Models\User;
 use App\Services\AuthService;
 use App\Services\LoginAuditService;
 use App\Services\ParameterService;
+use App\Services\PasswordPolicyService;
+use App\Services\PasswordResetService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
@@ -24,6 +27,8 @@ class AuthController extends ApiController
         private readonly AuthService $authService,
         private readonly LoginAuditService $loginAudit,
         private readonly ParameterService $parameterService,
+        private readonly PasswordPolicyService $passwordPolicy,
+        private readonly PasswordResetService $passwordResetService,
         private readonly UserService $userService,
     ) {}
 
@@ -108,6 +113,20 @@ class AuthController extends ApiController
         return $response;
     }
 
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->guard()->user();
+
+        $this->passwordResetService->changeOwnPassword(
+            $user,
+            $request->string("current_password")->toString(),
+            $request->string("password")->toString(),
+        );
+
+        return ApiResult::empty("Contraseña actualizada correctamente.")->toResponse();
+    }
+
     public function loginLocation(LoginLocationRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -136,6 +155,7 @@ class AuthController extends ApiController
         $data["shift_countdown_enabled"] = $this->parameterService->get($auth, "shift_countdown_enabled");
         $data["geolocalization_login_enabled"] = $this->parameterService->get($auth, "geolocalization_login_enabled");
         $data["ip_address"] = request()->ip();
+        $data["password_expired"] = $this->passwordPolicy->isExpired($user);
 
         return $data;
     }
@@ -148,6 +168,7 @@ class AuthController extends ApiController
                 "geolocalization_login_enabled",
             ),
             "login_field" => $this->authService->getLoginField(),
+            "password_policy" => $this->passwordPolicy->config(),
         ])->toResponse();
     }
 

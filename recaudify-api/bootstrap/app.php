@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckUserSchedule;
+use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\LogHttpRequests;
 use App\Http\Middleware\SetJwtFromCookie;
 use App\Http\Responses\ApiResult;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             "permission" => PermissionMiddleware::class,
             "role_or_permission" => RoleOrPermissionMiddleware::class,
             "check.schedule" => CheckUserSchedule::class,
+            "force.password.change" => ForcePasswordChange::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

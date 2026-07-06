@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Services\PasswordPolicyService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateUserRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public function rules(PasswordPolicyService $passwordPolicy): array
     {
         $id = $this->route("id");
 
@@ -26,7 +27,7 @@ class UpdateUserRequest extends FormRequest
                 'regex:/^[a-z0-9._-]+$/',
             ],
             "email" => ["nullable", "email", "max:150"],
-            "password" => ["sometimes", "nullable", "string", "min:8", "confirmed"],
+            "password" => ["sometimes", "nullable", "string", $passwordPolicy->rule(), "confirmed"],
             "role" => ["nullable", "string", "exists:roles,name"],
             "active" => ["sometimes", "boolean"],
         ];

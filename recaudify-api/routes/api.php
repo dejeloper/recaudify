@@ -21,10 +21,11 @@ Route::prefix("auth")->group(function () {
         Route::get("me", [AuthController::class, "me"]);
         Route::post("login/location", [AuthController::class, "loginLocation"]);
         Route::post("logout", [AuthController::class, "logout"]);
+        Route::post("change-password", [AuthController::class, "changePassword"]);
     });
 });
 
-Route::middleware(["auth:api", "check.schedule"])->group(function () {
+Route::middleware(["auth:api", "check.schedule", "force.password.change"])->group(function () {
     Route::prefix("users")->group(function () {
         Route::get("/", [UserController::class, "index"])->middleware("permission:users.view");
         Route::get("/disabled", [UserController::class, "indexDisabled"])->middleware("permission:users.view");

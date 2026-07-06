@@ -48,6 +48,10 @@ class UserService
 
     public function create(array $data, ?string $role = null): User
     {
+        if (!empty($data["password"])) {
+            $data["password_changed_at"] = now();
+        }
+
         $user = $this->repository->create($data);
 
         if ($role) {
@@ -60,6 +64,10 @@ class UserService
     public function update(User $user, array $data, bool $syncRole = false, ?string $role = null): User
     {
         $filtered = collect($data)->filter(fn($value, $key) => $key !== "password" || !empty($value))->toArray();
+
+        if (!empty($filtered["password"])) {
+            $filtered["password_changed_at"] = now();
+        }
 
         $user->update($filtered);
 

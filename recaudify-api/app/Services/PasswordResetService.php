@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Enums\ParameterType;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PasswordResetService
 {
@@ -26,6 +28,17 @@ class PasswordResetService
         ]);
 
         return $password;
+    }
+
+    public function changeOwnPassword(User $user, string $currentPassword, string $newPassword): void
+    {
+        if (!Hash::check($currentPassword, $user->password)) {
+            throw ValidationException::withMessages(["current_password" => "La contraseña actual es incorrecta."]);
+        }
+
+        $this->userService->update($user, ["password" => $newPassword]);
+
+        $this->logging->logSecurity("Contraseña cambiada por el usuario", ["user_id" => $user->id]);
     }
 
     private function generatePassword(): string
