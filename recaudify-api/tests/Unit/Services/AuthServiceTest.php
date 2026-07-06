@@ -18,7 +18,7 @@ class AuthServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new AuthService();
+        $this->service = app(AuthService::class);
         Role::firstOrCreate(["name" => "superadmin", "guard_name" => "api"]);
         Role::firstOrCreate(["name" => "cobrador", "guard_name" => "api"]);
     }

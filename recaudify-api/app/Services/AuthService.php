@@ -2,10 +2,20 @@
 
 namespace App\Services;
 
+use App\Enums\ParameterType;
 use App\Models\User;
 
 class AuthService
 {
+    public function __construct(private readonly ParameterService $parameterService) {}
+
+    public function getLoginField(): string
+    {
+        $field = $this->parameterService->get(ParameterType::Authentication, "login_field");
+
+        return in_array($field, ["username", "email"], true) ? $field : "username";
+    }
+
     public function getScheduleAccessError(User $user): ?string
     {
         if ($user->hasRole("superadmin")) {

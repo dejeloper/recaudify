@@ -32,6 +32,13 @@ class ParameterSeeder extends Seeder
                 "cast" => "boolean",
                 "description" => "Solicita geolocalización al momento del login",
             ],
+            [
+                "type" => "authentication",
+                "key" => "login_field",
+                "value" => "username",
+                "cast" => "string",
+                "description" => "Campo usado para autenticar al usuario: username o email",
+            ],
 
             //  Application ─
             [

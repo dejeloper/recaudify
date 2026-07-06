@@ -36,6 +36,11 @@ class UserService
         return $this->repository->findByUsername($username);
     }
 
+    public function findByLoginField(string $field, string $value): ?User
+    {
+        return $this->repository->findByLoginField($field, $value);
+    }
+
     public function search(string $term): Collection
     {
         return $this->repository->search($term);

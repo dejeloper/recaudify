@@ -38,6 +38,11 @@ class UserRepository
         return User::where("username", $username)->first();
     }
 
+    public function findByLoginField(string $field, string $value): ?User
+    {
+        return User::where($field, $value)->first();
+    }
+
     public function search(string $term): Collection
     {
         return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))

@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResult;
+use App\Models\User;
 use App\Services\AuthService;
 use App\Services\LoginAuditService;
 use App\Services\ParameterService;
@@ -42,15 +43,17 @@ class AuthController extends ApiController
 
     public function login(LoginRequest $request): JsonResponse
     {
+        $loginField = $this->authService->getLoginField();
+
         $credentials = [
-            "username" => $request->username,
+            $loginField => $request->username,
             "password" => $request->password,
         ];
 
         $location = $request->filled("latitude") ? $request->only("latitude", "longitude", "accuracy") : null;
 
         if (!($token = $this->guard()->attempt($credentials))) {
-            $attempted = $this->userService->findByUsername($request->username);
+            $attempted = $this->userService->findByLoginField($loginField, $request->username);
             $this->loginAudit->recordFailure(
                 $request->username,
                 "invalid_credentials",
@@ -62,7 +65,7 @@ class AuthController extends ApiController
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->guard()->user();
 
         if (!$user->active) {
@@ -86,7 +89,7 @@ class AuthController extends ApiController
         return $this->buildTokenResponse($token, $user);
     }
 
-    private function buildTokenResponse(string $token, \App\Models\User $user): JsonResponse
+    private function buildTokenResponse(string $token, User $user): JsonResponse
     {
         $response = ApiResult::success(
             [
@@ -107,7 +110,7 @@ class AuthController extends ApiController
 
     public function loginLocation(LoginLocationRequest $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->guard()->user();
 
         $this->loginAudit->attachLocation($user, $request->validated());
@@ -117,13 +120,13 @@ class AuthController extends ApiController
 
     public function me(): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $this->guard()->user();
 
         return ApiResult::success($this->userPayload($user))->toResponse();
     }
 
-    private function userPayload(\App\Models\User $user): array
+    private function userPayload(User $user): array
     {
         $auth = ParameterType::Authentication;
         $data = (new UserResource($user))->toArray(request());
@@ -144,6 +147,7 @@ class AuthController extends ApiController
                 ParameterType::Authentication,
                 "geolocalization_login_enabled",
             ),
+            "login_field" => $this->authService->getLoginField(),
         ])->toResponse();
     }
 
