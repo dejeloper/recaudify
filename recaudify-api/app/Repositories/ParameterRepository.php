@@ -34,6 +34,16 @@ class ParameterRepository
         return Parameter::findOrFail($id);
     }
 
+    public function findTrashed(int $id): ?Parameter
+    {
+        return Parameter::onlyTrashed()->find($id);
+    }
+
+    public function trashed(): Collection
+    {
+        return Parameter::onlyTrashed()->orderBy("type")->orderBy("key")->get();
+    }
+
     public function create(array $data): Parameter
     {
         return Parameter::create($data);

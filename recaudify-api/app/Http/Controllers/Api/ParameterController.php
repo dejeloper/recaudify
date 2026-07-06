@@ -26,6 +26,17 @@ class ParameterController extends ApiController
         return ApiResult::success(ParameterResource::collection($this->parameterService->all($type)))->toResponse();
     }
 
+    public function show(int $id): JsonResponse
+    {
+        $parameter = $this->parameterService->find($id);
+
+        if (!$parameter) {
+            return ApiResult::notFound("Parametro no encontrado.")->toResponse();
+        }
+
+        return ApiResult::success(new ParameterResource($parameter))->toResponse();
+    }
+
     public function store(StoreParameterRequest $request): JsonResponse
     {
         $parameter = $this->parameterService->create($request->validated());
@@ -78,5 +89,30 @@ class ParameterController extends ApiController
         ]);
 
         return ApiResult::empty("Parametro eliminado.")->toResponse();
+    }
+
+    public function trashed(): JsonResponse
+    {
+        return ApiResult::success(ParameterResource::collection($this->parameterService->trashed()))->toResponse();
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $parameter = $this->parameterService->findTrashed($id);
+
+        if (!$parameter) {
+            return ApiResult::notFound("Parametro no encontrado.")->toResponse();
+        }
+
+        $restored = $this->parameterService->restore($parameter);
+
+        $this->logging->logBusiness("Parametro restaurado", [
+            "parameter_id" => $restored->id,
+            "type" => $restored->type->value,
+            "key" => $restored->key,
+            "by_user_id" => request()->user()?->id,
+        ]);
+
+        return ApiResult::empty("Parametro restaurado.")->toResponse();
     }
 }

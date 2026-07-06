@@ -75,6 +75,50 @@ class ParameterTest extends TestCase
         $this->assertSoftDeleted("parameters", ["id" => $param->id]);
     }
 
+    public function test_show_returns_parameter(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $param = Parameter::create(self::PAYLOAD);
+
+        $this->getJson("/api/parameters/{$param->id}")
+            ->assertStatus(200)
+            ->assertJsonPath("data.key", "dias_mora");
+    }
+
+    public function test_show_returns_404_for_missing_parameter(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->getJson("/api/parameters/999999")->assertStatus(404);
+    }
+
+    public function test_trashed_lists_soft_deleted_parameters(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $param = Parameter::create(self::PAYLOAD);
+        $param->delete();
+
+        $this->getJson("/api/parameters/trashed")->assertStatus(200)->assertJsonPath("data.0.id", $param->id);
+    }
+
+    public function test_restore_restores_soft_deleted_parameter(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $param = Parameter::create(self::PAYLOAD);
+        $param->delete();
+
+        $this->postJson("/api/parameters/{$param->id}/restore")->assertStatus(200);
+        $this->assertDatabaseHas("parameters", ["id" => $param->id, "deleted_at" => null]);
+    }
+
+    public function test_restore_returns_404_if_not_trashed(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $param = Parameter::create(self::PAYLOAD);
+
+        $this->postJson("/api/parameters/{$param->id}/restore")->assertStatus(404);
+    }
+
     public function test_requires_authentication(): void
     {
         $this->getJson("/api/parameters")->assertStatus(401);

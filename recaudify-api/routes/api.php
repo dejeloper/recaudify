@@ -74,9 +74,14 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
 
     Route::prefix("parameters")->group(function () {
         Route::get("/", [ParameterController::class, "index"])->middleware("permission:parameters.view");
+        Route::get("/trashed", [ParameterController::class, "trashed"])->middleware("permission:parameters.view");
+        Route::get("/{id}", [ParameterController::class, "show"])->middleware("permission:parameters.view");
         Route::post("/", [ParameterController::class, "store"])->middleware("permission:parameters.create");
         Route::put("/{id}", [ParameterController::class, "update"])->middleware("permission:parameters.edit");
         Route::delete("/{id}", [ParameterController::class, "destroy"])->middleware("permission:parameters.delete");
+        Route::post("/{id}/restore", [ParameterController::class, "restore"])->middleware(
+            "permission:parameters.restore",
+        );
     });
 
     Route::prefix("activities")->group(function () {

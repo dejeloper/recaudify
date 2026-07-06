@@ -30,6 +30,24 @@ class ParameterService
         return $this->repository->findOrFail($id);
     }
 
+    public function findTrashed(int $id): ?Parameter
+    {
+        return $this->repository->findTrashed($id);
+    }
+
+    public function trashed(): Collection
+    {
+        return $this->repository->trashed();
+    }
+
+    public function restore(Parameter $parameter): Parameter
+    {
+        $parameter->restore();
+        $this->flushCache($parameter->type);
+
+        return $parameter->fresh();
+    }
+
     public function create(array $data): Parameter
     {
         $parameter = $this->repository->create($data);
