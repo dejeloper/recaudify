@@ -45,7 +45,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 #### Menús y navegación
 
-- [ ] Menú dinámico por permisos: el menú lateral/superior se arma en base a los permisos reales del usuario logueado (`AuthService.hasPermission()`), no con ítems ocultos a mano por rol — si mañana se crea un permiso nuevo, el ítem aparece solo con asignarlo, sin tocar el componente de menú.
+- [x] Menú dinámico por permisos: el menú lateral/superior se arma en base a los permisos reales del usuario logueado (`AuthService.hasPermission()`), no con ítems ocultos a mano por rol — si mañana se crea un permiso nuevo, el ítem aparece solo con asignarlo, sin tocar el componente de menú.
 - [ ] Menú configurable desde Settings (builder de menú): una pantalla de administración donde se define qué ítems existen, en qué orden, con qué ícono y bajo qué permiso, guardado en BD en vez de hardcodeado en el `routes.ts`/componente Angular — útil si el negocio quiere reordenar o renombrar secciones sin pedir un deploy.
 - [ ] Favoritos / accesos rápidos personalizados: que cada usuario pueda marcar sus pantallas más usadas (ej. un cobrador que vive en "Agenda" y "Pagos programados") y tenerlas arriba de todo, sin afectar el menú de los demás usuarios.
 - [ ] Menú con contadores/badges en vivo: mostrar en el ítem del menú un número (ej. "Pagos programados por vencer hoy: 12", "Importaciones fallidas: 2") para que el usuario sepa que hay algo pendiente sin tener que entrar a mirar.
@@ -187,7 +187,7 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 - [ ] Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy: 60 días fijos)
 - [ ] Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy: 1–8 días según motivo, fijo)
 - [ ] Redondeo del pago mínimo por mora (legacy: al millar, fijo)
-- [ ] Password por defecto al resetear contraseña, parametrizable (solo si se implementa esa función; legacy usa `Cobranza123` hardcodeado)
+- [x] Password por defecto al resetear contraseña, parametrizable (solo si se implementa esa función; legacy usa `Cobranza123` hardcodeado)
 
 ### Vendedores, Productos y Tarifas
 
