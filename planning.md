@@ -38,7 +38,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 #### Autenticación y parámetros de acceso
 
-- [ ] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
+- [x] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
 - [ ] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
 - [ ] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
 - [ ] Delegación temporal de permisos / suplencias: que un supervisor pueda asignar temporalmente su rol o un permiso puntual a otro usuario (ej. cobrador de vacaciones), con fecha de inicio y fin, sin tener que editar roles manualmente y no olvidarse de revertir.
