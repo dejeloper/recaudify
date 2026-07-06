@@ -22,6 +22,7 @@ export class Login implements OnInit {
   protected readonly error = signal('');
   protected readonly loading = signal(false);
   protected readonly geoRequired = signal(true);
+  protected readonly loginField = signal<'username' | 'email'>('username');
 
   ngOnInit(): void {
     this.username = 'admin';
@@ -30,7 +31,10 @@ export class Login implements OnInit {
     this.config
       .getLoginConfig()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cfg) => this.geoRequired.set(cfg.geolocalization_login));
+      .subscribe((cfg) => {
+        this.geoRequired.set(cfg.geolocalization_login);
+        this.loginField.set(cfg.login_field);
+      });
   }
 
   submit() {
