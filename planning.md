@@ -58,7 +58,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 #### Logs y auditoría
 
-- [ ] Registro de accesos (IP, dispositivo, fecha) por login exitoso y fallido: complementa la auditoría de acciones (`spatie/activitylog`) con auditoría de acceso, que hoy no está cubierta explícitamente en planning.md.
+- [x] Registro de accesos (IP, dispositivo, fecha) por login exitoso y fallido: complementa la auditoría de acciones (`spatie/activitylog`) con auditoría de acceso, que hoy no está cubierta explícitamente en planning.md.
 - [ ] Visor de logs de sistema en UI: hoy `business`/`app-errors`/`security`/`http` solo existen como archivos planos en `storage/logs/`. Una pantalla de admin que los liste/filtre (por canal, fecha, usuario, nivel) evita tener que entrar por SSH a leer un archivo cada vez que algo falla en producción.
 - [ ] Correlación de intentos fallidos → alerta automática in-app: ya se captura `LoginAudit` y existe el canal `security`, pero nadie los cruza. Detectar "N intentos fallidos del mismo usuario/IP en X minutos" y notificar al administrador (in-app) en vez de que quede solo como registro pasivo que hay que ir a mirar (la variante por correo queda en la sección final).
 - [ ] Comando programado de purga de logs vencidos: `config/activitylog.php` ya define `clean_after_days` (365) pero no hay ningún comando agendado en `routes/console.php` que ejecute la limpieza — hoy crecería indefinidamente.
@@ -354,9 +354,9 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 #### Vendedores, Productos, Tarifas
 
-- [ ] Pantalla Vendedores
-- [ ] Pantalla Productos (con edición)
-- [ ] Pantalla Tarifas (con historial)
+- [x] Pantalla Vendedores
+- [x] Pantalla Productos (con edición)
+- [x] Pantalla Tarifas (con historial)
 
 #### Clientes
 
