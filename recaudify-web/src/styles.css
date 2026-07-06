@@ -21,6 +21,10 @@
     @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
   }
 
+  .btn-table-neutral {
+    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors disabled:opacity-50;
+  }
+
   .btn-inline-save {
     @apply rounded-lg px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors;
   }

@@ -9,6 +9,7 @@ const VARIANT_CLASS: Record<BtnVariant, string> = {
   'table-edit': 'btn-table-edit',
   'table-danger': 'btn-table-danger',
   'table-restore': 'btn-table-restore',
+  'table-neutral': 'btn-table-neutral',
   'inline-save': 'btn-inline-save',
   'inline-cancel': 'btn-inline-cancel',
 };
