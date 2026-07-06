@@ -44,7 +44,7 @@ export class Login implements OnInit {
     this.auth.login(this.username, this.password).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate([this.auth.passwordExpired() ? '/change-password' : '/dashboard']);
       },
       error: (err) => {
         this.error.set(err.message ?? 'Usuario o contraseña incorrectos');

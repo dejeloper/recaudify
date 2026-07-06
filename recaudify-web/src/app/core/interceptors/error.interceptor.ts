@@ -37,6 +37,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
+      if (err.status === 423) {
+        const user = auth.currentUser();
+        if (user) auth.currentUser.set({ ...user, password_expired: true });
+        router.navigate(['/change-password']);
+        return throwError(() => ({ message: err.error?.message, statusCode: 423 }) as ApiError);
+      }
+
       if (err.status === 403 && SCHEDULE_MESSAGES.includes(err.error?.message)) {
         const name = auth.currentUser()?.name ?? 'usuario';
         auth.expireSession();

@@ -40,6 +40,7 @@ export class AuthService {
   readonly geolocalizationLoginEnabled = computed(
     () => this.currentUser()?.geolocalization_login_enabled ?? true,
   );
+  readonly passwordExpired = computed(() => this.currentUser()?.password_expired ?? false);
 
   hasPermission(permission: string): boolean {
     return this.currentUser()?.permissions.includes(permission) ?? false;
@@ -109,6 +110,21 @@ export class AuthService {
         );
       }),
     );
+  }
+
+  changePassword(currentPassword: string, password: string, passwordConfirmation: string) {
+    return this.api
+      .post('auth', 'change-password', {
+        current_password: currentPassword,
+        password,
+        password_confirmation: passwordConfirmation,
+      })
+      .pipe(
+        tap(() => {
+          const user = this.currentUser();
+          if (user) this.currentUser.set({ ...user, password_expired: false });
+        }),
+      );
   }
 
   private sendLoginLocation(coords: GeolocationCoordinates) {
