@@ -40,8 +40,11 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 - [x] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
 - [x] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
-- [ ] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
+- [x] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
 - [ ] Delegación temporal de permisos / suplencias: que un supervisor pueda asignar temporalmente su rol o un permiso puntual a otro usuario (ej. cobrador de vacaciones), con fecha de inicio y fin, sin tener que editar roles manualmente y no olvidarse de revertir.
+- [ ] Envío de password de reseteo por correo: si el tenant tiene correo/SMTP habilitado y el modo
+      de reseteo (ver sección base) es auto-generada, enviar la contraseña generada al correo del
+      usuario en vez de (o además de) mostrarla en pantalla.
 
 #### Menús y navegación
 
@@ -65,6 +68,9 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Exportar logs filtrados a CSV/Excel: para pasarle un rango de fechas a soporte o auditoría externa sin acceso al servidor.
 - [ ] Nivel de verbosidad por canal configurable desde Parameters: poder subir/bajar detalle de `app-errors`/`http` en caliente (ej. modo debug temporal) sin cambiar `config/logging.php` y redesplegar.
 - [ ] Trazabilidad por request-id: propagar un ID único de request en cabecera de respuesta y en cada línea de log de ese request, para poder seguir un problema puntual del usuario a través de los 4 canales sin adivinar por timestamp.
+- [ ] Alerta de intentos fallidos de login por correo: variante por correo de la "Correlación de
+      intentos fallidos → alerta automática" de esta misma sección — hoy esa idea ya se puede
+      construir en su versión in-app; el envío por correo se agrega cuando haya SMTP.
 - [x] Diff visual de cambios en el feed de actividad: `activitylog` ya guarda `old`/`attributes`, pero la pantalla actual los lista crudo; mostrar "campo X: valor A → valor B" en vez de JSON crudo hace el feed realmente legible para un no-técnico.
 
 #### Dashboard y métricas
@@ -89,11 +95,23 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Panel de administración de rate limiting: en vez de límites fijos en el código de rutas, poder ajustar los límites por endpoint sensible desde Parameters/Settings.
 - [ ] Detección de acceso desde ubicación/IP inusual: dado que `LoginAudit` ya guarda IP y geolocalización, comparar contra el histórico del usuario y marcar/alertar accesos atípicos (otro país, otro dispositivo nunca visto) es una extensión natural de un dato que ya existe.
 - [ ] Modo "vista previa como otro usuario" (impersonar) para administrador/soporte: para reproducir un problema que reporta un cobrador sin pedirle contraseña, dejando registro en auditoría de cuándo y quién impersonó a quién (nunca silencioso).
+- [ ] Confirmación por correo de acceso desde dispositivo nuevo: enviar un aviso "se inició sesión
+      desde un dispositivo nuevo", reutilizando `LoginAudit` — depende de tener correo saliente
+      configurado.
 
 #### Notificaciones
 
 - [ ] Sistema de notificaciones in-app (campana con contador): el modelo `User` ya puede usar el trait `Notifiable` de Laravel pero no hay ninguna clase `Notification` implementada todavía; es la base para "recordatorio de reseteo enviado", "job falló", "acceso desde dispositivo nuevo", etc., sin tener que inventar un canal nuevo para cada aviso.
 - [ ] Centro de notificaciones (histórico): que el usuario pueda ver notificaciones pasadas ya leídas/no leídas, no solo un toast que desaparece a los 5s como hoy (`ToastService`).
+- [ ] Plantillas de correo / Mailables editables: los mensajes que el sistema envía (reseteo de
+      password, alertas) deberían salir de una plantilla configurable, no de texto fijo en el
+      código. Requiere primero tener SMTP configurado y al menos un `Mailable` implementado (hoy no
+      hay ninguno; el mailer por defecto es `log`).
+- [ ] WhatsApp como canal de aviso: mismo concepto que las anteriores (alertas de seguridad, avisos
+      de jobs, confirmaciones) pero por WhatsApp en vez de correo — requiere contratar un proveedor
+      de WhatsApp Business API; no hay ninguna integración ni credencial hoy. Se anota como canal a
+      futuro, sin ideas específicas más allá de las ya listadas por correo (aplican igual a
+      WhatsApp una vez haya proveedor).
 
 #### Configuración y ajustes
 
@@ -109,6 +127,27 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Internacionalización (i18n) de textos de UI: aunque el negocio sea local, tenerlo resuelto desde el inicio evita reescribir strings hardcodeados si en el futuro se necesita otro idioma o simplemente estandarizar textos en un solo lugar.
 - [ ] Theming claro/oscuro: no está implementado en el frontend hoy (no hay ningún mecanismo de tema); dado que ya se usan `ChangeDetectionStrategy.OnPush` + signals en todo el proyecto, es buen momento de dejarlo resuelto con una señal global antes de que crezcan más pantallas.
 - [ ] Auditoría de accesibilidad (a11y) básica: contraste, `aria-label`, navegación por teclado en los componentes compartidos (`Spinner`, `ToastContainer`) — más fácil de corregir ahora que hay pocos componentes que después con decenas de pantallas de negocio.
+
+### Infraestructura de jobs y colas
+
+#### Jobs
+
+- [ ] Panel de "failed jobs": listar, ver el error y poder reintentar/descartar jobs fallidos desde
+      la UI en vez de por consola (`php artisan queue:failed`).
+- [ ] Reintentos automáticos configurables por tipo de job: cuántas veces reintentar y con qué
+      backoff antes de marcarlo como fallido definitivo, en vez del valor por defecto de Laravel.
+- [ ] Notificación cuando un job falla repetidamente: aviso in-app en vez de descubrirlo días
+      después revisando `failed_jobs` manualmente (la variante por correo queda en la sección
+      final).
+- [ ] Notificación por correo cuando un job falla repetidamente: variante por correo de la
+      notificación anterior (hoy construible como aviso in-app).
+
+#### Schedule
+
+- [ ] Programación de comandos (`schedule`) desde el día uno: dejar el mecanismo de cron de Laravel
+      ya armado (aunque el primer comando real sea trivial, como la purga de logs) para que cuando
+      llegue el job del Motor Financiero (`NEGOCIO.md` §7) solo haya que agregar el comando, no
+      montar la infraestructura de scheduling.
 
 ### Convención de borrado y estado
 
