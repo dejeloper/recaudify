@@ -63,7 +63,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "$excluded = @('planning.md','CLAUDE.md','AGENTS.md','Pendientes mios.md'); $changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $codeChanged = $changed | Where-Object { $excluded -notcontains $_ -and $_ -notmatch '^\\.claude/' }; $planChanged = $changed -contains 'planning.md'; if ($codeChanged.Count -gt 0 -and -not $planChanged) { [Console]::Error.WriteLine('Hay cambios de codigo sin reflejar en planning.md. Ejecuta /update-plan antes de terminar.'); exit 2 }; exit 0",
+            "command": "$excluded = @('planning.md','CLAUDE.md','AGENTS.md','funcionalidades.md','funcionalidades.md', 'NEGOCIO.md'); $changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $codeChanged = $changed | Where-Object { $excluded -notcontains $_ -and $_ -notmatch '^\\.claude/' }; $planChanged = $changed -contains 'planning.md'; if ($codeChanged.Count -gt 0 -and -not $planChanged) { [Console]::Error.WriteLine('Hay cambios de codigo sin reflejar en planning.md. Ejecuta /update-plan antes de terminar.'); exit 2 }; exit 0",
             "statusMessage": "Verificando si planning.md está al día...",
             "timeout": 15
           }
