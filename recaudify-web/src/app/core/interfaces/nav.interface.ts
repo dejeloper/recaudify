@@ -1,12 +1,11 @@
-export interface NavItem {
+export interface MenuItem {
+  id: number;
+  parent_id: number | null;
   label: string;
-  icons: string[];
-  route: string;
-  permission?: string;
-}
-
-export interface NavGroup {
-  key: string;
-  label: string;
-  items: NavItem[];
+  icons: string[] | null;
+  route: string | null;
+  permission: string | null;
+  order: number;
+  is_active: boolean;
+  children?: MenuItem[];
 }

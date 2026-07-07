@@ -189,6 +189,25 @@ export const routes: Routes = [
                 (m) => m.ParameterForm,
               ),
           },
+          {
+            path: 'menu-items',
+            loadComponent: () =>
+              import('./features/admin/menu-items/menu-items').then((m) => m.MenuItems),
+          },
+          {
+            path: 'menu-items/new',
+            loadComponent: () =>
+              import('./features/admin/menu-items/menu-item-form/menu-item-form').then(
+                (m) => m.MenuItemForm,
+              ),
+          },
+          {
+            path: 'menu-items/:id/edit',
+            loadComponent: () =>
+              import('./features/admin/menu-items/menu-item-form/menu-item-form').then(
+                (m) => m.MenuItemForm,
+              ),
+          },
         ],
       },
     ],
