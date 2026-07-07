@@ -8,6 +8,8 @@ import { MenuService } from '@core/services/menu.service';
 import { ShiftStatusService } from '@core/services/shift-status.service';
 import { filter, map } from 'rxjs';
 
+const SIDEBAR_COMPACT_KEY = 'sidebar_compact';
+
 export interface Breadcrumb {
   label: string;
   route: string | null;
@@ -69,6 +71,9 @@ export class AppShell implements OnInit {
 
   protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
+  protected readonly sidebarCompact = signal(
+    localStorage.getItem(SIDEBAR_COMPACT_KEY) === 'true',
+  );
   protected readonly groupOverrides = signal<ReadonlyMap<number, boolean>>(new Map());
   protected readonly itemOverrides = signal<ReadonlyMap<number, boolean>>(new Map());
 
@@ -116,6 +121,14 @@ export class AppShell implements OnInit {
     this.itemOverrides.update((overrides) => {
       const next = new Map(overrides);
       next.set(item.id, !this.isItemOpen(item, isFirst));
+      return next;
+    });
+  }
+
+  protected toggleCompact() {
+    this.sidebarCompact.update((v) => {
+      const next = !v;
+      localStorage.setItem(SIDEBAR_COMPACT_KEY, String(next));
       return next;
     });
   }
