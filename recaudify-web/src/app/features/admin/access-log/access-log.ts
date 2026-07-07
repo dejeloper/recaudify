@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
-import { LoginAudit } from '@core/interfaces/login-audit.interface';
+import { LoginAudit, LoginAuditStatusFilter } from '@core/interfaces/login-audit.interface';
 import { LoginAuditsService } from '@core/services/login-audits.service';
 
 const REASON_LABELS: Record<string, string> = {
@@ -10,8 +10,6 @@ const REASON_LABELS: Record<string, string> = {
   inactive: 'Usuario inactivo',
   out_of_schedule: 'Fuera de horario',
 };
-
-type StatusFilter = 'all' | 'success' | 'failed';
 
 @Component({
   selector: 'app-access-log',
@@ -25,13 +23,13 @@ export class AccessLog implements OnInit {
   protected readonly meta = this.service.meta;
   protected readonly loading = this.service.loading;
   protected readonly loadingMore = this.service.loadingMore;
-  protected readonly status = signal<StatusFilter>('all');
+  protected readonly status = signal<LoginAuditStatusFilter>('all');
 
   ngOnInit() {
     this.service.load();
   }
 
-  protected setStatus(status: StatusFilter) {
+  protected setStatus(status: LoginAuditStatusFilter) {
     if (this.status() === status) return;
     this.status.set(status);
     this.service.load(status === 'all' ? {} : { status });

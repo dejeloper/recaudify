@@ -1,12 +1,21 @@
 <div class="p-4 sm:p-8">
-  <div class="mb-6">
-    <h1 class="text-xl font-semibold text-gray-900">Actividad</h1>
-    <p class="mt-0.5 text-sm text-gray-400">
-      Registro de acciones realizadas en el sistema.
-      @if (meta(); as m) {
-        <span class="text-gray-300">·</span> {{ m.total }} registro{{ m.total === 1 ? '' : 's' }}
-      }
-    </p>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Actividad</h1>
+      <p class="mt-0.5 text-sm text-gray-400">
+        Registro de acciones realizadas en el sistema.
+        @if (meta(); as m) {
+          <span class="text-gray-300">·</span> {{ m.total }} registro{{ m.total === 1 ? '' : 's' }}
+        }
+      </p>
+    </div>
+    <input
+      type="text"
+      placeholder="Filtrar por usuario (usuario o 'sistema')..."
+      [value]="userFilter"
+      (input)="onUserFilterChange($any($event.target).value)"
+      class="w-full sm:w-64 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-slate-400 focus:outline-none"
+    />
   </div>
 
   <app-spinner [show]="loading()" />
@@ -55,15 +64,22 @@
                         </dt>
                         <dd class="text-gray-800">
                           @if (activity.event === 'updated') {
-                            <span class="text-gray-400 line-through">{{
-                              formatValue(change.field, change.old)
-                            }}</span>
+                            <span
+                              class="text-gray-400 line-through"
+                              [title]="changeValue(change.field, change.old).title"
+                              >{{ changeValue(change.field, change.old).text }}</span
+                            >
                             <span class="mx-1 text-gray-400">→</span>
-                            <span class="font-medium">{{
-                              formatValue(change.field, change.new)
-                            }}</span>
+                            <span
+                              class="font-medium"
+                              [title]="changeValue(change.field, change.new).title"
+                              >{{ changeValue(change.field, change.new).text }}</span
+                            >
                           } @else {
-                            {{ formatValue(change.field, change.new ?? change.old) }}
+                            <span
+                              [title]="changeValue(change.field, change.new ?? change.old).title"
+                              >{{ changeValue(change.field, change.new ?? change.old).text }}</span
+                            >
                           }
                         </dd>
                       </div>

@@ -2,15 +2,11 @@
 
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CallReasonController;
 use App\Http\Controllers\Api\LoginAuditController;
+use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\RateController;
 use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\SellerController;
-use App\Http\Controllers\Api\StateController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
@@ -26,10 +22,11 @@ Route::prefix("auth")->group(function () {
         Route::get("me", [AuthController::class, "me"]);
         Route::post("login/location", [AuthController::class, "loginLocation"]);
         Route::post("logout", [AuthController::class, "logout"]);
+        Route::post("change-password", [AuthController::class, "changePassword"]);
     });
 });
 
-Route::middleware(["auth:api", "check.schedule"])->group(function () {
+Route::middleware(["auth:api", "check.schedule", "force.password.change"])->group(function () {
     Route::prefix("users")->group(function () {
         Route::get("/", [UserController::class, "index"])->middleware("permission:users.view");
         Route::get("/disabled", [UserController::class, "indexDisabled"])->middleware("permission:users.view");
@@ -40,6 +37,9 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::put("/{id}", [UserController::class, "update"])->middleware("permission:users.edit");
         Route::delete("/{id}", [UserController::class, "destroy"])->middleware("permission:users.deactivate");
         Route::post("/{id}/restore", [UserController::class, "restore"])->middleware("permission:users.restore");
+        Route::post("/{id}/reset-password", [UserController::class, "resetPassword"])->middleware(
+            "permission:users.reset-password",
+        );
         Route::post("/{id}/permissions", [UserController::class, "syncPermissions"])->middleware(
             "permission:users.edit",
         );
@@ -67,6 +67,18 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         );
     });
 
+    Route::get("menu", [MenuItemController::class, "mine"]);
+
+    Route::prefix("menu-items")->group(function () {
+        Route::get("/", [MenuItemController::class, "index"])->middleware("permission:menu.view");
+        Route::get("/trashed", [MenuItemController::class, "trashed"])->middleware("permission:menu.view");
+        Route::get("/{id}", [MenuItemController::class, "show"])->middleware("permission:menu.view");
+        Route::post("/", [MenuItemController::class, "store"])->middleware("permission:menu.create");
+        Route::put("/{id}", [MenuItemController::class, "update"])->middleware("permission:menu.edit");
+        Route::delete("/{id}", [MenuItemController::class, "destroy"])->middleware("permission:menu.delete");
+        Route::post("/{id}/restore", [MenuItemController::class, "restore"])->middleware("permission:menu.restore");
+    });
+
     Route::prefix("users/{userId}/schedules")->group(function () {
         Route::get("/", [UserScheduleController::class, "index"])->middleware("permission:schedules.view");
         Route::post("/", [UserScheduleController::class, "store"])->middleware("permission:schedules.create");
@@ -87,53 +99,6 @@ Route::middleware(["auth:api", "check.schedule"])->group(function () {
         Route::post("/{id}/restore", [ParameterController::class, "restore"])->middleware(
             "permission:parameters.restore",
         );
-    });
-
-    Route::prefix("products")->group(function () {
-        Route::get("/", [ProductController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [ProductController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [ProductController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [ProductController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [ProductController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [ProductController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [ProductController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("rates")->group(function () {
-        Route::get("/", [RateController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [RateController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [RateController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [RateController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [RateController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [RateController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [RateController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("sellers")->group(function () {
-        Route::get("/", [SellerController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [SellerController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [SellerController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [SellerController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [SellerController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [SellerController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [SellerController::class, "restore"])->middleware("permission:catalogs.restore");
-    });
-
-    Route::prefix("call-reasons")->group(function () {
-        Route::get("/", [CallReasonController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/trashed", [CallReasonController::class, "trashed"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [CallReasonController::class, "show"])->middleware("permission:catalogs.view");
-        Route::post("/", [CallReasonController::class, "store"])->middleware("permission:catalogs.create");
-        Route::put("/{id}", [CallReasonController::class, "update"])->middleware("permission:catalogs.edit");
-        Route::delete("/{id}", [CallReasonController::class, "destroy"])->middleware("permission:catalogs.delete");
-        Route::post("/{id}/restore", [CallReasonController::class, "restore"])->middleware(
-            "permission:catalogs.restore",
-        );
-    });
-
-    Route::prefix("states")->group(function () {
-        Route::get("/", [StateController::class, "index"])->middleware("permission:catalogs.view");
-        Route::get("/{id}", [StateController::class, "show"])->middleware("permission:catalogs.view");
     });
 
     Route::prefix("activities")->group(function () {

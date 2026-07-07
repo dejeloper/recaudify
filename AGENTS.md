@@ -28,6 +28,21 @@ If a command fails with a quota error, inform the user and suggest `npx ctx7@lat
 
 ---
 
+## Contexto del proyecto
+
+Antes de empezar cualquier tarea, revisa los siguientes archivos en la raíz del repo si son relevantes a la tarea:
+
+- `funcionalidades.md` — plan de trabajo oficial de la reescritura legacy → Recaudify (funcionalidades a implementar).
+- `Lista_test.md` — listado de pruebas/casos de test pendientes o realizados.
+- `plan-ejecucion.md` — plan de ejecución del proyecto.
+- `planning.md` — planificación general del proyecto.
+- `vps_deploy_guide.md` — guía de despliegue en el VPS.
+- `vps_plan.md` — plan de infraestructura/VPS.
+
+Úsalos como contexto para entender el estado y las decisiones del proyecto antes de proponer cambios.
+
+---
+
 ## Laravel conventions
 
 - Controllers are thin: validate via Form Request, delegate to a Service or Action class, return an API Resource.

@@ -58,6 +58,7 @@ export class ActivitiesService {
     if (this.filters.model) params['model'] = this.filters.model;
     if (this.filters.subject_id != null) params['subject_id'] = this.filters.subject_id;
     if (this.filters.causer_id != null) params['causer_id'] = this.filters.causer_id;
+    if (this.filters.user) params['user'] = this.filters.user;
     return this.api.getPaginated<Activity>('activities', undefined, params);
   }
 }

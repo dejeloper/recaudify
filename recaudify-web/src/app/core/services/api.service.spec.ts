@@ -2,7 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ApiError, ApiService } from '@core/services/api.service';
+import { ApiService } from '@core/services/api.service';
+import { ApiError } from '@core/interfaces/api-error.interface';
 
 function setup() {
   TestBed.configureTestingModule({
@@ -77,7 +78,7 @@ describe('ApiService', () => {
         { status: 422, statusText: 'Unprocessable Entity' },
       );
 
-    expect(error.status).toBe(422);
+    expect(error.statusCode).toBe(422);
     expect(error.message).toBe('Error de validación.');
     expect(error.errors?.['username']).toContain('Ya existe.');
     controller.verify();

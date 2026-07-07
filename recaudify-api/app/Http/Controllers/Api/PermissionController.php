@@ -6,12 +6,16 @@ use App\Http\Requests\Permission\StorePermissionRequest;
 use App\Http\Requests\Permission\UpdatePermissionRequest;
 use App\Http\Resources\PermissionResource;
 use App\Http\Responses\ApiResult;
+use App\Services\LoggingService;
 use App\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
 
 class PermissionController extends ApiController
 {
-    public function __construct(private readonly PermissionService $permissionService) {}
+    public function __construct(
+        private readonly PermissionService $permissionService,
+        private readonly LoggingService $logging,
+    ) {}
 
     public function index(): JsonResponse
     {
@@ -33,6 +37,12 @@ class PermissionController extends ApiController
     {
         $permission = $this->permissionService->create($request->name);
 
+        $this->logging->logBusiness("Permiso creado", [
+            "permission_id" => $permission->id,
+            "name" => $permission->name,
+            "by_user_id" => $request->user()?->id,
+        ]);
+
         return ApiResult::created(new PermissionResource($permission), "Permiso creado correctamente.")->toResponse();
     }
 
@@ -45,6 +55,12 @@ class PermissionController extends ApiController
         }
 
         $this->permissionService->update($permission, $request->name);
+
+        $this->logging->logBusiness("Permiso actualizado", [
+            "permission_id" => $permission->id,
+            "name" => $request->name,
+            "by_user_id" => $request->user()?->id,
+        ]);
 
         return ApiResult::success(
             new PermissionResource($permission),
@@ -61,6 +77,12 @@ class PermissionController extends ApiController
         }
 
         $this->permissionService->delete($permission);
+
+        $this->logging->logBusiness("Permiso eliminado", [
+            "permission_id" => $permission->id,
+            "name" => $permission->name,
+            "by_user_id" => request()->user()?->id,
+        ]);
 
         return ApiResult::empty("Permiso eliminado correctamente.")->toResponse();
     }
@@ -79,6 +101,12 @@ class PermissionController extends ApiController
         }
 
         $this->permissionService->restore($permission);
+
+        $this->logging->logBusiness("Permiso restaurado", [
+            "permission_id" => $permission->id,
+            "name" => $permission->name,
+            "by_user_id" => request()->user()?->id,
+        ]);
 
         return ApiResult::empty("Permiso restaurado correctamente.")->toResponse();
     }

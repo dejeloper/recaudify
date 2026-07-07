@@ -20,10 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([errorInterceptor])),
     provideAppInitializer(() => {
       const auth = inject(AuthService);
-      if (!localStorage.getItem('auth_token')) {
-        auth.clearSession();
-        return Promise.resolve();
-      }
       return firstValueFrom(auth.checkAuth());
     }),
   ],

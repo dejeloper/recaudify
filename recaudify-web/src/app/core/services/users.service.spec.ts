@@ -99,6 +99,17 @@ describe('UsersService', () => {
     expect(api.post).toHaveBeenCalledWith('users', undefined, payload);
   });
 
+  it('resetPassword posts to the reset-password endpoint and returns the new password', () => {
+    const { service, api } = setup();
+    api.post.mockReturnValue(of({ password: 'newpass123' }));
+
+    let result: { password: string } | undefined;
+    service.resetPassword(5).subscribe((res) => (result = res));
+
+    expect(api.post).toHaveBeenCalledWith('users', '5/reset-password');
+    expect(result).toEqual({ password: 'newpass123' });
+  });
+
   it('remove toasts error and keeps state on failure', () => {
     const { service, api, toast } = setup();
     api.get.mockReturnValue(of([user(1, 'Ana')]));

@@ -3,42 +3,56 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
 class UserService
 {
+    public function __construct(private readonly UserRepository $repository) {}
+
     public function all(): Collection
     {
-        return User::with("roles")->get();
+        return $this->repository->all();
     }
 
     public function allDisabled(): Collection
     {
-        return User::onlyTrashed()->with("roles")->get();
+        return $this->repository->allDisabled();
     }
 
     public function find(int $id): ?User
     {
-        return User::with("roles", "permissions")->find($id);
+        return $this->repository->find($id);
     }
 
     public function findTrashed(int $id): ?User
     {
-        return User::onlyTrashed()->with("roles")->find($id);
+        return $this->repository->findTrashed($id);
+    }
+
+    public function findByUsername(string $username): ?User
+    {
+        return $this->repository->findByUsername($username);
+    }
+
+    public function findByLoginField(string $field, string $value): ?User
+    {
+        return $this->repository->findByLoginField($field, $value);
     }
 
     public function search(string $term): Collection
     {
-        return User::with("roles")
-            ->where("name", "like", "%{$term}%")
-            ->orWhere("username", "like", "%{$term}%")
-            ->get();
+        return $this->repository->search($term);
     }
 
-    public function create(array $data, ?string $role): User
+    public function create(array $data, ?string $role = null): User
     {
-        $user = User::create($data);
+        if (!empty($data["password"])) {
+            $data["password_changed_at"] = now();
+        }
+
+        $user = $this->repository->create($data);
 
         if ($role) {
             $user->syncRoles([$role]);
@@ -50,6 +64,10 @@ class UserService
     public function update(User $user, array $data, bool $syncRole = false, ?string $role = null): User
     {
         $filtered = collect($data)->filter(fn($value, $key) => $key !== "password" || !empty($value))->toArray();
+
+        if (!empty($filtered["password"])) {
+            $filtered["password_changed_at"] = now();
+        }
 
         $user->update($filtered);
 

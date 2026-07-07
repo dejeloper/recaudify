@@ -15,3 +15,5 @@ export interface LoginAuditFilters {
   status?: 'success' | 'failed';
   user_id?: number;
 }
+
+export type LoginAuditStatusFilter = 'all' | 'success' | 'failed';

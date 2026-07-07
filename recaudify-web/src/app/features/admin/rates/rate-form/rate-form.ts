@@ -68,8 +68,8 @@ export class RateForm implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar la tarifa.');
-          this.loading.set(false);
+          this.toast.error('No se pudo cargar la tarifa.');
+          this.router.navigate(['/admin/rates']);
         },
       });
   }

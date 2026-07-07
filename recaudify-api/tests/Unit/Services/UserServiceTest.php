@@ -19,7 +19,7 @@ class UserServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new UserService();
+        $this->service = $this->app->make(UserService::class);
         Role::firstOrCreate(["name" => "cobrador", "guard_name" => "api"]);
         Permission::firstOrCreate(["name" => "clientes.ver", "guard_name" => "api"]);
     }

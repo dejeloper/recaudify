@@ -16,7 +16,7 @@ class UserScheduleServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new UserScheduleService();
+        $this->service = $this->app->make(UserScheduleService::class);
     }
 
     public function test_is_duplicate_day_detects_existing_day(): void

@@ -1,9 +1,14 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Activity } from '@core/interfaces/activity.interface';
 import { ActivitiesService } from '@core/services/activities.service';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+
+const DEFAULT_USER_FILTER = 'sistema';
 
 /** Etiquetas legibles de campos por modelo. */
 const FIELD_LABELS: Record<string, Record<string, string>> = {
@@ -30,14 +35,38 @@ const MONEY_FIELDS = new Set(['value', 'installment_value', 'discount']);
 })
 export class ActivityFeed implements OnInit {
   protected readonly service = inject(ActivitiesService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly activities = this.service.items;
   protected readonly meta = this.service.meta;
   protected readonly loading = this.service.loading;
   protected readonly loadingMore = this.service.loadingMore;
 
+  protected readonly userFilter =
+    this.route.snapshot.queryParamMap.get('user') ?? DEFAULT_USER_FILTER;
+
+  private readonly userFilter$ = new Subject<string>();
+
   ngOnInit() {
-    this.service.load();
+    this.service.load({ user: this.userFilter });
+
+    this.userFilter$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((user) => {
+        this.service.load({ user: user || DEFAULT_USER_FILTER });
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { user: user || null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      });
+  }
+
+  protected onUserFilterChange(user: string) {
+    this.userFilter$.next(user);
   }
 
   protected loadMore() {
@@ -59,6 +88,14 @@ export class ActivityFeed implements OnInit {
       return '$ ' + Number(value).toLocaleString('es-CO');
     }
     return String(value);
+  }
+
+  /** Trunca a 30 caracteres para mostrar en la lista; expone el texto completo como title. */
+  protected changeValue(field: string, value: unknown): { text: string; title: string | null } {
+    const full = this.formatValue(field, value);
+    return full.length > 30
+      ? { text: full.slice(0, 30) + '...', title: full }
+      : { text: full, title: null };
   }
 
   /** Color del punto/etiqueta según el evento. */

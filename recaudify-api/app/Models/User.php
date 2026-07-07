@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected string $guard_name = "api";
 
-    protected $fillable = ["name", "username", "email", "password", "active"];
+    protected $fillable = ["name", "username", "email", "password", "active", "password_changed_at"];
 
     protected $hidden = ["password"];
 
@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             "password" => "hashed",
             "active" => "boolean",
+            "password_changed_at" => "datetime",
         ];
     }
 

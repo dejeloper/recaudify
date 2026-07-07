@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string("username")->unique();
             $table->string("email")->nullable();
             $table->string("password");
+            $table->timestamp("password_changed_at")->nullable();
             $table->boolean("active")->default(true);
             $table->timestamps();
             $table->softDeletes();

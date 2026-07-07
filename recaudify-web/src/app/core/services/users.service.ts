@@ -28,6 +28,18 @@ export class UsersService {
     });
   }
 
+  search(term: string): void {
+    this.loading.set(true);
+    const request = term.trim() ? this.searchByTerm(term.trim()) : this.getAll();
+    request.subscribe({
+      next: (list) => {
+        this.items.set(list);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
   toggleDisabled(): void {
     const next = !this.showDisabled();
     this.showDisabled.set(next);
@@ -79,6 +91,9 @@ export class UsersService {
   getAll() {
     return this.api.get<User[]>('users');
   }
+  searchByTerm(term: string) {
+    return this.api.get<User[]>('users', `search/${encodeURIComponent(term)}`);
+  }
   getDisabled() {
     return this.api.get<User[]>('users', 'disabled');
   }
@@ -96,5 +111,8 @@ export class UsersService {
   }
   restore(id: number) {
     return this.api.post<void>('users', `${id}/restore`);
+  }
+  resetPassword(id: number) {
+    return this.api.post<{ password: string }>('users', `${id}/reset-password`);
   }
 }
