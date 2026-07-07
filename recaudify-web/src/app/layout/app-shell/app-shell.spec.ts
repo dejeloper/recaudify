@@ -12,6 +12,10 @@ import { AppShell } from './app-shell';
 interface AppShellHarness {
   isItemVisible: (item: MenuItem) => boolean;
   hasVisibleItems: (group: MenuItem) => boolean;
+  isGroupOpen: (group: MenuItem, isFirst: boolean) => boolean;
+  toggleGroup: (group: MenuItem, isFirst: boolean) => void;
+  isItemOpen: (item: MenuItem, isFirst: boolean) => boolean;
+  toggleItem: (item: MenuItem, isFirst: boolean) => void;
   sidebarOpen: WritableSignal<boolean>;
   toggleSidebar: () => void;
   closeSidebar: () => void;
@@ -133,6 +137,102 @@ describe('AppShell', () => {
     });
 
     expect(comp.hasVisibleItems(group)).toBe(false);
+  });
+
+  it('isGroupOpen defaults the first group to open and the rest to closed', async () => {
+    const { comp } = await setup(makeUser());
+
+    const first = makeItem({ id: 10, label: 'Cobranza' });
+    const second = makeItem({ id: 11, label: 'Tablas Genéricas' });
+
+    expect(comp.isGroupOpen(first, true)).toBe(true);
+    expect(comp.isGroupOpen(second, false)).toBe(false);
+  });
+
+  it('toggleGroup closes the default-open first group', async () => {
+    const { comp } = await setup(makeUser());
+
+    const first = makeItem({ id: 10, label: 'Cobranza' });
+
+    comp.toggleGroup(first, true);
+
+    expect(comp.isGroupOpen(first, true)).toBe(false);
+  });
+
+  it('toggleGroup opens a default-closed group', async () => {
+    const { comp } = await setup(makeUser());
+
+    const second = makeItem({ id: 11, label: 'Tablas Genéricas' });
+
+    comp.toggleGroup(second, false);
+
+    expect(comp.isGroupOpen(second, false)).toBe(true);
+  });
+
+  it('toggleGroup twice on the same group returns to its default state', async () => {
+    const { comp } = await setup(makeUser());
+
+    const second = makeItem({ id: 11, label: 'Tablas Genéricas' });
+
+    comp.toggleGroup(second, false);
+    comp.toggleGroup(second, false);
+
+    expect(comp.isGroupOpen(second, false)).toBe(false);
+  });
+
+  it('toggling one group does not affect another group (multi-accordion)', async () => {
+    const { comp } = await setup(makeUser());
+
+    const first = makeItem({ id: 10, label: 'Cobranza' });
+    const second = makeItem({ id: 11, label: 'Tablas Genéricas' });
+
+    comp.toggleGroup(second, false);
+
+    expect(comp.isGroupOpen(first, true)).toBe(true);
+    expect(comp.isGroupOpen(second, false)).toBe(true);
+  });
+
+  it('isItemOpen defaults the first item to open and the rest to closed', async () => {
+    const { comp } = await setup(makeUser());
+
+    const first = makeItem({ id: 20, label: 'Auth' });
+    const second = makeItem({ id: 21, label: 'Negocio' });
+
+    expect(comp.isItemOpen(first, true)).toBe(true);
+    expect(comp.isItemOpen(second, false)).toBe(false);
+  });
+
+  it('toggleItem closes the default-open first item', async () => {
+    const { comp } = await setup(makeUser());
+
+    const first = makeItem({ id: 20, label: 'Auth' });
+
+    comp.toggleItem(first, true);
+
+    expect(comp.isItemOpen(first, true)).toBe(false);
+  });
+
+  it('toggleItem opens a default-closed item', async () => {
+    const { comp } = await setup(makeUser());
+
+    const second = makeItem({ id: 21, label: 'Negocio' });
+
+    comp.toggleItem(second, false);
+
+    expect(comp.isItemOpen(second, false)).toBe(true);
+  });
+
+  it('toggling one item does not affect another item, nor group overrides', async () => {
+    const { comp } = await setup(makeUser());
+
+    const group = makeItem({ id: 10, label: 'Tablas Genéricas' });
+    const first = makeItem({ id: 20, label: 'Auth' });
+    const second = makeItem({ id: 21, label: 'Negocio' });
+
+    comp.toggleItem(second, false);
+
+    expect(comp.isItemOpen(first, true)).toBe(true);
+    expect(comp.isGroupOpen(group, true)).toBe(true);
   });
 
   it('loads the menu tree on init', async () => {
