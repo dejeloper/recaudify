@@ -1,8 +1,49 @@
 @import 'tailwindcss';
 
+/*
+ * Paleta de marca de Recaudify ("brand"). Es la escala de color primario propia de
+ * la app (no el azul por defecto de Tailwind): mismo formato oklch (lightness /
+ * chroma / hue) que usa Tailwind, así que se comporta igual de bien en contraste
+ * y accesibilidad, pero con un tono más saturado y propio.
+ *
+ * Para cambiar el color de marca de toda la app en el futuro (ej. rebranding),
+ * alcanza con editar estos 11 valores — nada más en el proyecto necesita tocarse.
+ */
+@theme {
+  --color-brand-50: oklch(97.5% 0.02 258);
+  --color-brand-100: oklch(94% 0.045 258);
+  --color-brand-200: oklch(89% 0.075 258);
+  --color-brand-300: oklch(82% 0.125 258);
+  --color-brand-400: oklch(72% 0.185 258);
+  --color-brand-500: oklch(63% 0.23 258);
+  --color-brand-600: oklch(55% 0.26 260);
+  --color-brand-700: oklch(48% 0.258 262);
+  --color-brand-800: oklch(42% 0.22 264);
+  --color-brand-900: oklch(36% 0.17 265);
+  --color-brand-950: oklch(26% 0.105 267);
+
+  /*
+   * Recaudify usa la escala `slate` de Tailwind como color "primario" en toda la
+   * UI existente (logo, sidebar activo, botones, focus rings, ~30 componentes).
+   * Remapear `slate` a `brand` aquí hace que toda esa UI adopte la paleta propia
+   * sin tener que tocar cada componente uno por uno.
+   */
+  --color-slate-50: var(--color-brand-50);
+  --color-slate-100: var(--color-brand-100);
+  --color-slate-200: var(--color-brand-200);
+  --color-slate-300: var(--color-brand-300);
+  --color-slate-400: var(--color-brand-400);
+  --color-slate-500: var(--color-brand-500);
+  --color-slate-600: var(--color-brand-600);
+  --color-slate-700: var(--color-brand-700);
+  --color-slate-800: var(--color-brand-800);
+  --color-slate-900: var(--color-brand-900);
+  --color-slate-950: var(--color-brand-950);
+}
+
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
@@ -26,7 +67,7 @@
   }
 
   .btn-inline-save {
-    @apply rounded-lg px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-50 transition-colors;
+    @apply rounded-lg px-3 py-1.5 text-xs font-semibold bg-brand-900 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors;
   }
 
   .btn-inline-cancel {
@@ -35,16 +76,16 @@
 
   /* Tables — default */
   .data-table {
-    @apply rounded-xl border border-gray-200 bg-white overflow-hidden;
+    @apply rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden;
   }
   .data-table table {
     @apply w-full text-sm;
   }
   .data-table thead tr {
-    @apply border-b border-stone-200 bg-stone-100;
+    @apply border-b border-brand-100 bg-brand-50/60;
   }
   .data-table th {
-    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600;
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-900/70;
   }
   .data-table tbody {
     @apply divide-y divide-gray-100;
@@ -53,7 +94,7 @@
     @apply transition-colors;
   }
   .data-table tbody tr:hover {
-    @apply bg-gray-50;
+    @apply bg-brand-50/40;
   }
 
   /* Tables — trashed */
