@@ -18,7 +18,7 @@ class LoginAuditServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LoginAuditService();
+        $this->service = $this->app->make(LoginAuditService::class);
     }
 
     private function request(string $userAgent, string $ip = "200.1.2.3"): Request

@@ -7,14 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ActivityResource extends JsonResource
 {
-    /**
-     * Mapa de clase de modelo → etiqueta legible en singular.
-     */
     private const MODEL_LABELS = [
-        "Product" => "producto",
-        "Rate" => "tarifa",
-        "Seller" => "vendedor",
-        "CallReason" => "motivo de llamada",
+        "User" => "usuario",
+        "UserSchedule" => "horario",
+        "Role" => "rol",
+        "Permission" => "permiso",
+        "Parameter" => "parámetro",
     ];
 
     public function toArray(Request $request): array
@@ -25,12 +23,11 @@ class ActivityResource extends JsonResource
             "id" => $this->id,
             "log_name" => $this->log_name,
             "event" => $this->event,
-            "description" => $this->description, // verbo en español: creó/actualizó/...
-            "model" => $model, // ej. "Product"
+            "description" => $this->description,
+            "model" => $model,
             "model_label" => $model ? self::MODEL_LABELS[$model] ?? strtolower($model) : null,
             "subject" => [
                 "id" => $this->subject_id,
-                // label resuelto en el ActivityService (soporta registros eliminados)
                 "label" => $this->subject_label,
             ],
             "causer" => $this->causer ? ["id" => $this->causer->id, "name" => $this->causer->name] : null,
@@ -39,12 +36,6 @@ class ActivityResource extends JsonResource
         ];
     }
 
-    /**
-     * Normaliza los cambios a una lista [{ field, old, new }] lista para pintar.
-     * - created/restored: solo "new".
-     * - updated: "old" y "new" (solo campos que cambiaron).
-     * - deleted: solo "old".
-     */
     private function buildChanges(): array
     {
         $data = $this->attribute_changes ?? collect();

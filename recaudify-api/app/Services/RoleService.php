@@ -3,36 +3,40 @@
 namespace App\Services;
 
 use App\Models\Role;
+use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class RoleService
 {
+    public function __construct(private readonly RoleRepository $repository) {}
+
     public function all(): Collection
     {
-        return Role::where("guard_name", "api")->with("permissions")->orderBy("name")->get();
+        return $this->repository->all();
     }
 
     public function find(int $id): ?Role
     {
-        return Role::where("guard_name", "api")->with("permissions")->find($id);
+        return $this->repository->find($id);
     }
 
     public function findTrashed(int $id): ?Role
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->find($id);
+        return $this->repository->findTrashed($id);
     }
 
     public function trashed(): Collection
     {
-        return Role::onlyTrashed()->where("guard_name", "api")->with("permissions")->orderBy("name")->get();
+        return $this->repository->trashed();
     }
 
     public function create(string $name, array $permissions = []): Role
     {
-        $role = Role::create(["name" => $name, "guard_name" => "api"]);
+        $role = $this->repository->create(["name" => $name, "guard_name" => "api"]);
 
         if ($permissions) {
-            $role->syncPermissions($permissions);
+            $this->syncPermissionsWithLog($role, $permissions);
         }
 
         return $role->load("permissions");
@@ -45,7 +49,7 @@ class RoleService
         }
 
         if ($permissions !== null) {
-            $role->syncPermissions($permissions);
+            $this->syncPermissionsWithLog($role, $permissions);
         }
 
         return $role->load("permissions");
@@ -60,5 +64,28 @@ class RoleService
     public function restore(Role $role): void
     {
         $role->restore();
+    }
+
+    private function syncPermissionsWithLog(Role $role, array $permissions): void
+    {
+        $before = $role->permissions()->pluck("name")->sort()->values()->all();
+
+        $role->syncPermissions($permissions);
+
+        $after = $role->permissions()->pluck("name")->sort()->values()->all();
+
+        if ($before === $after) {
+            return;
+        }
+
+        activity($role->getActivitylogOptions()->logName)
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->event("updated")
+            ->withChanges([
+                "attributes" => ["permissions" => $after],
+                "old" => ["permissions" => $before],
+            ])
+            ->log("actualizó los permisos");
     }
 }

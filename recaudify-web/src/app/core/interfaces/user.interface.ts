@@ -20,6 +20,7 @@ export interface User {
   shift_countdown_enabled?: boolean;
   geolocalization_login_enabled?: boolean;
   ip_address?: string;
+  password_expired?: boolean;
 }
 
 export interface UserPayload extends Record<string, unknown> {

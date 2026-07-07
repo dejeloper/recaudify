@@ -16,6 +16,7 @@ class PermissionSeeder extends Seeder
             "users.edit",
             "users.deactivate",
             "users.restore",
+            "users.reset-password",
 
             // Roles
             "roles.view",
@@ -45,18 +46,21 @@ class PermissionSeeder extends Seeder
             "parameters.delete",
             "parameters.restore",
 
-            // Catalogs (products, rates, sellers, call reasons, states)
-            "catalogs.view",
-            "catalogs.create",
-            "catalogs.edit",
-            "catalogs.delete",
-            "catalogs.restore",
-
-            // Audit (activity feed)
+            // Activity model log (Spatie)
             "audit.view",
 
-            // Access (login audit)
+            // Login audit
             "access.view",
+
+            // Catalogs
+            "catalogs.view",
+
+            // Menu builder
+            "menu.view",
+            "menu.create",
+            "menu.edit",
+            "menu.delete",
+            "menu.restore",
         ];
 
         foreach ($permissions as $permission) {

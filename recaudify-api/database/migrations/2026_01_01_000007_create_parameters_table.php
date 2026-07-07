@@ -9,11 +9,17 @@ return new class extends Migration {
     {
         Schema::create("parameters", function (Blueprint $table) {
             $table->id();
-            $table->string("key")->unique();
-            $table->string("value");
+            $table->string("type");
+            $table->string("key");
+            $table->text("value")->nullable();
+            $table->string("cast")->default("string");
             $table->string("description")->nullable();
+            $table->boolean("is_editable")->default(true);
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(["type", "key"]);
+            $table->index("type");
         });
     }
 

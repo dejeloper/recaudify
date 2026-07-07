@@ -16,6 +16,9 @@ class LoginRequest extends FormRequest
         return [
             "username" => ["required", "string"],
             "password" => ["required", "string"],
+            "latitude" => ["nullable", "numeric", "between:-90,90"],
+            "longitude" => ["nullable", "numeric", "between:-180,180"],
+            "accuracy" => ["nullable", "numeric", "min:0"],
         ];
     }
 

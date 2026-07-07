@@ -1,6 +1,7 @@
 import { Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { TableVariant } from '@core/interfaces/table.interface';
 
-export type TableVariant = 'default' | 'trashed';
+export type { TableVariant };
 
 const VARIANT_CLASS: Record<TableVariant, string> = {
   default: 'data-table',

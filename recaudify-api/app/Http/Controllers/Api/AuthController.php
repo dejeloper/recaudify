@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ParameterType;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginLocationRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -11,6 +13,9 @@ use App\Models\User;
 use App\Services\AuthService;
 use App\Services\LoginAuditService;
 use App\Services\ParameterService;
+use App\Services\PasswordPolicyService;
+use App\Services\PasswordResetService;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
 use PHPOpenSourceSaver\JWTAuth\JWTGuard;
@@ -21,11 +26,15 @@ class AuthController extends ApiController
     public function __construct(
         private readonly AuthService $authService,
         private readonly LoginAuditService $loginAudit,
+        private readonly ParameterService $parameterService,
+        private readonly PasswordPolicyService $passwordPolicy,
+        private readonly PasswordResetService $passwordResetService,
+        private readonly UserService $userService,
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        $user = $this->userService->create($request->validated());
 
         return ApiResult::created(
             [
@@ -39,14 +48,24 @@ class AuthController extends ApiController
 
     public function login(LoginRequest $request): JsonResponse
     {
+        $loginField = $this->authService->getLoginField();
+
         $credentials = [
-            "username" => $request->username,
+            $loginField => $request->username,
             "password" => $request->password,
         ];
 
+        $location = $request->filled("latitude") ? $request->only("latitude", "longitude", "accuracy") : null;
+
         if (!($token = $this->guard()->attempt($credentials))) {
-            $attempted = User::where("username", $request->username)->first();
-            $this->loginAudit->recordFailure($request->username, "invalid_credentials", $attempted, $request);
+            $attempted = $this->userService->findByLoginField($loginField, $request->username);
+            $this->loginAudit->recordFailure(
+                $request->username,
+                "invalid_credentials",
+                $attempted,
+                $request,
+                $location,
+            );
 
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
@@ -56,7 +75,7 @@ class AuthController extends ApiController
 
         if (!$user->active) {
             $this->guard()->logout();
-            $this->loginAudit->recordFailure($user->username, "inactive", $user, $request);
+            $this->loginAudit->recordFailure($user->username, "inactive", $user, $request, $location);
 
             return ApiResult::forbidden("Usuario inactivo.")->toResponse();
         }
@@ -65,12 +84,12 @@ class AuthController extends ApiController
 
         if ($error !== null) {
             $this->guard()->logout();
-            $this->loginAudit->recordFailure($user->username, "out_of_schedule", $user, $request);
+            $this->loginAudit->recordFailure($user->username, "out_of_schedule", $user, $request, $location);
 
             return ApiResult::forbidden($error)->toResponse();
         }
 
-        $this->loginAudit->recordSuccess($user, $request);
+        $this->loginAudit->recordSuccess($user, $request, $location);
 
         return $this->buildTokenResponse($token, $user);
     }
@@ -82,14 +101,9 @@ class AuthController extends ApiController
                 "token" => $token,
                 "token_type" => "bearer",
                 "expires_in" => config("jwt.ttl") * 60,
-                "user" => [
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "username" => $user->username,
-                    "role" => $user->getRoleNames()->first(),
-                ],
+                "user" => $this->userPayload($user),
             ],
-            "Sesión iniciada correctamente.",
+            "Sesion iniciada correctamente.",
         )
             ->toResponse()
             ->withCookie($this->tokenCookie($token));
@@ -99,6 +113,20 @@ class AuthController extends ApiController
         return $response;
     }
 
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->guard()->user();
+
+        $this->passwordResetService->changeOwnPassword(
+            $user,
+            $request->string("current_password")->toString(),
+            $request->string("password")->toString(),
+        );
+
+        return ApiResult::empty("Contraseña actualizada correctamente.")->toResponse();
+    }
+
     public function loginLocation(LoginLocationRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -106,7 +134,7 @@ class AuthController extends ApiController
 
         $this->loginAudit->attachLocation($user, $request->validated());
 
-        return ApiResult::empty("Ubicación registrada.")->toResponse();
+        return ApiResult::empty("Ubicacion registrada.")->toResponse();
     }
 
     public function me(): JsonResponse
@@ -114,22 +142,33 @@ class AuthController extends ApiController
         /** @var User $user */
         $user = $this->guard()->user();
 
-        $resource = new UserResource($user);
-        $data = $resource->toArray(request());
+        return ApiResult::success($this->userPayload($user))->toResponse();
+    }
+
+    private function userPayload(User $user): array
+    {
+        $auth = ParameterType::Authentication;
+        $data = (new UserResource($user))->toArray(request());
 
         $data["current_shift"] = $this->authService->getCurrentShift($user);
-        $data["shift_status_enabled"] = ParameterService::get("shift-status", "true") === "true";
-        $data["shift_countdown_enabled"] = ParameterService::get("shift-status-countdown", "true") === "true";
-        $data["geolocalization_login_enabled"] = ParameterService::get("geolocalization_login", "true") === "true";
+        $data["shift_status_enabled"] = $this->parameterService->get($auth, "shift_status_enabled");
+        $data["shift_countdown_enabled"] = $this->parameterService->get($auth, "shift_countdown_enabled");
+        $data["geolocalization_login_enabled"] = $this->parameterService->get($auth, "geolocalization_login_enabled");
         $data["ip_address"] = request()->ip();
+        $data["password_expired"] = $this->passwordPolicy->isExpired($user);
 
-        return ApiResult::success($data)->toResponse();
+        return $data;
     }
 
     public function config(): JsonResponse
     {
         return ApiResult::success([
-            "geolocalization_login" => ParameterService::get("geolocalization_login", "true") === "true",
+            "geolocalization_login" => $this->parameterService->get(
+                ParameterType::Authentication,
+                "geolocalization_login_enabled",
+            ),
+            "login_field" => $this->authService->getLoginField(),
+            "password_policy" => $this->passwordPolicy->config(),
         ])->toResponse();
     }
 
@@ -138,7 +177,7 @@ class AuthController extends ApiController
         try {
             $newToken = $this->guard()->refresh();
         } catch (\Throwable) {
-            return ApiResult::unauthorized("No se pudo renovar la sesión.")->toResponse();
+            return ApiResult::unauthorized("No se pudo renovar la sesion.")->toResponse();
         }
 
         $response = ApiResult::success(
@@ -161,7 +200,7 @@ class AuthController extends ApiController
     {
         $this->guard()->logout();
 
-        return ApiResult::empty("Sesión cerrada correctamente.")
+        return ApiResult::empty("Sesion cerrada correctamente.")
             ->toResponse()
             ->withCookie(Cookie::forget(config("jwt.cookie_key_name", "token")));
     }

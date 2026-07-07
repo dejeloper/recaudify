@@ -21,4 +21,5 @@ export interface ActivityFilters {
   model?: string;
   subject_id?: number;
   causer_id?: number;
+  user?: string;
 }

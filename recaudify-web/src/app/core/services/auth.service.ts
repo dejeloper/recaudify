@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
   catchError,
   finalize,
+  from,
   map,
   Observable,
   of,
@@ -13,8 +14,10 @@ import {
 } from 'rxjs';
 import { lower } from '@core/utils/text';
 import { ApiError } from '@core/interfaces/api-error.interface';
+import { LoginResponse } from '@core/interfaces/auth.interface';
 import { CurrentShift, User } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
+import { ConfigService } from '@core/services/config.service';
 import { GeolocationService } from '@core/services/geolocation.service';
 
 @Injectable({ providedIn: 'root' })
@@ -22,6 +25,7 @@ export class AuthService {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly geolocation = inject(GeolocationService);
+  private readonly config = inject(ConfigService);
 
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
@@ -36,6 +40,7 @@ export class AuthService {
   readonly geolocalizationLoginEnabled = computed(
     () => this.currentUser()?.geolocalization_login_enabled ?? true,
   );
+  readonly passwordExpired = computed(() => this.currentUser()?.password_expired ?? false);
 
   hasPermission(permission: string): boolean {
     return this.currentUser()?.permissions.includes(permission) ?? false;
@@ -64,29 +69,62 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    const data = { username: lower(username), password };
-    return this.api.post('auth', 'login', data).pipe(
-      switchMap(() => this.me()),
-      switchMap((user) => {
-        if (!(user.geolocalization_login_enabled ?? true)) {
-          return of(user);
+    return this.config.getLoginConfig().pipe(
+      switchMap((cfg) =>
+        cfg.geolocalization_login
+          ? from(this.geolocation.getPermissionState())
+          : of<PermissionState>('denied'),
+      ),
+      switchMap((state) =>
+        state === 'granted'
+          ? this.geolocation.request().pipe(catchError(() => of(null)))
+          : of(null),
+      ),
+      switchMap((coords: GeolocationCoordinates | null) => {
+        const data: Record<string, unknown> = { username: lower(username), password };
+        if (coords) {
+          data['latitude'] = coords.latitude;
+          data['longitude'] = coords.longitude;
+          data['accuracy'] = coords.accuracy;
         }
-        return this.geolocation.request().pipe(
-          // Geo concedida → la enviamos al backend (best-effort, no bloquea el login).
-          switchMap((coords) => this.sendLoginLocation(coords).pipe(map(() => user))),
-          catchError(() =>
-            this.api.post('auth', 'logout').pipe(
-              tap(() => this.currentUser.set(null)),
-              switchMap(() =>
-                throwError(
-                  () => new Error('Se requiere permiso de ubicación para usar la aplicación.'),
+        return this.api.post<LoginResponse>('auth', 'login', data).pipe(
+          tap((res) => this.currentUser.set(res.user)),
+          switchMap((res) => {
+            const user = res.user;
+            if (!this.geolocalizationLoginEnabled()) return of(user);
+            if (coords) return of(user);
+            return this.geolocation.request().pipe(
+              switchMap((newCoords) => this.sendLoginLocation(newCoords).pipe(map(() => user))),
+              catchError(() =>
+                this.api.post('auth', 'logout').pipe(
+                  tap(() => this.currentUser.set(null)),
+                  switchMap(() =>
+                    throwError(
+                      () => new Error('Se requiere permiso de ubicación para usar la aplicación.'),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         );
       }),
     );
+  }
+
+  changePassword(currentPassword: string, password: string, passwordConfirmation: string) {
+    return this.api
+      .post('auth', 'change-password', {
+        current_password: currentPassword,
+        password,
+        password_confirmation: passwordConfirmation,
+      })
+      .pipe(
+        tap(() => {
+          const user = this.currentUser();
+          if (user) this.currentUser.set({ ...user, password_expired: false });
+        }),
+      );
   }
 
   private sendLoginLocation(coords: GeolocationCoordinates) {

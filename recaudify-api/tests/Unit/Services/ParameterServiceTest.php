@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services;
 
+use App\Enums\ParameterCast;
+use App\Enums\ParameterType;
 use App\Models\Parameter;
 use App\Services\ParameterService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,47 +18,77 @@ class ParameterServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new ParameterService();
-        ParameterService::clearCache();
+        $this->service = $this->app->make(ParameterService::class);
     }
 
-    public function test_static_get_returns_value_or_default(): void
+    public function test_get_returns_resolved_value(): void
     {
-        Parameter::create(["key" => "dias_mora", "value" => "45"]);
-        ParameterService::clearCache();
+        Parameter::create([
+            "type" => "authentication",
+            "key" => "max_intentos",
+            "value" => "5",
+            "cast" => "integer",
+        ]);
 
-        $this->assertSame("45", ParameterService::get("dias_mora"));
-        $this->assertSame("fallback", ParameterService::get("inexistente", "fallback"));
+        $result = $this->service->get(ParameterType::Authentication, "max_intentos");
+
+        $this->assertSame(5, $result);
     }
 
-    public function test_create_invalidates_cache(): void
+    public function test_get_returns_null_for_missing_key(): void
     {
-        // Calienta la caché (vacía) antes de crear.
-        $this->assertNull(ParameterService::get("dias_mora"));
+        Parameter::create([
+            "type" => "configuration",
+            "key" => "other",
+            "value" => "x",
+            "cast" => "string",
+        ]);
 
-        $this->service->create(["key" => "dias_mora", "value" => "45"]);
+        $result = $this->service->get(ParameterType::Configuration, "nonexistent");
 
-        // Tras crear, la caché se invalidó y refleja el nuevo valor.
-        $this->assertSame("45", ParameterService::get("dias_mora"));
+        $this->assertNull($result);
     }
 
-    public function test_update_invalidates_cache(): void
+    public function test_get_all_by_type(): void
     {
-        $param = $this->service->create(["key" => "dias_mora", "value" => "45"]);
-        $this->assertSame("45", ParameterService::get("dias_mora"));
+        Parameter::create(["type" => "authentication", "key" => "k1", "value" => "v1", "cast" => "string"]);
+        Parameter::create(["type" => "authentication", "key" => "k2", "value" => "v2", "cast" => "string"]);
 
-        $this->service->update($param, ["value" => "60"]);
+        $results = $this->service->getAll(ParameterType::Authentication);
 
-        $this->assertSame("60", ParameterService::get("dias_mora"));
+        $this->assertCount(2, $results);
     }
 
-    public function test_delete_invalidates_cache(): void
+    public function test_update_modifies_value_and_flushes_cache(): void
     {
-        $param = $this->service->create(["key" => "dias_mora", "value" => "45"]);
-        $this->assertSame("45", ParameterService::get("dias_mora"));
+        $param = Parameter::create([
+            "type" => "configuration",
+            "key" => "app_name",
+            "value" => "old",
+            "cast" => "string",
+        ]);
 
-        $this->service->delete($param);
+        $updated = $this->service->update($param, "new");
 
-        $this->assertSame("default", ParameterService::get("dias_mora", "default"));
+        $this->assertSame("new", $updated->value);
+    }
+
+    public function test_flush_cache_removes_cached_entry(): void
+    {
+        Parameter::create(["type" => "configuration", "key" => "k", "value" => "v", "cast" => "string"]);
+        $this->service->getAll(ParameterType::Configuration);
+
+        $this->service->flushCache(ParameterType::Configuration);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function test_resolve_value_returns_correct_types(): void
+    {
+        $this->assertSame(true, $this->service->resolveValue("true", ParameterCast::Boolean));
+        $this->assertSame(42, $this->service->resolveValue("42", ParameterCast::Integer));
+        $this->assertSame(3.14, $this->service->resolveValue("3.14", ParameterCast::Float));
+        $this->assertSame(["a" => 1], $this->service->resolveValue('{"a":1}', ParameterCast::Json));
+        $this->assertSame("hello", $this->service->resolveValue("hello", ParameterCast::String));
     }
 }

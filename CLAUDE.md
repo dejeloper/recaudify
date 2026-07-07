@@ -8,6 +8,32 @@ General Angular and Laravel conventions are defined in the global `~/.claude/CLA
 - **Never make git commits** unless the user explicitly asks with words like "commit", "hacer commit", or "guarda los cambios en git".
 - Be concise and direct. Do not ask unnecessary questions or over-explain. Provide short answers unless the user asks for detail.
 
+## Contexto del proyecto
+
+Antes de empezar cualquier tarea, revisa los siguientes archivos en la raíz del repo si son relevantes a la tarea:
+
+- `funcionalidades.md` — plan de trabajo oficial de la reescritura legacy → Recaudify (funcionalidades a implementar).
+- `Lista_test.md` — listado de pruebas/casos de test pendientes o realizados.
+- `plan-ejecucion.md` — plan de ejecución del proyecto.
+- `planning.md` — planificación general del proyecto.
+- `vps_deploy_guide.md` — guía de despliegue en el VPS.
+- `vps_plan.md` — plan de infraestructura/VPS.
+
+Úsalos como contexto para entender el estado y las decisiones del proyecto antes de proponer cambios.
+
+### Documentos de contexto (`docs/contexto/`)
+
+Consulta estos documentos según lo que necesite la tarea — están basados solo en lo que existe en el repo, con huecos marcados `[PENDIENTE: ...]` donde no había evidencia suficiente:
+
+- `docs/contexto/arquitectura.md` — stack, mapa de carpetas, flujo de datos, qué NO existe todavía.
+- `docs/contexto/convenciones.md` — estilo, naming, patrones permitidos/prohibidos, tests, commits.
+- `docs/contexto/decisiones.md` — decisiones técnicas detectadas en código/commits, con su porqué y lo descartado.
+- `docs/contexto/glosario.md` — términos del dominio, entidades principales, siglas internas.
+- `docs/contexto/flujo-de-trabajo.md` — pasos para hacer un cambio, checklist de "terminado", deploy.
+- `docs/contexto/errores-conocidos.md` — gotchas del código/tests que ya han costado tiempo.
+
+Estos documentos **no se actualizan automáticamente** (ni con `/update-plan` ni con ningún hook). Si el código cambia de forma que los vuelve obsoletos, actualízalos manualmente cuando se te pida.
+
 ## Project
 
 Recaudify is a SaaS for debt collection and payment management (cobranza). It is a rewrite of a legacy CodeIgniter 3 app. The monorepo contains two subprojects:

@@ -48,8 +48,8 @@ export class CallReasonForm implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar el motivo.');
-          this.loading.set(false);
+          this.toast.error('No se pudo cargar el motivo.');
+          this.router.navigate(['/admin/call-reasons']);
         },
       });
   }

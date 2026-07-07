@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Parameter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -19,7 +20,7 @@ class LoginTest extends TestCase
         Role::create(["name" => "superadmin", "guard_name" => "api"]);
         $this->user = User::factory()
             ->withRole("superadmin")
-            ->create(["username" => "testuser"]);
+            ->create(["username" => "testuser", "email" => "testuser@example.com"]);
     }
 
     public function test_login_returns_token_on_success(): void
@@ -67,6 +68,52 @@ class LoginTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    public function test_login_with_username_field_rejects_email(): void
+    {
+        $response = $this->postJson("/api/auth/login", [
+            "username" => $this->user->email,
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_login_with_email_field_authenticates_by_email(): void
+    {
+        Parameter::create([
+            "type" => "authentication",
+            "key" => "login_field",
+            "value" => "email",
+            "cast" => "string",
+            "description" => "Campo usado para autenticar",
+        ]);
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => $this->user->email,
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(200)->assertJsonPath("success", true);
+    }
+
+    public function test_login_with_email_field_rejects_username(): void
+    {
+        Parameter::create([
+            "type" => "authentication",
+            "key" => "login_field",
+            "value" => "email",
+            "cast" => "string",
+            "description" => "Campo usado para autenticar",
+        ]);
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(401);
     }
 
     public function test_me_returns_authenticated_user_data(): void

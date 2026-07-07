@@ -3,33 +3,36 @@
 namespace App\Services;
 
 use App\Models\Permission;
+use App\Repositories\PermissionRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class PermissionService
 {
+    public function __construct(private readonly PermissionRepository $repository) {}
+
     public function all(): Collection
     {
-        return Permission::where("guard_name", "api")->orderBy("name")->get();
+        return $this->repository->all();
     }
 
     public function find(int $id): ?Permission
     {
-        return Permission::where("guard_name", "api")->find($id);
+        return $this->repository->find($id);
     }
 
     public function findTrashed(int $id): ?Permission
     {
-        return Permission::onlyTrashed()->where("guard_name", "api")->find($id);
+        return $this->repository->findTrashed($id);
     }
 
     public function trashed(): Collection
     {
-        return Permission::onlyTrashed()->where("guard_name", "api")->orderBy("name")->get();
+        return $this->repository->trashed();
     }
 
     public function create(string $name): Permission
     {
-        return Permission::create(["name" => $name, "guard_name" => "api"]);
+        return $this->repository->create(["name" => $name, "guard_name" => "api"]);
     }
 
     public function update(Permission $permission, string $name): void

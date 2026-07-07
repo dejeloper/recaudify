@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { User } from '@core/interfaces/user.interface';
 import { ApiService } from '@core/services/api.service';
 import { AuthService } from '@core/services/auth.service';
@@ -23,7 +23,7 @@ function makeUser(overrides: Partial<User> = {}): User {
 function setup() {
   const api = { post: vi.fn(), get: vi.fn() };
   const router = { navigate: vi.fn() };
-  const geo = { request: vi.fn() };
+  const geo = { request: vi.fn(), getPermissionState: vi.fn().mockResolvedValue('denied') };
 
   TestBed.configureTestingModule({
     providers: [
@@ -50,8 +50,8 @@ describe('AuthService', () => {
   describe('login', () => {
     it('sets currentUser on success (geo disabled)', () => {
       const { service, api } = setup();
-      api.post.mockReturnValue(of({}));
-      api.get.mockReturnValue(of(makeUser()));
+      api.get.mockReturnValue(of({ geolocalization_login: false, login_field: 'username' }));
+      api.post.mockReturnValue(of({ user: makeUser() }));
 
       service.login('admin', 'password').subscribe();
 
@@ -61,8 +61,8 @@ describe('AuthService', () => {
 
     it('normalizes username to lowercase before sending', () => {
       const { service, api } = setup();
-      api.post.mockReturnValue(of({}));
-      api.get.mockReturnValue(of(makeUser()));
+      api.get.mockReturnValue(of({ geolocalization_login: false, login_field: 'username' }));
+      api.post.mockReturnValue(of({ user: makeUser() }));
 
       service.login('ADMIN', 'password').subscribe();
 
@@ -72,15 +72,18 @@ describe('AuthService', () => {
       });
     });
 
-    it('sends geolocation to the backend when geo is enabled and granted', () => {
+    it('sends geolocation to the backend when geo is enabled and granted', async () => {
       const { service, api, geo } = setup();
-      api.post.mockReturnValue(of({}));
-      api.get.mockReturnValue(of(makeUser({ geolocalization_login_enabled: true })));
+      api.get.mockReturnValue(of({ geolocalization_login: true, login_field: 'username' }));
+      api.post.mockReturnValue(of({ user: makeUser({ geolocalization_login_enabled: true }) }));
       geo.request.mockReturnValue(of({ latitude: 4.7, longitude: -74, accuracy: 10 }));
+      geo.getPermissionState = vi.fn().mockResolvedValue('granted');
 
-      service.login('admin', 'password').subscribe();
+      await firstValueFrom(service.login('admin', 'password'));
 
-      expect(api.post).toHaveBeenCalledWith('auth', 'login/location', {
+      expect(api.post).toHaveBeenCalledWith('auth', 'login', {
+        username: 'admin',
+        password: 'password',
         latitude: 4.7,
         longitude: -74,
         accuracy: 10,
@@ -89,8 +92,8 @@ describe('AuthService', () => {
 
     it('logs out and errors when geolocation is denied', () => {
       const { service, api, geo } = setup();
-      api.post.mockReturnValue(of({}));
-      api.get.mockReturnValue(of(makeUser({ geolocalization_login_enabled: true })));
+      api.get.mockReturnValue(of({ geolocalization_login: false, login_field: 'username' }));
+      api.post.mockReturnValue(of({ user: makeUser({ geolocalization_login_enabled: true }) }));
       geo.request.mockReturnValue(throwError(() => new Error('denied')));
 
       const onError = vi.fn();

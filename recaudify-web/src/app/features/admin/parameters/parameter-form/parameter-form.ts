@@ -2,8 +2,10 @@ import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { ApiError } from '@core/interfaces/api-error.interface';
+import { PARAMETER_TYPE_LABELS, ParameterType } from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 
@@ -24,14 +26,31 @@ export class ParameterForm implements OnInit {
   protected readonly saving = signal(false);
   protected readonly error = signal('');
 
+  protected readonly availableTypes = signal<ParameterType[]>([]);
+  protected readonly availableCasts = signal<string[]>([]);
+  protected readonly typeLabels = PARAMETER_TYPE_LABELS;
+
   protected formKey = '';
   protected formValue = '';
   protected formDescription = '';
+  protected formType: ParameterType = 'configuration';
+  protected formCast = 'string';
 
   protected readonly isEdit = computed(() => !!this.id());
 
   ngOnInit() {
     const id = this.id();
+
+    forkJoin({
+      types: this.parametersService.getConfigValue<ParameterType[]>('parameter_types'),
+      casts: this.parametersService.getConfigValue<string[]>('parameter_casts'),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ types, casts }) => {
+        if (types) this.availableTypes.set(types);
+        if (casts) this.availableCasts.set(casts);
+      });
+
     if (!id) {
       this.loading.set(false);
       return;
@@ -45,11 +64,13 @@ export class ParameterForm implements OnInit {
           this.formKey = param.key;
           this.formValue = param.value;
           this.formDescription = param.description ?? '';
+          this.formType = param.type;
+          this.formCast = param.cast;
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar el parámetro.');
-          this.loading.set(false);
+          this.toast.error('No se pudo cargar el parámetro.');
+          this.router.navigate(['/admin/parameters']);
         },
       });
   }
@@ -65,8 +86,8 @@ export class ParameterForm implements OnInit {
     const description = this.formDescription.trim() || null;
 
     const req$ = id
-      ? this.parametersService.update(+id, key, value, description)
-      : this.parametersService.create(key, value, description);
+      ? this.parametersService.update(+id, value)
+      : this.parametersService.create(key, value, description, this.formType, this.formCast);
 
     req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {

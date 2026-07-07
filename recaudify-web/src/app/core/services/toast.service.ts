@@ -5,20 +5,26 @@ import { Toast, ToastType } from '@core/interfaces/toast.interface';
 export class ToastService {
   readonly toasts = signal<Toast[]>([]);
 
-  success(message: string, duration = 5000): void {
-    this._add(message, 'success', duration);
+  private _defaultDuration = 5000;
+
+  setDefaultDuration(ms: number): void {
+    this._defaultDuration = ms;
   }
 
-  error(message: string, duration = 5000): void {
-    this._add(message, 'error', duration);
+  success(message: string, duration?: number): void {
+    this._add(message, 'success', duration ?? this._defaultDuration);
   }
 
-  warning(message: string, duration = 5000): void {
-    this._add(message, 'warning', duration);
+  error(message: string, duration?: number): void {
+    this._add(message, 'error', duration ?? this._defaultDuration);
   }
 
-  info(message: string, duration = 5000): void {
-    this._add(message, 'info', duration);
+  warning(message: string, duration?: number): void {
+    this._add(message, 'warning', duration ?? this._defaultDuration);
+  }
+
+  info(message: string, duration?: number): void {
+    this._add(message, 'info', duration ?? this._defaultDuration);
   }
 
   dismiss(id: string): void {

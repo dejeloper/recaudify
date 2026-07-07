@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 import { ApiOptions, ApiResponse } from '@core/interfaces/api.interface';
+import { ApiError } from '@core/interfaces/api-error.interface';
 import { Paginated } from '@core/interfaces/pagination.interface';
 
 /** Claves que pueden contaminar el prototipo (prototype pollution). */
@@ -33,17 +34,11 @@ function sanitize(value: unknown): unknown {
   return value;
 }
 
-export interface ApiError {
-  status: number;
-  message: string;
-  errors?: Record<string, string[]>;
-}
-
 function toApiError(err: HttpErrorResponse): ApiError {
   const body = err.error as { message?: string; errors?: Record<string, string[]> } | null;
 
   return {
-    status: err.status,
+    statusCode: err.status,
     message: body?.message ?? err.message ?? 'Error desconocido',
     errors: body?.errors,
   };

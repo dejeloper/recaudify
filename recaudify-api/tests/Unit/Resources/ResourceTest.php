@@ -37,13 +37,36 @@ class ResourceTest extends TestCase
 
     public function test_parameter_resource_exposes_expected_shape(): void
     {
-        $param = Parameter::create(["key" => "dias_mora", "value" => "45", "description" => "Días de mora"]);
+        $param = Parameter::create([
+            "type" => "authentication",
+            "key" => "max_intentos",
+            "value" => "5",
+            "cast" => "integer",
+            "description" => "Intentos máximos",
+        ]);
 
         $data = (new ParameterResource($param))->toArray(Request::create("/"));
 
-        $this->assertSame(["id", "key", "value", "description"], array_keys($data));
-        $this->assertSame("dias_mora", $data["key"]);
-        $this->assertSame("45", $data["value"]);
+        $this->assertSame(
+            [
+                "id",
+                "type",
+                "type_label",
+                "key",
+                "value",
+                "typed_value",
+                "cast",
+                "description",
+                "is_editable",
+                "updated_at",
+            ],
+            array_keys($data),
+        );
+        $this->assertSame("max_intentos", $data["key"]);
+        $this->assertSame("5", $data["value"]);
+        $this->assertSame("authentication", $data["type"]);
+        $this->assertSame(5, $data["typed_value"]);
+        $this->assertSame("integer", $data["cast"]);
     }
 
     public function test_user_schedule_resource_formats_day_and_time(): void

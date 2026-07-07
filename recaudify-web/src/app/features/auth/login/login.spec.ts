@@ -7,7 +7,7 @@ import { ConfigService } from '@core/services/config.service';
 import { Login } from './login';
 
 async function setup() {
-  const auth = { login: vi.fn() };
+  const auth = { login: vi.fn(), passwordExpired: vi.fn().mockReturnValue(false) };
   const config = { getLoginConfig: vi.fn().mockReturnValue(of({ geolocalization_login: true })) };
   const router = { navigate: vi.fn() };
 

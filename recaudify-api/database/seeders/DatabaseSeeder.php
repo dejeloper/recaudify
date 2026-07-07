@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,12 +15,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             UserScheduleSeeder::class,
             ParameterSeeder::class,
-            // Catálogos base (Fase 1)
-            StateSeeder::class,
-            ProductSeeder::class,
-            RateSeeder::class,
-            SellerSeeder::class,
-            CallReasonSeeder::class,
+            MenuItemSeeder::class,
         ]);
+
+        Cache::flush();
     }
 }

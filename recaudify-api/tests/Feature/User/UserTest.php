@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\User;
 
+use App\Enums\ParameterType;
+use App\Models\Parameter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -12,7 +15,14 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PERMISSIONS = ["users.view", "users.create", "users.edit", "users.deactivate", "users.restore"];
+    private const PERMISSIONS = [
+        "users.view",
+        "users.create",
+        "users.edit",
+        "users.deactivate",
+        "users.restore",
+        "users.reset-password",
+    ];
 
     public function test_index_lists_users(): void
     {
@@ -126,5 +136,44 @@ class UserTest extends TestCase
     public function test_requires_authentication(): void
     {
         $this->getJson("/api/users")->assertStatus(401);
+    }
+
+    public function test_reset_password_generates_random_password_by_default(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $user = User::factory()->create();
+
+        $response = $this->postJson("/api/users/{$user->id}/reset-password")->assertStatus(200);
+        $password = $response->json("data.password");
+
+        $this->assertNotEmpty($password);
+        $this->assertTrue(Hash::check($password, $user->fresh()->password));
+    }
+
+    public function test_reset_password_uses_fixed_value_when_configured(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $user = User::factory()->create();
+
+        Parameter::query()->updateOrCreate(
+            ["type" => ParameterType::Authentication->value, "key" => "reset_password_mode"],
+            ["value" => "fixed", "cast" => "string"],
+        );
+        Parameter::query()->updateOrCreate(
+            ["type" => ParameterType::Authentication->value, "key" => "reset_password_fixed_value"],
+            ["value" => "ClaveFija123", "cast" => "string"],
+        );
+
+        $response = $this->postJson("/api/users/{$user->id}/reset-password")->assertStatus(200);
+
+        $response->assertJsonPath("data.password", "ClaveFija123");
+        $this->assertTrue(Hash::check("ClaveFija123", $user->fresh()->password));
+    }
+
+    public function test_reset_password_returns_404_for_unknown_user(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/users/99999/reset-password")->assertStatus(404);
     }
 }

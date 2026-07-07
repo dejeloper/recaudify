@@ -7,7 +7,18 @@ import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
 
 function param(id: number, key: string, value: string): Parameter {
-  return { id, key, value, description: null };
+  return {
+    id,
+    key,
+    value,
+    typed_value: value,
+    cast: 'string',
+    description: null,
+    type: 'configuration',
+    type_label: 'Configuración',
+    is_editable: true,
+    updated_at: '2026-01-01T00:00:00Z',
+  };
 }
 
 function setup() {
@@ -57,6 +68,13 @@ describe('ParametersService', () => {
     expect(service.items()).toHaveLength(1);
   });
 
+  it('load with type passes query param', () => {
+    const { service, api } = setup();
+    api.get.mockReturnValue(of([]));
+    service.load('business');
+    expect(api.get).toHaveBeenCalledWith('parameters', undefined, { type: 'business' });
+  });
+
   it('remove moves the parameter to trashed', () => {
     const { service, api, toast } = setup();
     api.get.mockReturnValue(of([param(1, 'k', 'v')]));
@@ -70,16 +88,18 @@ describe('ParametersService', () => {
     expect(toast.success).toHaveBeenCalled();
   });
 
-  it('create posts the parameter payload', () => {
+  it('create posts the parameter payload with cast', () => {
     const { service, api } = setup();
     api.post.mockReturnValue(of(param(2, 'dias_mora', '45')));
 
-    service.create('dias_mora', '45', 'Días de mora').subscribe();
+    service.create('dias_mora', '45', 'Días de mora', 'business').subscribe();
 
     expect(api.post).toHaveBeenCalledWith('parameters', undefined, {
       key: 'dias_mora',
       value: '45',
       description: 'Días de mora',
+      type: 'business',
+      cast: 'string',
     });
   });
 });

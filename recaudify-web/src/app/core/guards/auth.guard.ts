@@ -11,6 +11,10 @@ export const authGuard: CanActivateFn = () => {
 
   if (!auth.isAuthenticated()) return router.createUrlTree(['/login']);
 
+  if (auth.passwordExpired()) return router.createUrlTree(['/change-password']);
+
+  if (!auth.geolocalizationLoginEnabled()) return true;
+
   return from(geolocation.getPermissionState()).pipe(
     map((state) => {
       if (state === 'denied') {
@@ -20,6 +24,13 @@ export const authGuard: CanActivateFn = () => {
       return true;
     }),
   );
+};
+
+export const authOnlyGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  return auth.isAuthenticated() ? true : router.createUrlTree(['/login']);
 };
 
 export const guestGuard: CanActivateFn = () => {

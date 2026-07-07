@@ -2,48 +2,60 @@
 
 namespace App\Services;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Repositories\ActivityRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Models\Activity;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Schema;
 
 class ActivityService
 {
-    public const DEFAULT_PER_PAGE = 25;
+    public function __construct(
+        private readonly ActivityRepository $repository,
+        private readonly UserService $userService,
+    ) {}
 
-    public const MAX_PER_PAGE = 100;
-
-    /**
-     * Filtros soportados: log_name, causer_id, model (basename), subject_id.
-     */
-    public function getAll(array $filters = [], int $perPage = self::DEFAULT_PER_PAGE): LengthAwarePaginator
+    public function getAll(array $filters = [], int $perPage = 25): LengthAwarePaginator
     {
-        $model = $filters["model"] ?? null;
-        $subjectType = $model ? "App\\Models\\" . $model : null;
+        $paginator = $this->repository->paginate($this->resolveUserFilter($filters), $perPage);
 
-        $paginator = Activity::with("causer")
-            ->when($filters["log_name"] ?? null, fn($q, $v) => $q->where("log_name", $v))
-            ->when($filters["causer_id"] ?? null, fn($q, $v) => $q->where("causer_id", $v))
-            ->when($subjectType, fn($q, $v) => $q->where("subject_type", $v))
-            ->when($filters["subject_id"] ?? null, fn($q, $v) => $q->where("subject_id", $v))
-            ->orderByDesc("id")
-            ->paginate($perPage);
-
-        $this->attachSubjectLabels($paginator->getCollection());
+        $this->attachSubjectLabels(new Collection($paginator->items()));
 
         return $paginator;
     }
 
-    /**
-     * Resuelve la etiqueta legible (nombre) del subject de cada actividad.
-     * Una consulta por tipo de modelo (incluye eliminados con softDelete).
-     */
+    private function resolveUserFilter(array $filters): array
+    {
+        $user = $filters["user"] ?? null;
+        unset($filters["user"]);
+
+        if (!$user) {
+            return $filters;
+        }
+
+        if (strtolower($user) === "sistema") {
+            $filters["causer_is_null"] = true;
+
+            return $filters;
+        }
+
+        $filters["causer_id"] = $this->userService->findByUsername($user)?->id ?? -1;
+
+        return $filters;
+    }
+
     private function attachSubjectLabels(Collection $activities): void
     {
         $groups = $activities->whereNotNull("subject_type")->groupBy("subject_type");
 
         foreach ($groups as $type => $group) {
             if (!class_exists($type)) {
+                continue;
+            }
+
+            $model = new $type();
+
+            if (!Schema::hasColumn($model->getTable(), "name")) {
                 continue;
             }
 

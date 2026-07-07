@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\PasswordPolicyService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -11,13 +12,13 @@ class RegisterRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public function rules(PasswordPolicyService $passwordPolicy): array
     {
         return [
             "name" => ["required", "string", "max:100"],
             "username" => ["required", "string", "max:50", "unique:users,username", 'regex:/^[a-z0-9._-]+$/'],
             "email" => ["nullable", "email", "max:150"],
-            "password" => ["required", "string", "min:8", "confirmed"],
+            "password" => ["required", "string", $passwordPolicy->rule(), "confirmed"],
         ];
     }
 

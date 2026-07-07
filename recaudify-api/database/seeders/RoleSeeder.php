@@ -26,19 +26,9 @@ class RoleSeeder extends Seeder
                 "parameters.view",
                 "parameters.create",
                 "parameters.edit",
-                "catalogs.view",
-                "catalogs.create",
-                "catalogs.edit",
             ],
 
-            "auxiliar" => [
-                "users.view",
-                "roles.view",
-                "permissions.view",
-                "schedules.view",
-                "parameters.view",
-                "catalogs.view",
-            ],
+            "auxiliar" => ["users.view", "roles.view", "permissions.view", "schedules.view", "parameters.view"],
         ];
 
         foreach ($roles as $roleName => $permissions) {
