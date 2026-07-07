@@ -81,13 +81,13 @@
     </div>
 
     <!-- Nav -->
-    <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+    <nav class="nav-scroll flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
       <a
         (click)="closeSidebar()"
         routerLink="/dashboard"
         routerLinkActive="bg-slate-100 text-slate-900 font-medium"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+        class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors lg:hidden"
       >
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -100,42 +100,78 @@
         Dashboard
       </a>
 
-      @if (isAdmin()) {
-        @for (group of navGroups; track group.key; let first = $first) {
-          @if (hasVisibleItems(group)) {
-            <div [class.pt-3]="first" [class.pt-1]="!first">
-              <button
-                (click)="openSection.set(group.key)"
-                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
+      @for (group of navGroups(); track group.id; let first = $first) {
+        @if (hasVisibleItems(group)) {
+          <div [class.pt-3]="first" [class.pt-1]="!first">
+            <button
+              (click)="toggleGroup(group, first)"
+              class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {{ group.label }}
+              <svg
+                class="w-3 h-3 transition-transform duration-200"
+                [class.rotate-180]="isGroupOpen(group, first)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {{ group.label }}
-                <svg
-                  class="w-3 h-3 transition-transform duration-200"
-                  [class.rotate-180]="openSection() === group.key"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2.5"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-              <div
-                class="overflow-hidden transition-all duration-200 ease-in-out"
-                [style.max-height]="openSection() === group.key ? '500px' : '0px'"
-              >
-                <div class="space-y-0.5 pt-0.5">
-                  @for (item of group.items; track item.label) {
-                    @if (isItemVisible(item)) {
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div
+              class="overflow-hidden transition-all duration-200 ease-in-out"
+              [style.max-height]="isGroupOpen(group, first) ? '2000px' : '0px'"
+            >
+              <div class="space-y-0.5 pt-0.5">
+                @for (item of group.children ?? []; track item.id; let itemFirst = $first) {
+                  @if (isItemVisible(item)) {
+                    @if (item.children?.length) {
+                      <button
+                        (click)="toggleItem(item, itemFirst)"
+                        class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                      >
+                        <svg
+                          class="w-4 h-4 shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          @for (d of item.icons; track $index) {
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              [attr.d]="d"
+                            />
+                          }
+                        </svg>
+                        <span class="flex-1 text-left">{{ item.label }}</span>
+                        <svg
+                          class="w-3 h-3 shrink-0 transition-transform duration-200"
+                          [class.rotate-180]="isItemOpen(item, itemFirst)"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2.5"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    } @else {
                       <a
                         (click)="closeSidebar()"
-                        [routerLink]="item.route !== '#' ? item.route : null"
+                        [routerLink]="item.route ? item.route : null"
                         [routerLinkActive]="
-                          item.route !== '#' ? 'bg-slate-100 text-slate-900 font-medium' : ''
+                          item.route ? 'bg-slate-100 text-slate-900 font-medium' : ''
                         "
                         class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
                       >
@@ -157,11 +193,36 @@
                         {{ item.label }}
                       </a>
                     }
+
+                    @if (item.children?.length) {
+                      <div
+                        class="overflow-hidden transition-all duration-200 ease-in-out"
+                        [style.max-height]="isItemOpen(item, itemFirst) ? '1000px' : '0px'"
+                      >
+                        <div class="ml-3 space-y-0.5 pt-0.5">
+                          @for (subItem of item.children ?? []; track subItem.id) {
+                            @if (isItemVisible(subItem)) {
+                              <a
+                                (click)="closeSidebar()"
+                                [routerLink]="subItem.route ? subItem.route : null"
+                                [routerLinkActive]="
+                                  subItem.route ? 'bg-slate-100 text-slate-900 font-medium' : ''
+                                "
+                                class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                              >
+                                <span class="shrink-0 text-gray-300">└─&gt;</span>
+                                {{ subItem.label }}
+                              </a>
+                            }
+                          }
+                        </div>
+                      </div>
+                    }
                   }
-                </div>
+                }
               </div>
             </div>
-          }
+          </div>
         }
       }
     </nav>
