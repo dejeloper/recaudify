@@ -10,6 +10,13 @@
  * alcanza con editar estos 11 valores — nada más en el proyecto necesita tocarse.
  */
 @theme {
+  --font-sans:
+    'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+
   --color-brand-50: oklch(97.5% 0.02 258);
   --color-brand-100: oklch(94% 0.045 258);
   --color-brand-200: oklch(89% 0.075 258);
@@ -21,6 +28,9 @@
   --color-brand-800: oklch(42% 0.22 264);
   --color-brand-900: oklch(36% 0.17 265);
   --color-brand-950: oklch(26% 0.105 267);
+
+  /* Fondo del sidebar: azul oscuro propio, fijado a un solo tono (no escala). */
+  --color-sidebar: oklch(0.26 0.15 262.82);
 
   /*
    * Recaudify usa la escala `slate` de Tailwind como color "primario" en toda la
@@ -50,20 +60,21 @@
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-200 transition-colors;
   }
 
+  /* Botones de acciones de tabla: cuadrados, solo ícono (título/aria-label llevan el texto) */
   .btn-table-edit {
-    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors;
   }
 
   .btn-table-danger {
-    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50;
   }
 
   .btn-table-restore {
-    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
   }
 
   .btn-table-neutral {
-    @apply rounded-xl px-3 py-1.5 text-xs font-semibold bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors disabled:opacity-50;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors disabled:opacity-50;
   }
 
   .btn-inline-save {
@@ -120,13 +131,13 @@
     @apply bg-amber-50;
   }
 
-  /* Thin scrollbar that stays out of the way until hovered */
+  /* Thin scrollbar that stays out of the way until hovered (sidebar es oscuro) */
   .nav-scroll {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
   }
   .nav-scroll:hover {
-    scrollbar-color: var(--color-stone-300) transparent;
+    scrollbar-color: color-mix(in oklch, white 20%, transparent) transparent;
   }
   .nav-scroll::-webkit-scrollbar {
     width: 6px;
@@ -139,6 +150,27 @@
     border-radius: 9999px;
   }
   .nav-scroll:hover::-webkit-scrollbar-thumb {
-    background-color: var(--color-stone-300);
+    background-color: color-mix(in oklch, white 20%, transparent);
+  }
+
+  /*
+   * Barra de acento del ítem de navegación activo en el sidebar oscuro.
+   * Concepto tomado de una referencia de diseño (nav-link.active::before),
+   * adaptado a la paleta `brand` propia.
+   */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 60%;
+    width: 3px;
+    border-radius: 9999px;
+    background: var(--color-brand-400);
+    box-shadow: 0 0 10px var(--color-brand-400);
   }
 }

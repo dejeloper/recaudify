@@ -1,11 +1,17 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MenuItem } from '@core/interfaces/nav.interface';
 import { AuthService } from '@core/services/auth.service';
 import { MenuService } from '@core/services/menu.service';
 import { ShiftStatusService } from '@core/services/shift-status.service';
+import { filter, map } from 'rxjs';
+
+export interface Breadcrumb {
+  label: string;
+  route: string | null;
+}
 
 @Component({
   selector: 'app-shell',
@@ -17,9 +23,49 @@ export class AppShell implements OnInit {
   private readonly menuService = inject(MenuService);
   private readonly shiftStatus = inject(ShiftStatusService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   protected readonly navGroups = this.menuService.menuTree;
   protected readonly currentUser = this.authService.currentUser;
+
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects.split('?')[0]),
+    ),
+    { initialValue: this.router.url.split('?')[0] },
+  );
+
+  protected readonly breadcrumbs = computed<Breadcrumb[]>(() => {
+    const url = this.currentUrl();
+    if (url === '/dashboard') {
+      return [{ label: 'Dashboard', route: null }];
+    }
+
+    const matchesRoute = (route: string | null) =>
+      !!route && (url === route || url.startsWith(`${route}/`));
+
+    for (const group of this.navGroups()) {
+      for (const item of group.children ?? []) {
+        if (matchesRoute(item.route)) {
+          return [
+            { label: group.label, route: null },
+            { label: item.label, route: item.route },
+          ];
+        }
+        for (const subItem of item.children ?? []) {
+          if (matchesRoute(subItem.route)) {
+            return [
+              { label: group.label, route: null },
+              { label: item.label, route: null },
+              { label: subItem.label, route: subItem.route },
+            ];
+          }
+        }
+      }
+    }
+    return [];
+  });
 
   protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
