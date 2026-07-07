@@ -1,10 +1,12 @@
-import { Component, input } from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-spinner',
   template: `
     @if (show()) {
-      <div class="flex items-center justify-center py-16">
+      <div
+        class="fixed inset-0 z-100 flex items-center justify-center bg-white/40 backdrop-blur-sm"
+      >
         <div class="flex flex-col items-center gap-3">
           <svg class="h-8 w-8 animate-spin text-slate-400" fill="none" viewBox="0 0 24 24">
             <circle
