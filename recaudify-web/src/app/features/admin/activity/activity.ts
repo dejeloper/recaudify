@@ -108,7 +108,7 @@ export class ActivityFeed implements OnInit {
       case 'deleted':
         return { dot: 'bg-red-500', badge: 'bg-red-50 text-red-700' };
       case 'restored':
-        return { dot: 'bg-blue-500', badge: 'bg-blue-50 text-blue-700' };
+        return { dot: 'bg-gray-500', badge: 'bg-gray-100 text-gray-700' };
       default:
         return { dot: 'bg-gray-400', badge: 'bg-gray-100 text-gray-600' };
     }

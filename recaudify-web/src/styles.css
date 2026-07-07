@@ -17,52 +17,71 @@
     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
 
-  --color-brand-50: oklch(97.5% 0.02 258);
-  --color-brand-100: oklch(94% 0.045 258);
-  --color-brand-200: oklch(89% 0.075 258);
-  --color-brand-300: oklch(82% 0.125 258);
-  --color-brand-400: oklch(72% 0.185 258);
-  --color-brand-500: oklch(63% 0.23 258);
-  --color-brand-600: oklch(55% 0.26 260);
-  --color-brand-700: oklch(48% 0.258 262);
-  --color-brand-800: oklch(42% 0.22 264);
-  --color-brand-900: oklch(36% 0.17 265);
-  --color-brand-950: oklch(26% 0.105 267);
-
-  /* Fondo del sidebar: azul oscuro propio, fijado a un solo tono (no escala). */
-  --color-sidebar: oklch(0.26 0.15 262.82);
-
   /*
-   * Recaudify usa la escala `slate` de Tailwind como color "primario" en toda la
-   * UI existente (logo, sidebar activo, botones, focus rings, ~30 componentes).
-   * Remapear `slate` a `brand` aquí hace que toda esa UI adopte la paleta propia
-   * sin tener que tocar cada componente uno por uno.
+   * Azul de marca, deliberadamente grisáceo/desaturado (poco croma) para un tono
+   * sobrio tipo Linear/Stripe. Se usa solo en elementos interactivos (botón
+   * primario, focus, checkboxes, enlaces, estado activo de nav) — nunca como
+   * color decorativo o de fondo general.
    */
-  --color-slate-50: var(--color-brand-50);
-  --color-slate-100: var(--color-brand-100);
-  --color-slate-200: var(--color-brand-200);
-  --color-slate-300: var(--color-brand-300);
-  --color-slate-400: var(--color-brand-400);
-  --color-slate-500: var(--color-brand-500);
-  --color-slate-600: var(--color-brand-600);
-  --color-slate-700: var(--color-brand-700);
-  --color-slate-800: var(--color-brand-800);
-  --color-slate-900: var(--color-brand-900);
-  --color-slate-950: var(--color-brand-950);
+  --color-brand-50: oklch(97% 0.008 258);
+  --color-brand-100: oklch(94% 0.016 258);
+  --color-brand-200: oklch(88% 0.028 258);
+  --color-brand-300: oklch(80% 0.045 258);
+  --color-brand-400: oklch(70% 0.065 258);
+  --color-brand-500: oklch(58% 0.085 258);
+  --color-brand-600: oklch(50% 0.095 260);
+  --color-brand-700: oklch(43% 0.09 262);
+  --color-brand-800: oklch(37% 0.075 264);
+  --color-brand-900: oklch(31% 0.06 265);
+  --color-brand-950: oklch(22% 0.04 267);
+
+  /* Fondo del sidebar: mismo tono que el panel de marca del login (brand-900). */
+  --color-sidebar: var(--color-brand-900);
+}
+
+@layer base {
+  /*
+   * El usuario debe poder distinguir a simple vista qué es clickeable. Por
+   * defecto el navegador muestra cursor de texto (I-beam) sobre cualquier
+   * texto seleccionable, lo que sugiere que todo es "editable"; se fuerza
+   * cursor:default a nivel body y luego cursor:pointer solo en elementos
+   * realmente interactivos, en vez de repetir clases en cada plantilla.
+   */
+  body {
+    cursor: default;
+  }
+  a,
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='color']),
+  textarea,
+  [contenteditable='true'] {
+    cursor: text;
+  }
+  input[type='checkbox'],
+  input[type='radio'],
+  select {
+    cursor: pointer;
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-700 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-200 transition-colors;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
   }
 
-  /* Botones de acciones de tabla: cuadrados, solo ícono (título/aria-label llevan el texto) */
+  /* Botones de acciones de tabla: cuadrados, solo ícono (título/aria-label llevan el texto). */
+  /* Editar/restaurar/duplicar/ver comparten el mismo tratamiento neutro — solo eliminar destaca. */
   .btn-table-edit {
-    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors;
   }
 
   .btn-table-danger {
@@ -70,19 +89,19 @@
   }
 
   .btn-table-restore {
-    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors disabled:opacity-50;
   }
 
   .btn-table-neutral {
-    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors disabled:opacity-50;
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors disabled:opacity-50;
   }
 
   .btn-inline-save {
-    @apply rounded-lg px-3 py-1.5 text-xs font-semibold bg-brand-900 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors;
+    @apply rounded-lg px-3 py-1.5 text-xs font-medium bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors;
   }
 
   .btn-inline-cancel {
-    @apply rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 transition-colors;
+    @apply rounded-lg px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors;
   }
 
   /* Tables — default */
@@ -93,10 +112,10 @@
     @apply w-full text-sm;
   }
   .data-table thead tr {
-    @apply border-b border-brand-100 bg-brand-50/60;
+    @apply border-b border-gray-200 bg-gray-50;
   }
   .data-table th {
-    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-900/70;
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500;
   }
   .data-table tbody {
     @apply divide-y divide-gray-100;
@@ -105,7 +124,7 @@
     @apply transition-colors;
   }
   .data-table tbody tr:hover {
-    @apply bg-brand-50/40;
+    @apply bg-gray-50;
   }
 
   /* Tables — trashed */

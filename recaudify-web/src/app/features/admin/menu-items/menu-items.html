@@ -3,7 +3,7 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-gray-900">Menú</h1>
-      <p class="mt-0.5 text-sm text-gray-400">
+      <p class="mt-0.5 text-sm text-gray-500">
         Define los ítems del menú lateral: orden, ícono, ruta y permiso requerido.
       </p>
     </div>
@@ -55,7 +55,7 @@
         <p class="text-sm text-gray-400">No hay ítems de menú creados.</p>
         <a
           routerLink="/admin/menu-items/new"
-          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          class="mt-2 inline-block text-sm font-medium text-brand-600 hover:text-brand-900"
         >
           Crear el primero
         </a>
@@ -86,7 +86,7 @@
                   <td class="px-5 py-3.5">
                     @if (item.permission) {
                       <span
-                        class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                        class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
                       >
                         {{ item.permission }}
                       </span>

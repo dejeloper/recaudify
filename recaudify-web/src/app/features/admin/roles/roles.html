@@ -3,7 +3,7 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-gray-900">Roles</h1>
-      <p class="mt-0.5 text-sm text-gray-400">Define los perfiles de acceso del sistema.</p>
+      <p class="mt-0.5 text-sm text-gray-500">Define los perfiles de acceso del sistema.</p>
     </div>
     <div class="flex items-center gap-2 sm:self-start self-stretch">
       <button
@@ -53,7 +53,7 @@
         <p class="text-sm text-gray-400">No hay roles creados.</p>
         <a
           routerLink="/admin/roles/new"
-          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          class="mt-2 inline-block text-sm font-medium text-brand-600 hover:text-brand-900"
         >
           Crear el primero
         </a>
@@ -80,7 +80,7 @@
                       <div class="flex flex-wrap gap-1">
                         @for (perm of role.permissions.slice(0, 4); track perm.id) {
                           <span
-                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                            class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
                           >
                             {{ perm.name }}
                           </span>
