@@ -18,8 +18,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
             cd ${{ secrets.VPS_STAGING_PATH }}/recaudify-api
-            git pull origin develop
+            git fetch origin develop
+            git reset --hard origin/develop
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
             php artisan config:cache
