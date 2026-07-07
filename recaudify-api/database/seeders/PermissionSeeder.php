@@ -51,6 +51,16 @@ class PermissionSeeder extends Seeder
 
             // Login audit
             "access.view",
+
+            // Catalogs
+            "catalogs.view",
+
+            // Menu builder
+            "menu.view",
+            "menu.create",
+            "menu.edit",
+            "menu.delete",
+            "menu.restore",
         ];
 
         foreach ($permissions as $permission) {
