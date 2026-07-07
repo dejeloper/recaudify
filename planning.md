@@ -57,7 +57,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Historial de navegación reciente: lista de "últimas 5 pantallas/clientes visitados" por usuario, para volver rápido a lo que se estaba revisando sin repetir la búsqueda.
 - [ ] Menú distinto por rol/perfil (layout): que el cobrador vea un menú simple centrado en Agenda y Pagos, mientras que administrador ve el menú completo — evita que roles operativos se pierdan entre opciones que nunca van a usar.
 - [ ] Atajos de teclado configurables: acciones rápidas (nuevo cliente, nuevo pago, buscar) vía teclado, documentadas en un modal de ayuda (`?`), pensado para usuarios de alto volumen (cobradores/cajeros) que ganan tiempo real no usando mouse.
-- [ ] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
+- [x] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
 
 #### Logs y auditoría
 
@@ -172,7 +172,7 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
       como evento propio vinculado al registro original, que nunca se oculta de los listados
 - [ ] Punto 2 — Devolución, Gestión/Llamada, Compromiso: sin borrado lógico; son eventos de
       historial, se corrigen con otro evento (no se ocultan ni se marcan como borrados)
-- [ ] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
+- [x] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
       de borrado (ni `SoftDeletes` ni booleano) bajo ninguna circunstancia
 
 #### Cuando SÍ se puede borrar físico (datos sin realidad de negocio todavía)
@@ -442,4 +442,4 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 ## Actualizado
 
-2026-07-06
+2026-07-07
