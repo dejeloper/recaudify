@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LoginAuditController;
+use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
@@ -64,6 +65,18 @@ Route::middleware(["auth:api", "check.schedule", "force.password.change"])->grou
         Route::post("/{id}/restore", [PermissionController::class, "restore"])->middleware(
             "permission:permissions.restore",
         );
+    });
+
+    Route::get("menu", [MenuItemController::class, "mine"]);
+
+    Route::prefix("menu-items")->group(function () {
+        Route::get("/", [MenuItemController::class, "index"])->middleware("permission:menu.view");
+        Route::get("/trashed", [MenuItemController::class, "trashed"])->middleware("permission:menu.view");
+        Route::get("/{id}", [MenuItemController::class, "show"])->middleware("permission:menu.view");
+        Route::post("/", [MenuItemController::class, "store"])->middleware("permission:menu.create");
+        Route::put("/{id}", [MenuItemController::class, "update"])->middleware("permission:menu.edit");
+        Route::delete("/{id}", [MenuItemController::class, "destroy"])->middleware("permission:menu.delete");
+        Route::post("/{id}/restore", [MenuItemController::class, "restore"])->middleware("permission:menu.restore");
     });
 
     Route::prefix("users/{userId}/schedules")->group(function () {
