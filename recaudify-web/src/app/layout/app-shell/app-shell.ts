@@ -71,9 +71,7 @@ export class AppShell implements OnInit {
 
   protected readonly sidebarOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
-  protected readonly sidebarCompact = signal(
-    localStorage.getItem(SIDEBAR_COMPACT_KEY) === 'true',
-  );
+  protected readonly sidebarCompact = signal(localStorage.getItem(SIDEBAR_COMPACT_KEY) === 'true');
   protected readonly groupOverrides = signal<ReadonlyMap<number, boolean>>(new Map());
   protected readonly itemOverrides = signal<ReadonlyMap<number, boolean>>(new Map());
 
