@@ -1,18 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { EMPTY, catchError, tap } from 'rxjs';
-import { MenuItem } from '@core/interfaces/nav.interface';
+import { MenuItem, MenuItemPayload } from '@core/interfaces/nav.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
-
-export interface MenuItemPayload {
-  parent_id: number | null;
-  label: string;
-  icons: string[] | null;
-  route: string | null;
-  permission: string | null;
-  order: number;
-  is_active: boolean;
-}
 
 @Injectable({ providedIn: 'root' })
 export class MenuItemsService {

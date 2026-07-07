@@ -9,3 +9,13 @@ export interface MenuItem {
   is_active: boolean;
   children?: MenuItem[];
 }
+
+export interface MenuItemPayload {
+  parent_id: number | null;
+  label: string;
+  icons: string[] | null;
+  route: string | null;
+  permission: string | null;
+  order: number;
+  is_active: boolean;
+}
