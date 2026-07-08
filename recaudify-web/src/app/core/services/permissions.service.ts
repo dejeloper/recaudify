@@ -1,8 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { EMPTY, catchError, tap } from 'rxjs';
-import { Permission } from '@core/interfaces/permission.interface';
+import { Permission, PermissionFilters } from '@core/interfaces/permission.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { PaginatedList } from '@core/utils/paginated-list';
 
 const NAME_PATTERN = /^[a-z_]+\.[a-z_-]+$/;
 
@@ -11,26 +12,33 @@ export class PermissionsService {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  readonly items = signal<Permission[]>([]);
+  private readonly list = new PaginatedList<Permission, PermissionFilters>(
+    (page, perPage, filters) => {
+      const params: Record<string, string | number> = { page, per_page: perPage };
+      if (filters?.search) params['search'] = filters.search;
+      return this.api.getPaginated<Permission>('permissions', undefined, params);
+    },
+    10,
+  );
+
+  readonly items = this.list.items;
+  readonly meta = this.list.meta;
+  readonly loading = this.list.loading;
   readonly trashed = signal<Permission[]>([]);
-  readonly loading = signal(false);
   readonly loadingTrashed = signal(false);
   readonly showTrashed = signal(false);
 
   readonly grouped = computed(() => this.groupByModule(this.items()));
   readonly groupedTrashed = computed(() => this.groupByModule(this.trashed()));
 
-  load(): void {
-    this.loading.set(true);
+  load(search?: string): void {
     this.showTrashed.set(false);
     this.trashed.set([]);
-    this.getAll().subscribe({
-      next: (list) => {
-        this.items.set(list);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.list.load({ search });
+  }
+
+  goToPage(page: number): void {
+    this.list.goToPage(page);
   }
 
   toggleTrashed(): void {
