@@ -25,6 +25,30 @@ class PermissionTest extends TestCase
         $this->getJson("/api/permissions")->assertStatus(200)->assertJsonPath("success", true);
     }
 
+    public function test_index_paginates_when_page_is_requested(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Permission::create(["name" => "catalogos.ver", "guard_name" => "api"]);
+        Permission::create(["name" => "catalogos.exportar", "guard_name" => "api"]);
+
+        $this->getJson("/api/permissions?page=1&search=catalogos&per_page=1")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 2)
+            ->assertJsonCount(1, "data.items");
+    }
+
+    public function test_index_filters_by_search_when_paginated(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+        Permission::create(["name" => "clientes.exportar", "guard_name" => "api"]);
+
+        $this->getJson("/api/permissions?page=1&search=exportar")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 1)
+            ->assertJsonPath("data.items.0.name", "clientes.exportar");
+    }
+
     public function test_show_returns_permission_or_404(): void
     {
         $this->authenticateWith(self::PERMISSIONS);
