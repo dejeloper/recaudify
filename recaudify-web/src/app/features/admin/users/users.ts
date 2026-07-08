@@ -45,7 +45,7 @@ export class Users implements OnInit {
   ngOnInit() {
     this.service.load();
     this.search$
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .pipe(debounceTime(500), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => this.service.search(term));
   }
 

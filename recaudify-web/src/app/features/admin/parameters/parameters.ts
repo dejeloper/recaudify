@@ -48,7 +48,7 @@ export class Parameters implements OnInit {
         if (types) this.availableTypes.set(types);
       });
     this.search$
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .pipe(debounceTime(500), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => this.service.load(this.selectedType() || undefined, term || undefined));
   }
 

@@ -53,7 +53,7 @@ export class ActivityFeed implements OnInit {
     this.service.load({ user: this.userFilter });
 
     this.userFilter$
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .pipe(debounceTime(500), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.service.load({ user: user || DEFAULT_USER_FILTER });
         this.router.navigate([], {

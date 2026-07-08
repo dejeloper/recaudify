@@ -44,7 +44,7 @@ export class Sessions implements OnInit {
   ngOnInit() {
     this.userSearch$
       .pipe(
-        debounceTime(300),
+        debounceTime(500),
         distinctUntilChanged(),
         switchMap((term) =>
           term.trim() ? this.usersService.searchByTerm(term.trim()) : this.usersService.getAll(),
