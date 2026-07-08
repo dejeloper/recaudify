@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ParameterType;
 use App\Http\Resources\SessionResource;
 use App\Http\Responses\ApiResult;
 use App\Models\User;
-use App\Services\UserService;
+use App\Services\ParameterService;
 use App\Services\UserSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class SessionController extends ApiController
 {
     public function __construct(
         private readonly UserSessionService $userSessions,
-        private readonly UserService $userService,
+        private readonly ParameterService $parameterService,
     ) {}
 
     public function mine(): JsonResponse
@@ -58,15 +59,21 @@ class SessionController extends ApiController
 
     public function index(Request $request): JsonResponse
     {
-        $userId = (int) $request->query("user_id");
+        $filters = [
+            "user_id" => $request->query("user_id"),
+            "device_type" => $request->query("device_type"),
+            "ip_address" => $request->query("ip_address"),
+        ];
 
-        if (!$userId || !$this->userService->find($userId)) {
-            return ApiResult::notFound("Usuario no encontrado.")->toResponse();
-        }
+        $defaultPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_per_page");
+        $maxPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_max_per_page");
 
-        $sessions = $this->userSessions->forUser($userId)->load("user");
+        $perPage = (int) $request->query("per_page", (string) $defaultPerPage);
+        $perPage = max(1, min($perPage, $maxPerPage));
 
-        return ApiResult::success(SessionResource::collection($sessions))->toResponse();
+        $paginator = $this->userSessions->getAll($filters, $perPage);
+
+        return ApiResult::paginated($paginator, SessionResource::collection($paginator->getCollection()))->toResponse();
     }
 
     public function revoke(int $id): JsonResponse
@@ -80,6 +87,13 @@ class SessionController extends ApiController
         $this->userSessions->revoke($session);
 
         return ApiResult::empty("Sesion revocada correctamente.")->toResponse();
+    }
+
+    public function revokeAllGlobal(): JsonResponse
+    {
+        $this->userSessions->revokeAllGlobal();
+
+        return ApiResult::empty("Todas las sesiones fueron cerradas correctamente.")->toResponse();
     }
 
     private function currentSessionId(): ?string

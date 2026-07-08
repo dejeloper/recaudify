@@ -170,7 +170,7 @@ class SessionTest extends TestCase
         $list = $this->withToken($adminToken)
             ->getJson("/api/sessions?user_id={$target->id}")
             ->assertStatus(200)
-            ->json("data");
+            ->json("data.items");
 
         $this->assertCount(1, $list);
 
@@ -186,6 +186,39 @@ class SessionTest extends TestCase
         // test_authenticated_request_with_revoked_session_returns_401.
         $this->assertDatabaseHas("user_sessions", ["id" => $list[0]["id"], "user_id" => $target->id]);
         $this->assertDatabaseMissing("user_sessions", ["id" => $list[0]["id"], "revoked_at" => null]);
+    }
+
+    public function test_administrador_role_is_blocked_from_admin_sessions_despite_having_permission(): void
+    {
+        // "administrador" conserva el resto de permisos admin, pero sessions.view/revoke quedan
+        // reservados a superadmin (RoleSeeder) y la ruta exige explícitamente role:superadmin.
+        Role::firstOrCreate(["name" => "administrador", "guard_name" => "api"]);
+        $admin = User::factory()
+            ->withRole("administrador")
+            ->create(["username" => "admin-normal"]);
+        $this->giveFullDaySchedule($admin);
+        $token = $this->loginAs($admin);
+
+        $this->withToken($token)->getJson("/api/sessions")->assertStatus(403);
+    }
+
+    public function test_revoke_all_global_closes_every_session_including_the_caller(): void
+    {
+        $superadminToken = $this->loginAndGetToken();
+
+        $otherUser = User::factory()->create(["username" => "otro2"]);
+        UserSession::create([
+            "user_id" => $otherUser->id,
+            "session_id" => "otro2-session",
+            "expires_at" => now()->addHours(4),
+        ]);
+
+        $this->withToken($superadminToken)->postJson("/api/sessions/revoke-all")->assertStatus(200);
+
+        $this->assertDatabaseMissing("user_sessions", ["user_id" => $otherUser->id, "revoked_at" => null]);
+        $this->assertDatabaseMissing("user_sessions", ["user_id" => $this->user->id, "revoked_at" => null]);
+
+        $this->withToken($superadminToken)->getJson("/api/auth/me")->assertStatus(401);
     }
 
     private function loginAs(User $user): string

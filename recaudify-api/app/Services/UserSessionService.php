@@ -7,6 +7,7 @@ use App\Models\UserSession;
 use App\Repositories\UserSessionRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class UserSessionService
@@ -83,6 +84,18 @@ class UserSessionService
     public function forUser(int $userId): Collection
     {
         return $this->repository->activeForUser($userId);
+    }
+
+    public function getAll(array $filters, int $perPage): LengthAwarePaginator
+    {
+        return $this->repository->paginate($filters, $perPage);
+    }
+
+    public function revokeAllGlobal(): void
+    {
+        foreach ($this->repository->allActive() as $session) {
+            $this->revoke($session);
+        }
     }
 
     public function activeCacheKey(string $sessionId): string

@@ -114,8 +114,13 @@ Route::middleware(["auth:api", "track.session", "check.schedule", "force.passwor
         Route::get("/", [LoginAuditController::class, "index"])->middleware("permission:access.view");
     });
 
-    Route::prefix("sessions")->group(function () {
-        Route::get("/", [SessionController::class, "index"])->middleware("permission:sessions.view");
-        Route::post("/{id}/revoke", [SessionController::class, "revoke"])->middleware("permission:sessions.revoke");
-    });
+    Route::prefix("sessions")
+        ->middleware("role:superadmin")
+        ->group(function () {
+            Route::get("/", [SessionController::class, "index"])->middleware("permission:sessions.view");
+            Route::post("/revoke-all", [SessionController::class, "revokeAllGlobal"])->middleware(
+                "permission:sessions.revoke",
+            );
+            Route::post("/{id}/revoke", [SessionController::class, "revoke"])->middleware("permission:sessions.revoke");
+        });
 });
