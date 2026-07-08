@@ -121,7 +121,7 @@ class ParameterSeeder extends Seeder
             [
                 "type" => "security",
                 "key" => "session_timeout_minutes",
-                "value" => "60",
+                "value" => "2",
                 "cast" => "integer",
                 "description" => "Minutos de inactividad antes de cerrar la sesión automáticamente",
             ],

@@ -183,6 +183,10 @@ class AuthController extends ApiController
         $data["geolocalization_login_enabled"] = $this->parameterService->get($auth, "geolocalization_login_enabled");
         $data["ip_address"] = request()->ip();
         $data["password_expired"] = $this->passwordPolicy->isExpired($user);
+        $data["session_timeout_minutes"] = (int) $this->parameterService->get(
+            ParameterType::Security,
+            "session_timeout_minutes",
+        );
 
         return $data;
     }
