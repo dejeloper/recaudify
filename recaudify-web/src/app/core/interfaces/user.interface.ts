@@ -21,6 +21,7 @@ export interface User {
   geolocalization_login_enabled?: boolean;
   ip_address?: string;
   password_expired?: boolean;
+  session_timeout_minutes?: number;
 }
 
 export interface UserPayload extends Record<string, unknown> {

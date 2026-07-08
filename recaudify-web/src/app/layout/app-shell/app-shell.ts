@@ -1,9 +1,10 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MenuItem } from '@core/interfaces/nav.interface';
 import { AuthService } from '@core/services/auth.service';
+import { InactivityService } from '@core/services/inactivity.service';
 import { MenuService } from '@core/services/menu.service';
 import { ShiftStatusService } from '@core/services/shift-status.service';
 import { filter, map } from 'rxjs';
@@ -20,10 +21,11 @@ export interface Breadcrumb {
   imports: [RouterOutlet, RouterLink, RouterLinkActive, DecimalPipe],
   templateUrl: './app-shell.html',
 })
-export class AppShell implements OnInit {
+export class AppShell implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly menuService = inject(MenuService);
   private readonly shiftStatus = inject(ShiftStatusService);
+  private readonly inactivityService = inject(InactivityService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
@@ -81,6 +83,11 @@ export class AppShell implements OnInit {
 
   ngOnInit() {
     this.menuService.load();
+    this.inactivityService.start();
+  }
+
+  ngOnDestroy() {
+    this.inactivityService.stop();
   }
 
   protected hasPermission(permission: string): boolean {
