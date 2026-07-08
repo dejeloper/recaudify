@@ -19,16 +19,63 @@
   </div>
 
   <div class="mb-5 flex flex-col sm:flex-row gap-3">
-    <select
-      [ngModel]="filterUserId()"
-      (ngModelChange)="filterUserId.set($event); applyFilters()"
-      class="w-full sm:w-56 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
-    >
-      <option [ngValue]="null">Todos los usuarios</option>
-      @for (user of users(); track user.id) {
-        <option [ngValue]="user.id">{{ user.name }}</option>
+    <div class="relative w-full sm:w-64">
+      <input
+        [ngModel]="userQuery()"
+        (ngModelChange)="onUserQueryChange($event)"
+        (focus)="onUserQueryFocus()"
+        (blur)="onUserQueryBlur()"
+        type="text"
+        placeholder="Buscar usuario..."
+        class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 pr-8 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+      />
+      @if (selectedUser()) {
+        <button
+          type="button"
+          (click)="clearUserFilter()"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          title="Quitar filtro de usuario"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
       }
-    </select>
+
+      @if (showUserResults() && userResults().length > 0) {
+        <ul
+          class="absolute z-10 mt-1 w-full max-h-56 overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+        >
+          @for (user of userResults(); track user.id) {
+            <li>
+              <button
+                type="button"
+                (mousedown)="selectUser(user)"
+                class="block w-full px-3.5 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              >
+                {{ user.name }}
+                <span class="text-gray-400">· {{ user.username }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    @if (selectedUser()) {
+      <button
+        (click)="revokeAllForSelectedUser()"
+        appBtn="secondary"
+        class="border-red-200 text-red-600 hover:bg-red-50"
+      >
+        Cerrar sesiones de {{ selectedUser()!.name }}
+      </button>
+    }
 
     <select
       [ngModel]="filterDeviceType()"

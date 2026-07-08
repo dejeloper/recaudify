@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { SessionFilters, UserSession } from '@core/interfaces/user-session.interface';
@@ -25,23 +26,80 @@ export class Sessions implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly users = signal<User[]>([]);
+  private readonly userSearch$ = new Subject<string>();
+
   protected readonly sessions = this.sessionsService.items;
   protected readonly meta = this.sessionsService.meta;
   protected readonly loading = this.sessionsService.loading;
   protected readonly loadingMore = this.sessionsService.loadingMore;
 
-  protected readonly filterUserId = signal<number | null>(null);
+  protected readonly userResults = signal<User[]>([]);
+  protected readonly showUserResults = signal(false);
+  protected readonly userQuery = signal('');
+  protected readonly selectedUser = signal<User | null>(null);
+
   protected readonly filterDeviceType = signal<'' | 'mobile' | 'tablet' | 'desktop'>('');
   protected readonly filterIpAddress = signal('');
 
   ngOnInit() {
-    this.usersService
-      .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((users) => this.users.set(users));
+    this.userSearch$
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((term) =>
+          term.trim() ? this.usersService.searchByTerm(term.trim()) : this.usersService.getAll(),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((users) => this.userResults.set(users));
 
     this.load();
+  }
+
+  protected onUserQueryChange(value: string): void {
+    this.userQuery.set(value);
+    this.showUserResults.set(true);
+    if (this.selectedUser()) this.selectedUser.set(null);
+    this.userSearch$.next(value);
+  }
+
+  protected onUserQueryFocus(): void {
+    this.showUserResults.set(true);
+    this.userSearch$.next(this.userQuery());
+  }
+
+  protected onUserQueryBlur(): void {
+    setTimeout(() => this.showUserResults.set(false), 150);
+  }
+
+  protected selectUser(user: User): void {
+    this.selectedUser.set(user);
+    this.userQuery.set(user.name);
+    this.showUserResults.set(false);
+    this.applyFilters();
+  }
+
+  protected clearUserFilter(): void {
+    this.selectedUser.set(null);
+    this.userQuery.set('');
+    this.applyFilters();
+  }
+
+  protected revokeAllForSelectedUser(): void {
+    const user = this.selectedUser();
+    if (!user) return;
+    if (!confirm(`¿Cerrar todas las sesiones de ${user.name}?`)) return;
+
+    this.sessionsService
+      .revokeAllForUser(user.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success('Sesiones del usuario cerradas correctamente.');
+          this.load();
+        },
+        error: () => this.toast.error('No se pudieron cerrar las sesiones del usuario.'),
+      });
   }
 
   protected applyFilters(): void {
@@ -92,7 +150,7 @@ export class Sessions implements OnInit {
 
   private load(): void {
     const filters: SessionFilters = {};
-    if (this.filterUserId() != null) filters.user_id = this.filterUserId()!;
+    if (this.selectedUser()) filters.user_id = this.selectedUser()!.id;
     if (this.filterDeviceType())
       filters.device_type = this.filterDeviceType() as 'mobile' | 'tablet' | 'desktop';
     if (this.filterIpAddress().trim()) filters.ip_address = this.filterIpAddress().trim();

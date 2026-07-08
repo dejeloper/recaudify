@@ -80,6 +80,10 @@ export class UserSessionsService {
     return this.api.post<void>('sessions', 'revoke-all');
   }
 
+  revokeAllForUser(userId: number) {
+    return this.api.post<void>('sessions', `user/${userId}/revoke-all`);
+  }
+
   private fetch(page: number) {
     const params: Record<string, string | number> = {
       page,
