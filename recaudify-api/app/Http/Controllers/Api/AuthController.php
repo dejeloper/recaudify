@@ -12,6 +12,7 @@ use App\Http\Responses\ApiResult;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Services\LoginAuditService;
+use App\Services\LoginLockoutService;
 use App\Services\ParameterService;
 use App\Services\PasswordPolicyService;
 use App\Services\PasswordResetService;
@@ -26,6 +27,7 @@ class AuthController extends ApiController
     public function __construct(
         private readonly AuthService $authService,
         private readonly LoginAuditService $loginAudit,
+        private readonly LoginLockoutService $loginLockout,
         private readonly ParameterService $parameterService,
         private readonly PasswordPolicyService $passwordPolicy,
         private readonly PasswordResetService $passwordResetService,
@@ -57,6 +59,18 @@ class AuthController extends ApiController
 
         $location = $request->filled("latitude") ? $request->only("latitude", "longitude", "accuracy") : null;
 
+        if ($this->loginLockout->isLocked($request->username, $request->ip())) {
+            $attempted = $this->userService->findByLoginField($loginField, $request->username);
+            $this->loginAudit->recordFailure($request->username, "locked_out", $attempted, $request, $location);
+
+            $minutes = (int) ceil($this->loginLockout->secondsRemaining($request->username, $request->ip()) / 60);
+
+            return ApiResult::failure(
+                "Demasiados intentos fallidos. Intente nuevamente en {$minutes} minuto(s).",
+                429,
+            )->toResponse();
+        }
+
         if (!($token = $this->guard()->attempt($credentials))) {
             $attempted = $this->userService->findByLoginField($loginField, $request->username);
             $this->loginAudit->recordFailure(
@@ -66,12 +80,15 @@ class AuthController extends ApiController
                 $request,
                 $location,
             );
+            $this->loginLockout->recordFailedAttempt($request->username, $request->ip());
 
             return ApiResult::unauthorized("Credenciales incorrectas.")->toResponse();
         }
 
         /** @var User $user */
         $user = $this->guard()->user();
+
+        $this->loginLockout->clear($user->username, $request->ip());
 
         if (!$user->active) {
             $this->guard()->logout();

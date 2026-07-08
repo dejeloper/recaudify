@@ -116,6 +116,108 @@ class LoginTest extends TestCase
         $response->assertStatus(401);
     }
 
+    public function test_login_locks_out_after_max_failed_attempts(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson("/api/auth/login", [
+                "username" => "testuser",
+                "password" => "contraseña_incorrecta",
+            ])->assertStatus(401);
+        }
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(429)->assertJsonPath("success", false);
+    }
+
+    public function test_login_respects_configured_max_login_attempts(): void
+    {
+        Parameter::create([
+            "type" => "security",
+            "key" => "max_login_attempts",
+            "value" => "3",
+            "cast" => "integer",
+            "description" => "Intentos de login fallidos antes de bloquear",
+        ]);
+
+        for ($i = 0; $i < 2; $i++) {
+            $this->postJson("/api/auth/login", [
+                "username" => "testuser",
+                "password" => "contraseña_incorrecta",
+            ])->assertStatus(401);
+        }
+
+        // Con el parámetro en 3, este 3er intento fallido ya debe agotar el cupo.
+        $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "contraseña_incorrecta",
+        ])->assertStatus(401);
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(429)->assertJsonPath("success", false);
+    }
+
+    public function test_login_lockout_disabled_never_blocks(): void
+    {
+        Parameter::create([
+            "type" => "security",
+            "key" => "lockout_enabled",
+            "value" => "false",
+            "cast" => "boolean",
+            "description" => "Habilita el bloqueo por intentos fallidos",
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson("/api/auth/login", [
+                "username" => "testuser",
+                "password" => "contraseña_incorrecta",
+            ])->assertStatus(401);
+        }
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_login_success_clears_failed_attempts_counter(): void
+    {
+        for ($i = 0; $i < 2; $i++) {
+            $this->postJson("/api/auth/login", [
+                "username" => "testuser",
+                "password" => "contraseña_incorrecta",
+            ])->assertStatus(401);
+        }
+
+        $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ])->assertStatus(200);
+
+        for ($i = 0; $i < 4; $i++) {
+            $this->postJson("/api/auth/login", [
+                "username" => "testuser",
+                "password" => "contraseña_incorrecta",
+            ])->assertStatus(401);
+        }
+
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $response->assertStatus(200);
+    }
+
     public function test_me_returns_authenticated_user_data(): void
     {
         $response = $this->actingAs($this->user, "api")->getJson("/api/auth/me");
