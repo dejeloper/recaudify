@@ -17,8 +17,10 @@ use App\Services\ParameterService;
 use App\Services\PasswordPolicyService;
 use App\Services\PasswordResetService;
 use App\Services\UserService;
+use App\Services\UserSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 
@@ -32,6 +34,7 @@ class AuthController extends ApiController
         private readonly PasswordPolicyService $passwordPolicy,
         private readonly PasswordResetService $passwordResetService,
         private readonly UserService $userService,
+        private readonly UserSessionService $userSessions,
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
@@ -71,7 +74,13 @@ class AuthController extends ApiController
             )->toResponse();
         }
 
-        if (!($token = $this->guard()->attempt($credentials))) {
+        $sessionId = (string) Str::uuid();
+
+        if (
+            !($token = $this->guard()
+                ->claims(["session_id" => $sessionId])
+                ->attempt($credentials))
+        ) {
             $attempted = $this->userService->findByLoginField($loginField, $request->username);
             $this->loginAudit->recordFailure(
                 $request->username,
@@ -107,6 +116,7 @@ class AuthController extends ApiController
         }
 
         $this->loginAudit->recordSuccess($user, $request, $location);
+        $this->userSessions->create($user, $sessionId, $request);
 
         return $this->buildTokenResponse($token, $user);
     }
@@ -192,9 +202,19 @@ class AuthController extends ApiController
     public function refresh(): JsonResponse
     {
         try {
+            $sessionId = $this->guard()->getPayload()->get("session_id");
+        } catch (\Throwable) {
+            $sessionId = null;
+        }
+
+        try {
             $newToken = $this->guard()->refresh();
         } catch (\Throwable) {
             return ApiResult::unauthorized("No se pudo renovar la sesion.")->toResponse();
+        }
+
+        if ($sessionId && ($session = $this->userSessions->findActive($sessionId))) {
+            $this->userSessions->touch($session);
         }
 
         $response = ApiResult::success(
@@ -215,6 +235,16 @@ class AuthController extends ApiController
 
     public function logout(): JsonResponse
     {
+        try {
+            $sessionId = $this->guard()->getPayload()->get("session_id");
+        } catch (\Throwable) {
+            $sessionId = null;
+        }
+
+        if ($sessionId && ($session = $this->userSessions->findActive($sessionId))) {
+            $this->userSessions->revoke($session);
+        }
+
         $this->guard()->logout();
 
         return ApiResult::empty("Sesion cerrada correctamente.")

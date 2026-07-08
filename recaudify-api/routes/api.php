@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SessionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
@@ -18,15 +19,19 @@ Route::prefix("auth")->group(function () {
 
     Route::post("refresh", [AuthController::class, "refresh"])->middleware("throttle:10,1");
 
-    Route::middleware("auth:api")->group(function () {
+    Route::middleware(["auth:api", "track.session"])->group(function () {
         Route::get("me", [AuthController::class, "me"]);
         Route::post("login/location", [AuthController::class, "loginLocation"]);
         Route::post("logout", [AuthController::class, "logout"]);
         Route::post("change-password", [AuthController::class, "changePassword"]);
+
+        Route::get("sessions", [SessionController::class, "mine"]);
+        Route::post("sessions/{id}/revoke", [SessionController::class, "revokeMine"]);
+        Route::post("sessions/revoke-all", [SessionController::class, "revokeAllMine"]);
     });
 });
 
-Route::middleware(["auth:api", "check.schedule", "force.password.change"])->group(function () {
+Route::middleware(["auth:api", "track.session", "check.schedule", "force.password.change"])->group(function () {
     Route::prefix("users")->group(function () {
         Route::get("/", [UserController::class, "index"])->middleware("permission:users.view");
         Route::get("/disabled", [UserController::class, "indexDisabled"])->middleware("permission:users.view");
@@ -107,5 +112,10 @@ Route::middleware(["auth:api", "check.schedule", "force.password.change"])->grou
 
     Route::prefix("login-audits")->group(function () {
         Route::get("/", [LoginAuditController::class, "index"])->middleware("permission:access.view");
+    });
+
+    Route::prefix("sessions")->group(function () {
+        Route::get("/", [SessionController::class, "index"])->middleware("permission:sessions.view");
+        Route::post("/{id}/revoke", [SessionController::class, "revoke"])->middleware("permission:sessions.revoke");
     });
 });
