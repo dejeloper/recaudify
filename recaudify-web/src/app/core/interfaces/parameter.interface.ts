@@ -11,6 +11,11 @@ export interface Parameter {
   updated_at: string;
 }
 
+export interface ParameterFilters {
+  type?: string;
+  search?: string;
+}
+
 export const PARAMETER_TYPES = [
   'authentication',
   'application',

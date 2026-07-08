@@ -11,7 +11,9 @@ import {
   ParameterType,
 } from '@core/interfaces/parameter.interface';
 import { ParametersService } from '@core/services/parameters.service';
-import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
+import { createDebouncedSearch } from '@core/utils/debounced-search';
+import { computePageNumbers } from '@core/utils/pagination-pages';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-parameters',
@@ -37,7 +39,9 @@ export class Parameters implements OnInit {
   protected readonly selectedType = signal('');
   protected readonly searchTerm = signal('');
 
-  private readonly search$ = new Subject<string>();
+  private readonly emitSearch = createDebouncedSearch(this.destroyRef, (term) =>
+    this.service.load(this.selectedType() || undefined, term || undefined),
+  );
 
   ngOnInit() {
     this.service.load();
@@ -47,14 +51,11 @@ export class Parameters implements OnInit {
       .subscribe((types) => {
         if (types) this.availableTypes.set(types);
       });
-    this.search$
-      .pipe(debounceTime(500), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe((term) => this.service.load(this.selectedType() || undefined, term || undefined));
   }
 
   protected onSearch(term: string) {
     this.searchTerm.set(term);
-    this.search$.next(term);
+    this.emitSearch(term);
   }
 
   protected filterByType(type: string) {
@@ -62,23 +63,7 @@ export class Parameters implements OnInit {
     this.service.load(type || undefined, this.searchTerm() || undefined);
   }
 
-  protected readonly pageNumbers = computed<(number | '...')[]>(() => {
-    const meta = this.meta();
-    if (!meta || meta.lastPage <= 1) return [];
-
-    const { page: current, lastPage: last } = meta;
-    if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
-
-    const pages = new Set<number>([1, 2, last - 1, last, current - 1, current, current + 1]);
-    const sorted = [...pages].filter((p) => p >= 1 && p <= last).sort((a, b) => a - b);
-
-    const result: (number | '...')[] = [];
-    for (let i = 0; i < sorted.length; i++) {
-      if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('...');
-      result.push(sorted[i]);
-    }
-    return result;
-  });
+  protected readonly pageNumbers = computed(() => computePageNumbers(this.meta()));
 
   protected goToPage(page: number | '...') {
     if (page === '...') return;
