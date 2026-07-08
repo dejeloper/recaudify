@@ -2,7 +2,7 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-gray-900">Actividad</h1>
-      <p class="mt-0.5 text-sm text-gray-400">
+      <p class="mt-0.5 text-sm text-gray-500">
         Registro de acciones realizadas en el sistema.
         @if (meta(); as m) {
           <span class="text-gray-300">·</span> {{ m.total }} registro{{ m.total === 1 ? '' : 's' }}
@@ -14,7 +14,7 @@
       placeholder="Filtrar por usuario (usuario o 'sistema')..."
       [value]="userFilter"
       (input)="onUserFilterChange($any($event.target).value)"
-      class="w-full sm:w-64 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-slate-400 focus:outline-none"
+      class="w-full sm:w-64 rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-400 focus:outline-none"
     />
   </div>
 

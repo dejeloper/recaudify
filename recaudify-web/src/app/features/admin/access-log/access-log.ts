@@ -9,6 +9,7 @@ const REASON_LABELS: Record<string, string> = {
   invalid_credentials: 'Credenciales incorrectas',
   inactive: 'Usuario inactivo',
   out_of_schedule: 'Fuera de horario',
+  locked_out: 'Bloqueado por intentos fallidos',
 };
 
 @Component({

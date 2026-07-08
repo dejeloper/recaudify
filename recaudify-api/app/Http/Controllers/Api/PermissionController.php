@@ -2,24 +2,45 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ParameterType;
 use App\Http\Requests\Permission\StorePermissionRequest;
 use App\Http\Requests\Permission\UpdatePermissionRequest;
 use App\Http\Resources\PermissionResource;
 use App\Http\Responses\ApiResult;
 use App\Services\LoggingService;
+use App\Services\ParameterService;
 use App\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PermissionController extends ApiController
 {
     public function __construct(
         private readonly PermissionService $permissionService,
         private readonly LoggingService $logging,
+        private readonly ParameterService $parameterService,
     ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return ApiResult::success(PermissionResource::collection($this->permissionService->all()))->toResponse();
+        if (!$request->filled("page")) {
+            return ApiResult::success(PermissionResource::collection($this->permissionService->all()))->toResponse();
+        }
+
+        $search = $request->filled("search") ? $request->string("search")->toString() : null;
+
+        $defaultPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_per_page");
+        $maxPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_max_per_page");
+
+        $perPage = (int) $request->query("per_page", (string) $defaultPerPage);
+        $perPage = max(1, min($perPage, $maxPerPage));
+
+        $paginator = $this->permissionService->paginate($search, $perPage);
+
+        return ApiResult::paginated(
+            $paginator,
+            PermissionResource::collection($paginator->getCollection()),
+        )->toResponse();
     }
 
     public function show(int $id): JsonResponse

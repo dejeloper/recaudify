@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Services;
+
+use App\Enums\ParameterType;
+use App\Models\User;
+use App\Models\UserSession;
+use App\Repositories\UserSessionRepository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
+
+class UserSessionService
+{
+    private const TOUCH_THRESHOLD_MINUTES = 1;
+
+    public function __construct(
+        private readonly UserSessionRepository $repository,
+        private readonly UserAgentParser $userAgentParser,
+        private readonly ParameterService $parameterService,
+    ) {}
+
+    public function create(User $user, string $sessionId, Request $request): UserSession
+    {
+        $userAgent = $request->userAgent() ?? "";
+        $os = $this->userAgentParser->parseOs($userAgent);
+
+        return $this->repository->create([
+            "user_id" => $user->id,
+            "session_id" => $sessionId,
+            "ip_address" => $request->ip(),
+            "user_agent" => $userAgent,
+            "os_name" => $os["name"],
+            "os_version" => $os["version"],
+            "device_type" => $this->userAgentParser->parseDeviceType($userAgent),
+            "last_used_at" => now(),
+            "expires_at" => now()->addMinutes((int) config("jwt.refresh_ttl")),
+        ]);
+    }
+
+    public function findActive(string $sessionId): ?UserSession
+    {
+        $session = $this->repository->findActiveBySessionId($sessionId);
+
+        if ($session !== null && $this->isInactive($session)) {
+            $this->revoke($session);
+
+            return null;
+        }
+
+        return $session;
+    }
+
+    public function isInactive(UserSession $session): bool
+    {
+        $timeoutMinutes = (int) $this->parameterService->get(ParameterType::Security, "session_timeout_minutes");
+
+        if ($timeoutMinutes <= 0 || $session->last_used_at === null) {
+            return false;
+        }
+
+        return $session->last_used_at->diffInMinutes(now()) >= $timeoutMinutes;
+    }
+
+    public function find(int $id): ?UserSession
+    {
+        return $this->repository->find($id);
+    }
+
+    public function findOwned(int $userId, int $id): ?UserSession
+    {
+        return $this->repository->findForUser($userId, $id);
+    }
+
+    public function touch(UserSession $session): void
+    {
+        if (
+            $session->last_used_at !== null &&
+            $session->last_used_at->diffInMinutes(now()) < self::TOUCH_THRESHOLD_MINUTES
+        ) {
+            return;
+        }
+
+        $session->update(["last_used_at" => now()]);
+    }
+
+    public function revoke(UserSession $session): void
+    {
+        $session->update(["revoked_at" => now()]);
+        Cache::forget($this->activeCacheKey($session->session_id));
+    }
+
+    public function revokeAllForUser(User $user, ?string $exceptSessionId = null): void
+    {
+        foreach ($this->repository->activeForUser($user->id) as $session) {
+            if ($exceptSessionId !== null && $session->session_id === $exceptSessionId) {
+                continue;
+            }
+
+            $this->revoke($session);
+        }
+    }
+
+    public function forUser(int $userId): Collection
+    {
+        return $this->repository->activeForUser($userId);
+    }
+
+    public function getAll(array $filters, int $perPage): LengthAwarePaginator
+    {
+        return $this->repository->paginate($filters, $perPage);
+    }
+
+    public function revokeAllGlobal(): void
+    {
+        foreach ($this->repository->allActive() as $session) {
+            $this->revoke($session);
+        }
+    }
+
+    public function activeCacheKey(string $sessionId): string
+    {
+        return "session-active:{$sessionId}";
+    }
+}

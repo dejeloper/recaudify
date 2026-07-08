@@ -50,6 +50,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserSchedule::class);
     }
 
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
     public function getJWTCustomClaims(): array
     {
         return [

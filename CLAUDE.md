@@ -111,7 +111,7 @@ pnpm prettier --write .
 | `FRONTEND_URL`          | `http://localhost:4200` |
 | `DB_DATABASE`           | `recaudify`             |
 | `JWT_TTL`               | `15` (minutes)          |
-| `JWT_REFRESH_TTL`       | `240` (minutes)         |
+| `JWT_REFRESH_TTL`       | `120` (minutes)         |
 | `L5_SWAGGER_CONST_HOST` | falls back to `APP_URL` |
 
 Angular API URL is set in `src/environments/environment.ts` → `apiUrl`.

@@ -23,6 +23,8 @@ interface AppShellHarness {
   toggleUserMenu: () => void;
   closeUserMenu: () => void;
   logout: () => void;
+  sidebarCompact: WritableSignal<boolean>;
+  toggleCompact: () => void;
 }
 
 function makeUser(overrides: Partial<User> = {}): User {
@@ -79,6 +81,10 @@ async function setup(user: User | null, permissions: string[] = []) {
 }
 
 describe('AppShell', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it('isItemVisible allows items without a permission requirement', async () => {
     const { comp } = await setup(makeUser());
 
@@ -270,5 +276,42 @@ describe('AppShell', () => {
     comp.logout();
 
     expect(auth.logout).toHaveBeenCalled();
+  });
+
+  it('sidebarCompact defaults to false when localStorage is not set', async () => {
+    const { comp } = await setup(makeUser());
+
+    expect(comp.sidebarCompact()).toBe(false);
+  });
+
+  it('sidebarCompact reads true from localStorage', async () => {
+    localStorage.setItem('sidebar_compact', 'true');
+    const { comp } = await setup(makeUser());
+
+    expect(comp.sidebarCompact()).toBe(true);
+  });
+
+  it('toggleCompact flips the value and persists to localStorage', async () => {
+    const { comp } = await setup(makeUser());
+
+    comp.toggleCompact();
+    expect(comp.sidebarCompact()).toBe(true);
+    expect(localStorage.getItem('sidebar_compact')).toBe('true');
+
+    comp.toggleCompact();
+    expect(comp.sidebarCompact()).toBe(false);
+    expect(localStorage.getItem('sidebar_compact')).toBe('false');
+  });
+
+  it('sidebarCompact persists independently of sidebarOpen', async () => {
+    const { comp } = await setup(makeUser());
+
+    comp.toggleCompact();
+    expect(comp.sidebarCompact()).toBe(true);
+    expect(comp.sidebarOpen()).toBe(false);
+
+    comp.toggleSidebar();
+    expect(comp.sidebarCompact()).toBe(true);
+    expect(comp.sidebarOpen()).toBe(true);
   });
 });

@@ -37,7 +37,7 @@
               id="formKey"
               [(ngModel)]="formKey"
               placeholder="ej. tasa_interes_moratorio"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow font-mono"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow font-mono"
             />
           }
         </div>
@@ -51,7 +51,7 @@
             id="formValue"
             [(ngModel)]="formValue"
             placeholder="ej. 2.5"
-            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
           />
         </div>
 
@@ -67,7 +67,7 @@
             <select
               id="formType"
               [(ngModel)]="formType"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             >
               @for (type of availableTypes(); track type) {
                 <option [value]="type">{{ typeLabels[type] }}</option>
@@ -84,7 +84,7 @@
             <select
               id="formCast"
               [(ngModel)]="formCast"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             >
               @for (cast of availableCasts(); track cast) {
                 <option [value]="cast">{{ cast }}</option>
@@ -109,7 +109,7 @@
               [(ngModel)]="formDescription"
               rows="2"
               placeholder="ej. Tasa de interés moratorio para cálculos de recargo"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow resize-none"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow resize-none"
             ></textarea>
           }
         </div>

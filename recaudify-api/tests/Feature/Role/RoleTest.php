@@ -21,6 +21,30 @@ class RoleTest extends TestCase
         $this->getJson("/api/roles")->assertStatus(200)->assertJsonPath("success", true);
     }
 
+    public function test_index_paginates_when_page_is_requested(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Role::create(["name" => "cobrador", "guard_name" => "api"]);
+        Role::create(["name" => "vendedor", "guard_name" => "api"]);
+
+        $this->getJson("/api/roles?page=1&per_page=1")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 2)
+            ->assertJsonCount(1, "data.items");
+    }
+
+    public function test_index_filters_by_search_when_paginated(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Role::create(["name" => "cobrador", "guard_name" => "api"]);
+        Role::create(["name" => "vendedor", "guard_name" => "api"]);
+
+        $this->getJson("/api/roles?page=1&search=cobra")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 1)
+            ->assertJsonPath("data.items.0.name", "cobrador");
+    }
+
     public function test_show_returns_role_or_404(): void
     {
         $this->authenticateWith(self::PERMISSIONS);

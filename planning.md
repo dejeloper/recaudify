@@ -57,7 +57,7 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 - [ ] Historial de navegación reciente: lista de "últimas 5 pantallas/clientes visitados" por usuario, para volver rápido a lo que se estaba revisando sin repetir la búsqueda.
 - [ ] Menú distinto por rol/perfil (layout): que el cobrador vea un menú simple centrado en Agenda y Pagos, mientras que administrador ve el menú completo — evita que roles operativos se pierdan entre opciones que nunca van a usar.
 - [ ] Atajos de teclado configurables: acciones rápidas (nuevo cliente, nuevo pago, buscar) vía teclado, documentadas en un modal de ayuda (`?`), pensado para usuarios de alto volumen (cobradores/cajeros) que ganan tiempo real no usando mouse.
-- [ ] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
+- [x] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
 
 #### Logs y auditoría
 
@@ -87,11 +87,13 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 #### Sesiones y seguridad
 
-- [ ] Bloqueo por intentos fallidos de login (rate limiting / lockout): tras N (paramétrico) intentos fallidos,  bloquear temporalmente el usuario y la IP. El legacy no tenía ningún control de este tipo;  es una brecha real de seguridad a cerrar antes de tener datos de negocio sensibles.
-- [ ] Gestión de sesiones activas: ver qué dispositivos/tokens tiene activos un usuario y poder  revocar uno o todos remotamente (útil si se pierde un dispositivo o se sospecha de un acceso  indebido). Se apoya en el JWT + refresh token ya existente. (Paramétrico si se quiere o no, por defecto true)
-- [ ] Expiración de sesión por inactividad configurable: además del TTL fijo del JWT (15 min), un parámetro de "cerrar sesión tras X(parametrizable) minutos sin actividad" a nivel de frontend/UX.
-- [ ] Listado de sesiones/tokens activos + revocación remota: hoy solo hay login/logout/refresh del JWT, sin ningún lugar donde ver "qué dispositivos tienen sesión abierta ahora mismo" ni forma de cerrar una sesión ajena (útil si se pierde un celular o hay sospecha de acceso indebido).
-- [ ] Bloqueo tras intentos fallidos (rate limit + lockout): actualmente el único throttle encontrado es `throttle:10,1` hardcodeado en el refresh; no hay bloqueo de cuenta ni de IP tras varios intentos fallidos de login.
+- [x] Bloqueo por intentos fallidos de login (rate limiting / lockout): tras N (paramétrico) intentos fallidos,  bloquear temporalmente el usuario y la IP. El legacy no tenía ningún control de este tipo;  es una brecha real de seguridad a cerrar antes de tener datos de negocio sensibles.
+- [x] Gestión de sesiones activas: ver qué dispositivos/tokens tiene activos un usuario y poder  revocar uno o todos remotamente (útil si se pierde un dispositivo o se sospecha de un acceso  indebido). Se apoya en el JWT + refresh token ya existente. (Paramétrico si se quiere o no, por defecto true)
+- [x] Expiración de sesión por inactividad configurable: además del TTL fijo del JWT (15 min), un parámetro de "cerrar sesión tras X(parametrizable) minutos sin actividad" a nivel de frontend/UX.
+- [x] Deslogueo proactivo por inactividad en el frontend: `InactivityService` escucha mousemove/keydown/scroll/touchstart mientras hay sesión activa (arrancado/detenido desde `AppShell`) y desloguea al usuario sin esperar el próximo request, usando el mismo parámetro `session_timeout_minutes` (ahora expuesto en `/auth/login` y `/auth/me`).
+- [x] Listado de sesiones/tokens activos + revocación remota: hoy solo hay login/logout/refresh del JWT, sin ningún lugar donde ver "qué dispositivos tienen sesión abierta ahora mismo" ni forma de cerrar una sesión ajena (útil si se pierde un celular o hay sospecha de acceso indebido).
+- [x] Revocar todas las sesiones de un usuario específico desde el panel admin: además de "todas las mías" (self-service) y "todas las globales", el admin puede buscar un usuario por nombre/username (input con debounce, sin `<select>` precargado) y cerrar únicamente las sesiones de ese usuario.
+- [x] Bloqueo tras intentos fallidos (rate limit + lockout): actualmente el único throttle encontrado es `throttle:10,1` hardcodeado en el refresh; no hay bloqueo de cuenta ni de IP tras varios intentos fallidos de login.
 - [ ] Panel de administración de rate limiting: en vez de límites fijos en el código de rutas, poder ajustar los límites por endpoint sensible desde Parameters/Settings.
 - [ ] Detección de acceso desde ubicación/IP inusual: dado que `LoginAudit` ya guarda IP y geolocalización, comparar contra el histórico del usuario y marcar/alertar accesos atípicos (otro país, otro dispositivo nunca visto) es una extensión natural de un dato que ya existe.
 - [ ] Modo "vista previa como otro usuario" (impersonar) para administrador/soporte: para reproducir un problema que reporta un cobrador sin pedirle contraseña, dejando registro en auditoría de cuándo y quién impersonó a quién (nunca silencioso).
@@ -172,7 +174,7 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
       como evento propio vinculado al registro original, que nunca se oculta de los listados
 - [ ] Punto 2 — Devolución, Gestión/Llamada, Compromiso: sin borrado lógico; son eventos de
       historial, se corrigen con otro evento (no se ocultan ni se marcan como borrados)
-- [ ] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
+- [x] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
       de borrado (ni `SoftDeletes` ni booleano) bajo ninguna circunstancia
 
 #### Cuando SÍ se puede borrar físico (datos sin realidad de negocio todavía)
@@ -442,4 +444,4 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 ## Actualizado
 
-2026-07-06
+2026-07-07

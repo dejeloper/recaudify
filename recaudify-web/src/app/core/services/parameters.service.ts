@@ -1,8 +1,9 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { EMPTY, catchError, map, Observable, shareReplay, tap } from 'rxjs';
-import { Parameter } from '@core/interfaces/parameter.interface';
+import { Parameter, ParameterFilters } from '@core/interfaces/parameter.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { PaginatedList } from '@core/utils/paginated-list';
 
 @Injectable({ providedIn: 'root' })
 export class ParametersService {
@@ -10,24 +11,31 @@ export class ParametersService {
   private readonly toast = inject(ToastService);
   private readonly cache = new Map<string, Observable<Parameter[]>>();
 
-  readonly items = signal<Parameter[]>([]);
+  private readonly list = new PaginatedList<Parameter, ParameterFilters>(
+    (page, perPage, filters) => {
+      const params: Record<string, string | number> = { page, per_page: perPage };
+      if (filters?.type) params['type'] = filters.type;
+      if (filters?.search) params['search'] = filters.search;
+      return this.api.getPaginated<Parameter>('parameters', undefined, params);
+    },
+    10,
+  );
+
+  readonly items = this.list.items;
+  readonly meta = this.list.meta;
+  readonly loading = this.list.loading;
   readonly trashed = signal<Parameter[]>([]);
-  readonly loading = signal(false);
   readonly loadingTrashed = signal(false);
   readonly showTrashed = signal(false);
 
-  load(type?: string): void {
-    this.loading.set(true);
+  load(type?: string, search?: string): void {
     this.showTrashed.set(false);
     this.trashed.set([]);
-    this.cache.delete(type ?? '__all__');
-    this.getAll(type).subscribe({
-      next: (list) => {
-        this.items.set(list);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.list.load({ type, search });
+  }
+
+  goToPage(page: number): void {
+    this.list.goToPage(page);
   }
 
   toggleTrashed(): void {

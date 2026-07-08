@@ -98,6 +98,14 @@ class ParameterSeeder extends Seeder
             //  Security
             [
                 "type" => "security",
+                "key" => "lockout_enabled",
+                "value" => "true",
+                "cast" => "boolean",
+                "description" =>
+                    "Habilita el bloqueo temporal de usuario e IP tras superar los intentos fallidos de login",
+            ],
+            [
+                "type" => "security",
                 "key" => "max_login_attempts",
                 "value" => "5",
                 "cast" => "integer",
@@ -113,7 +121,7 @@ class ParameterSeeder extends Seeder
             [
                 "type" => "security",
                 "key" => "session_timeout_minutes",
-                "value" => "60",
+                "value" => "30",
                 "cast" => "integer",
                 "description" => "Minutos de inactividad antes de cerrar la sesión automáticamente",
             ],

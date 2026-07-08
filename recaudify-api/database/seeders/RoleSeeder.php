@@ -40,8 +40,9 @@ class RoleSeeder extends Seeder
         }
 
         $allPermissions = Permission::pluck("name")->toArray();
+        $adminPermissions = array_values(array_diff($allPermissions, ["sessions.view", "sessions.revoke"]));
 
         Role::findByName("superadmin")->syncPermissions($allPermissions);
-        Role::findByName("administrador")->syncPermissions($allPermissions);
+        Role::findByName("administrador")->syncPermissions($adminPermissions);
     }
 }

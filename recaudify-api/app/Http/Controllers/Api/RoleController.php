@@ -2,21 +2,42 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ParameterType;
 use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Http\Responses\ApiResult;
 use App\Services\LoggingService;
+use App\Services\ParameterService;
 use App\Services\RoleService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RoleController extends ApiController
 {
-    public function __construct(private readonly RoleService $roleService, private readonly LoggingService $logging) {}
+    public function __construct(
+        private readonly RoleService $roleService,
+        private readonly LoggingService $logging,
+        private readonly ParameterService $parameterService,
+    ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return ApiResult::success(RoleResource::collection($this->roleService->all()))->toResponse();
+        if (!$request->filled("page")) {
+            return ApiResult::success(RoleResource::collection($this->roleService->all()))->toResponse();
+        }
+
+        $search = $request->filled("search") ? $request->string("search")->toString() : null;
+
+        $defaultPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_per_page");
+        $maxPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_max_per_page");
+
+        $perPage = (int) $request->query("per_page", (string) $defaultPerPage);
+        $perPage = max(1, min($perPage, $maxPerPage));
+
+        $paginator = $this->roleService->paginate($search, $perPage);
+
+        return ApiResult::paginated($paginator, RoleResource::collection($paginator->getCollection()))->toResponse();
     }
 
     public function show(int $id): JsonResponse

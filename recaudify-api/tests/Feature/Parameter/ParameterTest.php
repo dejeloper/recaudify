@@ -34,6 +34,31 @@ class ParameterTest extends TestCase
         $this->getJson("/api/parameters")->assertStatus(200)->assertJsonPath("success", true);
     }
 
+    public function test_index_paginates_when_page_is_requested(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Parameter::create(self::PAYLOAD);
+        Parameter::create([...self::PAYLOAD, "key" => "otro_parametro"]);
+
+        $this->getJson("/api/parameters?page=1&per_page=1")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 2)
+            ->assertJsonPath("data.meta.perPage", 1)
+            ->assertJsonCount(1, "data.items");
+    }
+
+    public function test_index_filters_by_search_when_paginated(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Parameter::create(self::PAYLOAD);
+        Parameter::create([...self::PAYLOAD, "key" => "otro_parametro"]);
+
+        $this->getJson("/api/parameters?page=1&search=dias_mora")
+            ->assertStatus(200)
+            ->assertJsonPath("data.meta.total", 1)
+            ->assertJsonPath("data.items.0.key", "dias_mora");
+    }
+
     public function test_store_creates_parameter(): void
     {
         $this->authenticateWith(self::PERMISSIONS);

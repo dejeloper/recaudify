@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckUserSchedule;
 use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\LogHttpRequests;
 use App\Http\Middleware\SetJwtFromCookie;
+use App\Http\Middleware\TrackUserSession;
 use App\Http\Responses\ApiResult;
 use App\Services\LoggingService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             "role_or_permission" => RoleOrPermissionMiddleware::class,
             "check.schedule" => CheckUserSchedule::class,
             "force.password.change" => ForcePasswordChange::class,
+            "track.session" => TrackUserSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

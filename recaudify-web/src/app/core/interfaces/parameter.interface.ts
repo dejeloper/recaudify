@@ -11,6 +11,11 @@ export interface Parameter {
   updated_at: string;
 }
 
+export interface ParameterFilters {
+  type?: string;
+  search?: string;
+}
+
 export const PARAMETER_TYPES = [
   'authentication',
   'application',
@@ -32,10 +37,10 @@ export const PARAMETER_TYPE_LABELS: Record<ParameterType, string> = {
 };
 
 export const PARAMETER_TYPE_COLORS: Record<ParameterType, string> = {
-  authentication: 'text-orange-700 bg-orange-50',
-  application: 'text-purple-700 bg-purple-50',
-  business: 'text-blue-700 bg-blue-50',
+  authentication: 'text-gray-700 bg-gray-100',
+  application: 'text-gray-700 bg-gray-100',
+  business: 'text-gray-700 bg-gray-100',
   configuration: 'text-gray-700 bg-gray-100',
-  notification: 'text-teal-700 bg-teal-50',
-  security: 'text-rose-700 bg-rose-50',
+  notification: 'text-gray-700 bg-gray-100',
+  security: 'text-gray-700 bg-gray-100',
 };

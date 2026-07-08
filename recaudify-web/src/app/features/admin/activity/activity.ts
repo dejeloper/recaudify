@@ -1,12 +1,11 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BtnDirective } from '@core/directives/btn.directive';
 import { Spinner } from '@core/components/spinner/spinner';
 import { Activity } from '@core/interfaces/activity.interface';
 import { ActivitiesService } from '@core/services/activities.service';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { createDebouncedSearch } from '@core/utils/debounced-search';
 
 const DEFAULT_USER_FILTER = 'sistema';
 
@@ -47,26 +46,22 @@ export class ActivityFeed implements OnInit {
   protected readonly userFilter =
     this.route.snapshot.queryParamMap.get('user') ?? DEFAULT_USER_FILTER;
 
-  private readonly userFilter$ = new Subject<string>();
+  private readonly emitUserFilter = createDebouncedSearch(this.destroyRef, (user) => {
+    this.service.load({ user: user || DEFAULT_USER_FILTER });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { user: user || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  });
 
   ngOnInit() {
     this.service.load({ user: this.userFilter });
-
-    this.userFilter$
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe((user) => {
-        this.service.load({ user: user || DEFAULT_USER_FILTER });
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { user: user || null },
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-      });
   }
 
   protected onUserFilterChange(user: string) {
-    this.userFilter$.next(user);
+    this.emitUserFilter(user);
   }
 
   protected loadMore() {
@@ -108,7 +103,7 @@ export class ActivityFeed implements OnInit {
       case 'deleted':
         return { dot: 'bg-red-500', badge: 'bg-red-50 text-red-700' };
       case 'restored':
-        return { dot: 'bg-blue-500', badge: 'bg-blue-50 text-blue-700' };
+        return { dot: 'bg-gray-500', badge: 'bg-gray-100 text-gray-700' };
       default:
         return { dot: 'bg-gray-400', badge: 'bg-gray-100 text-gray-600' };
     }

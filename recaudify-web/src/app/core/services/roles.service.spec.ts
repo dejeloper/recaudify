@@ -10,8 +10,12 @@ function role(id: number, name: string): Role {
   return { id, name, guard_name: 'api', permissions: [] } as Role;
 }
 
+function page(items: Role[]) {
+  return { items, meta: { total: items.length, page: 1, perPage: 10, lastPage: 1 } };
+}
+
 function setup() {
-  const api = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
+  const api = { get: vi.fn(), getPaginated: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
   const toast = { success: vi.fn(), error: vi.fn() };
 
   TestBed.configureTestingModule({
@@ -29,14 +33,25 @@ function setup() {
 describe('RolesService', () => {
   it('load populates items', () => {
     const { service, api } = setup();
-    api.get.mockReturnValue(of([role(1, 'cobrador')]));
+    api.getPaginated.mockReturnValue(of(page([role(1, 'cobrador')])));
     service.load();
     expect(service.items()).toHaveLength(1);
   });
 
+  it('load with search passes the query param', () => {
+    const { service, api } = setup();
+    api.getPaginated.mockReturnValue(of(page([])));
+    service.load('cobra');
+    expect(api.getPaginated).toHaveBeenCalledWith('roles', undefined, {
+      page: 1,
+      per_page: 10,
+      search: 'cobra',
+    });
+  });
+
   it('remove moves the role to trashed and toasts', () => {
     const { service, api, toast } = setup();
-    api.get.mockReturnValue(of([role(1, 'cobrador')]));
+    api.getPaginated.mockReturnValue(of(page([role(1, 'cobrador')])));
     service.load();
     api.delete.mockReturnValue(of(undefined));
 

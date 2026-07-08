@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\ParameterType;
 use App\Models\Parameter;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ParameterRepository
 {
@@ -22,6 +23,21 @@ class ParameterRepository
         }
 
         return $query->get();
+    }
+
+    public function paginate(?ParameterType $type, ?string $search, int $perPage): LengthAwarePaginator
+    {
+        return Parameter::query()
+            ->when($type !== null, fn($q) => $q->where("type", $type->value))
+            ->when(
+                $search,
+                fn($q, $s) => $q->where(
+                    fn($q2) => $q2->where("key", "like", "%{$s}%")->orWhere("description", "like", "%{$s}%"),
+                ),
+            )
+            ->orderBy("type")
+            ->orderBy("key")
+            ->paginate($perPage);
     }
 
     public function find(int $id): ?Parameter
