@@ -2,9 +2,21 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-gray-900">Parámetros</h1>
-      <p class="mt-0.5 text-sm text-gray-400">Configuración general del sistema.</p>
+      <p class="mt-0.5 text-sm text-gray-500">
+        Configuración general del sistema.
+        @if (meta(); as m) {
+          <span class="text-gray-300">·</span> {{ m.total }} parámetro{{ m.total === 1 ? '' : 's' }}
+        }
+      </p>
     </div>
     <div class="flex items-center gap-2 sm:self-start self-stretch">
+      <input
+        type="search"
+        placeholder="Buscar por clave o descripción..."
+        [value]="searchTerm()"
+        (input)="onSearch($any($event.target).value)"
+        class="w-full sm:w-56 rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-400 focus:outline-none"
+      />
       <button
         (click)="toggleTrashed()"
         appBtn="secondary"
@@ -77,7 +89,7 @@
         <p class="text-sm text-gray-400">No hay parámetros configurados.</p>
         <a
           routerLink="/admin/parameters/new"
-          class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+          class="mt-2 inline-block text-sm font-medium text-brand-600 hover:text-brand-900"
           >Crear el primero</a
         >
       </div>
@@ -177,6 +189,61 @@
           </table>
         </div>
       </div>
+
+      @if (meta(); as m) {
+        @if (m.lastPage > 1) {
+          <div class="mt-4 flex items-center justify-center gap-1">
+            <button
+              (click)="goToPage(m.page - 1)"
+              [disabled]="m.page === 1"
+              appBtn="secondary"
+              title="Anterior"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            @for (p of pageNumbers(); track $index) {
+              @if (p === '...') {
+                <span class="px-2 text-sm text-gray-400">…</span>
+              } @else {
+                <button
+                  (click)="goToPage(p)"
+                  class="min-w-[2.25rem] rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors"
+                  [class.bg-gray-900]="p === m.page"
+                  [class.text-white]="p === m.page"
+                  [class.text-gray-600]="p !== m.page"
+                  [class.hover:bg-gray-100]="p !== m.page"
+                >
+                  {{ p }}
+                </button>
+              }
+            }
+
+            <button
+              (click)="goToPage(m.page + 1)"
+              [disabled]="m.page === m.lastPage"
+              appBtn="secondary"
+              title="Siguiente"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+        }
+      }
     }
 
     <!-- Deleted parameters -->

@@ -2,6 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Parameter } from '@core/interfaces/parameter.interface';
+import { PaginationMeta } from '@core/interfaces/pagination.interface';
 import { ApiService } from '@core/services/api.service';
 import { ParametersService } from '@core/services/parameters.service';
 import { ToastService } from '@core/services/toast.service';
@@ -21,8 +22,21 @@ function param(id: number, key: string, value: string): Parameter {
   };
 }
 
+function page(items: Parameter[], meta: Partial<PaginationMeta> = {}) {
+  return {
+    items,
+    meta: { total: items.length, page: 1, perPage: 25, lastPage: 1, ...meta },
+  };
+}
+
 function setup() {
-  const api = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
+  const api = {
+    get: vi.fn(),
+    getPaginated: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  };
   const toast = { success: vi.fn(), error: vi.fn() };
 
   TestBed.configureTestingModule({
@@ -63,21 +77,36 @@ describe('ParametersService', () => {
 
   it('load populates items', () => {
     const { service, api } = setup();
-    api.get.mockReturnValue(of([param(1, 'k', 'v')]));
+    api.getPaginated.mockReturnValue(of(page([param(1, 'k', 'v')])));
     service.load();
     expect(service.items()).toHaveLength(1);
   });
 
   it('load with type passes query param', () => {
     const { service, api } = setup();
-    api.get.mockReturnValue(of([]));
+    api.getPaginated.mockReturnValue(of(page([])));
     service.load('business');
-    expect(api.get).toHaveBeenCalledWith('parameters', undefined, { type: 'business' });
+    expect(api.getPaginated).toHaveBeenCalledWith('parameters', undefined, {
+      page: 1,
+      per_page: 10,
+      type: 'business',
+    });
+  });
+
+  it('load with search term passes query param', () => {
+    const { service, api } = setup();
+    api.getPaginated.mockReturnValue(of(page([])));
+    service.load(undefined, 'dias_mora');
+    expect(api.getPaginated).toHaveBeenCalledWith('parameters', undefined, {
+      page: 1,
+      per_page: 10,
+      search: 'dias_mora',
+    });
   });
 
   it('remove moves the parameter to trashed', () => {
     const { service, api, toast } = setup();
-    api.get.mockReturnValue(of([param(1, 'k', 'v')]));
+    api.getPaginated.mockReturnValue(of(page([param(1, 'k', 'v')])));
     service.load();
     api.delete.mockReturnValue(of(undefined));
 

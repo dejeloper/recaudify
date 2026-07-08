@@ -1,31 +1,36 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { EMPTY, catchError, tap } from 'rxjs';
-import { Role } from '@core/interfaces/role.interface';
+import { Role, RoleFilters } from '@core/interfaces/role.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { PaginatedList } from '@core/utils/paginated-list';
 
 @Injectable({ providedIn: 'root' })
 export class RolesService {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  readonly items = signal<Role[]>([]);
+  private readonly list = new PaginatedList<Role, RoleFilters>((page, perPage, filters) => {
+    const params: Record<string, string | number> = { page, per_page: perPage };
+    if (filters?.search) params['search'] = filters.search;
+    return this.api.getPaginated<Role>('roles', undefined, params);
+  }, 10);
+
+  readonly items = this.list.items;
+  readonly meta = this.list.meta;
+  readonly loading = this.list.loading;
   readonly trashed = signal<Role[]>([]);
-  readonly loading = signal(false);
   readonly loadingTrashed = signal(false);
   readonly showTrashed = signal(false);
 
-  load(): void {
-    this.loading.set(true);
+  load(search?: string): void {
     this.showTrashed.set(false);
     this.trashed.set([]);
-    this.getAll().subscribe({
-      next: (list) => {
-        this.items.set(list);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.list.load({ search });
+  }
+
+  goToPage(page: number): void {
+    this.list.goToPage(page);
   }
 
   toggleTrashed(): void {

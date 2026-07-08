@@ -52,6 +52,10 @@ class PermissionSeeder extends Seeder
             // Login audit
             "access.view",
 
+            // Sessions
+            "sessions.view",
+            "sessions.revoke",
+
             // Catalogs
             "catalogs.view",
 

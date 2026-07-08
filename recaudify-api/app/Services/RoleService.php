@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Role;
 use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class RoleService
@@ -14,6 +15,11 @@ class RoleService
     public function all(): Collection
     {
         return $this->repository->all();
+    }
+
+    public function paginate(?string $search, int $perPage): LengthAwarePaginator
+    {
+        return $this->repository->paginate($search, $perPage);
     }
 
     public function find(int $id): ?Role

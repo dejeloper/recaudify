@@ -83,6 +83,36 @@ class ParameterServiceTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
+    public function test_get_all_does_not_hit_database_twice_for_same_type(): void
+    {
+        Parameter::create(["type" => "authentication", "key" => "k1", "value" => "v1", "cast" => "string"]);
+
+        $this->service->getAll(ParameterType::Authentication);
+
+        \Illuminate\Support\Facades\DB::enableQueryLog();
+        $this->service->getAll(ParameterType::Authentication);
+        $queries = \Illuminate\Support\Facades\DB::getQueryLog();
+        \Illuminate\Support\Facades\DB::disableQueryLog();
+
+        $this->assertEmpty(
+            $queries,
+            "La segunda llamada a getAll() para el mismo tipo no debería tocar la base de datos.",
+        );
+    }
+
+    public function test_get_all_reflects_changes_after_flush_cache(): void
+    {
+        $param = Parameter::create(["type" => "authentication", "key" => "k1", "value" => "v1", "cast" => "string"]);
+        $this->service->getAll(ParameterType::Authentication);
+
+        $param->update(["value" => "v2"]);
+        $this->service->flushCache(ParameterType::Authentication);
+
+        $result = $this->service->get(ParameterType::Authentication, "k1");
+
+        $this->assertSame("v2", $result);
+    }
+
     public function test_resolve_value_returns_correct_types(): void
     {
         $this->assertSame(true, $this->service->resolveValue("true", ParameterCast::Boolean));

@@ -11,6 +11,7 @@ const sample: Permission = { id: 1, name: 'users.create', guard_name: 'api' };
 async function setup() {
   const service = {
     items: signal<Permission[]>([]),
+    meta: signal(null),
     trashed: signal<Permission[]>([]),
     loading: signal(false),
     loadingTrashed: signal(false),
@@ -18,6 +19,7 @@ async function setup() {
     grouped: signal<{ module: string; perms: Permission[] }[]>([]),
     groupedTrashed: signal<{ module: string; perms: Permission[] }[]>([]),
     load: vi.fn(),
+    goToPage: vi.fn(),
     toggleTrashed: vi.fn(),
     actionLabel: vi.fn((name: string) => name.split('.')[1] ?? name),
     remove: vi.fn().mockReturnValue(of(undefined)),

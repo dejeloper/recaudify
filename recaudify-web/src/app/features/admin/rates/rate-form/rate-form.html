@@ -32,7 +32,7 @@
             id="formName"
             [(ngModel)]="formName"
             placeholder="ej. 7 Cuota - Biblia $350.000"
-            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
           />
         </div>
 
@@ -43,7 +43,7 @@
           <select
             id="formProductId"
             [(ngModel)]="formProductId"
-            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+            class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
           >
             <option [ngValue]="null" disabled>Seleccione un producto…</option>
             @for (product of products(); track product.id) {
@@ -63,7 +63,7 @@
               min="0"
               [(ngModel)]="formValue"
               placeholder="350000"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             />
           </div>
           <div>
@@ -76,7 +76,7 @@
               min="0"
               [(ngModel)]="formDiscount"
               placeholder="0"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             />
           </div>
           <div>
@@ -89,7 +89,7 @@
               min="0"
               [(ngModel)]="formInstallments"
               placeholder="7"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             />
           </div>
           <div>
@@ -102,7 +102,7 @@
               min="0"
               [(ngModel)]="formInstallmentValue"
               placeholder="50000"
-              class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+              class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
             />
           </div>
         </div>
@@ -112,7 +112,7 @@
             type="checkbox"
             id="formActive"
             [(ngModel)]="formActive"
-            class="h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-500/20"
+            class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500/20"
           />
           <label for="formActive" class="text-sm font-medium text-gray-700">Activa</label>
         </div>

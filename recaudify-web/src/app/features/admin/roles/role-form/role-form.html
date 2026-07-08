@@ -34,7 +34,7 @@
           id="formName"
           [(ngModel)]="formName"
           placeholder="ej. supervisor"
-          class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+          class="w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
         />
       </div>
 
@@ -44,7 +44,7 @@
           <p class="text-sm font-medium text-gray-700">Permisos</p>
           <a
             routerLink="/admin/permissions"
-            class="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            class="text-xs font-medium text-brand-600 hover:text-brand-900 transition-colors"
           >
             Gestionar permisos
           </a>
@@ -55,7 +55,7 @@
             <p class="text-sm text-gray-400">No hay permisos disponibles.</p>
             <a
               routerLink="/admin/permissions/new"
-              class="mt-2 inline-block text-sm font-medium text-slate-600 hover:text-slate-900"
+              class="mt-2 inline-block text-sm font-medium text-brand-600 hover:text-brand-900"
             >
               Crear permisos
             </a>
@@ -64,8 +64,8 @@
           <div class="divide-y divide-gray-100">
             @for (group of grouped(); track group.module) {
               <div>
-                <div class="flex items-center justify-between bg-stone-100 px-5 py-2.5">
-                  <span class="text-xs font-semibold uppercase tracking-wider text-stone-600">{{
+                <div class="flex items-center justify-between bg-gray-100 px-5 py-2.5">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{
                     group.module
                   }}</span>
                   <label class="flex items-center gap-2 cursor-pointer select-none">
@@ -73,7 +73,7 @@
                       type="checkbox"
                       [checked]="allChecked(group.perms)"
                       (change)="toggleAll(group.perms, $any($event.target).checked)"
-                      class="rounded border-gray-300 text-slate-900 focus:ring-slate-500"
+                      class="rounded border-gray-300 text-brand-900 focus:ring-brand-500"
                     />
                     <span class="text-xs text-gray-400">Todos</span>
                   </label>
@@ -87,7 +87,7 @@
                         type="checkbox"
                         [checked]="isSelected(perm)"
                         (change)="toggle(perm)"
-                        class="rounded border-gray-300 text-slate-900 focus:ring-slate-500"
+                        class="rounded border-gray-300 text-brand-900 focus:ring-brand-500"
                       />
                       <span class="text-sm text-gray-700">{{ actionLabel(perm) }}</span>
                     </label>

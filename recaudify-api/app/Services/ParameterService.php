@@ -7,11 +7,15 @@ use App\Enums\ParameterType;
 use App\Models\Parameter;
 use App\Repositories\ParameterRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class ParameterService
 {
     private const CACHE_TTL = 300;
+
+    /** Memo por instancia: evita repetir la consulta a la tabla `cache` para el mismo tipo dentro de la misma ejecución. */
+    private array $resolved = [];
 
     public function __construct(private readonly ParameterRepository $repository) {}
 
@@ -40,6 +44,11 @@ class ParameterService
         return $this->repository->trashed();
     }
 
+    public function paginate(?ParameterType $type, ?string $search, int $perPage): LengthAwarePaginator
+    {
+        return $this->repository->paginate($type, $search, $perPage);
+    }
+
     public function restore(Parameter $parameter): Parameter
     {
         $parameter->restore();
@@ -58,13 +67,17 @@ class ParameterService
 
     public function getAll(ParameterType $type): Collection
     {
+        if (array_key_exists($type->value, $this->resolved)) {
+            return $this->resolved[$type->value];
+        }
+
         $data = Cache::remember(
             "parameters.{$type->value}",
             self::CACHE_TTL,
             fn() => $this->repository->allByType($type)->toArray(),
         );
 
-        return Parameter::hydrate($data);
+        return $this->resolved[$type->value] = Parameter::hydrate($data);
     }
 
     public function get(ParameterType $type, string $key): mixed
@@ -91,6 +104,7 @@ class ParameterService
     public function flushCache(ParameterType $type): void
     {
         Cache::forget("parameters.{$type->value}");
+        unset($this->resolved[$type->value]);
     }
 
     public function resolveValue(string $value, ParameterCast $cast): mixed

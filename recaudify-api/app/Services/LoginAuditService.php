@@ -10,7 +10,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class LoginAuditService
 {
-    public function __construct(private readonly LoginAuditRepository $repository) {}
+    public function __construct(
+        private readonly LoginAuditRepository $repository,
+        private readonly UserAgentParser $userAgentParser,
+    ) {}
 
     public function getAll(array $filters = [], int $perPage = 25): LengthAwarePaginator
     {
@@ -73,48 +76,15 @@ class LoginAuditService
     private function metadataFrom(Request $request): array
     {
         $userAgent = $request->userAgent() ?? "";
-        $os = $this->parseOs($userAgent);
+        $os = $this->userAgentParser->parseOs($userAgent);
 
         return [
             "ip_address" => $request->ip(),
             "user_agent" => $userAgent,
             "os_name" => $os["name"],
             "os_version" => $os["version"],
-            "device_type" => $this->parseDeviceType($userAgent),
+            "device_type" => $this->userAgentParser->parseDeviceType($userAgent),
             "logged_at" => now(),
         ];
-    }
-
-    private function parseOs(string $ua): array
-    {
-        $rules = [
-            "/Windows NT ([\d.]+)/" => "Windows",
-            "/iPhone OS ([\d_]+)/" => "iOS",
-            "/iPad.*OS ([\d_]+)/" => "iPadOS",
-            "/Android ([\d.]+)/" => "Android",
-            "/Mac OS X ([\d_]+)/" => "macOS",
-            "/Linux/" => "Linux",
-        ];
-
-        foreach ($rules as $regex => $name) {
-            if (preg_match($regex, $ua, $m)) {
-                return ["name" => $name, "version" => str_replace("_", ".", $m[1] ?? "")];
-            }
-        }
-
-        return ["name" => "Unknown", "version" => ""];
-    }
-
-    private function parseDeviceType(string $ua): string
-    {
-        if (preg_match("/iPad|Android(?!.*Mobile)|Tablet/i", $ua)) {
-            return "tablet";
-        }
-
-        if (preg_match("/Mobile|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i", $ua)) {
-            return "mobile";
-        }
-
-        return "desktop";
     }
 }

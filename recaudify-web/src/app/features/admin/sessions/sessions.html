@@ -1,0 +1,158 @@
+<div class="p-4 sm:p-8">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Sesiones</h1>
+      <p class="mt-0.5 text-sm text-gray-500">
+        Sesiones activas de todos los usuarios.
+        @if (meta(); as m) {
+          <span class="text-gray-300">·</span> {{ m.total }} sesión{{ m.total === 1 ? '' : 'es' }}
+        }
+      </p>
+    </div>
+    <button
+      (click)="panic()"
+      appBtn="secondary"
+      class="border-red-200 text-red-600 hover:bg-red-50"
+    >
+      Cerrar todas las sesiones
+    </button>
+  </div>
+
+  <div class="mb-5 flex flex-col sm:flex-row gap-3">
+    <div class="relative w-full sm:w-64">
+      <input
+        [ngModel]="userQuery()"
+        (ngModelChange)="onUserQueryChange($event)"
+        (focus)="onUserQueryFocus()"
+        (blur)="onUserQueryBlur()"
+        type="text"
+        placeholder="Buscar usuario..."
+        class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 pr-8 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+      />
+      @if (selectedUser()) {
+        <button
+          type="button"
+          (click)="clearUserFilter()"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          title="Quitar filtro de usuario"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      }
+
+      @if (showUserResults() && userResults().length > 0) {
+        <ul
+          class="absolute z-10 mt-1 w-full max-h-56 overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+        >
+          @for (user of userResults(); track user.id) {
+            <li>
+              <button
+                type="button"
+                (mousedown)="selectUser(user)"
+                class="block w-full px-3.5 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              >
+                {{ user.name }}
+                <span class="text-gray-400">· {{ user.username }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    @if (selectedUser()) {
+      <button
+        (click)="revokeAllForSelectedUser()"
+        appBtn="secondary"
+        class="border-red-200 text-red-600 hover:bg-red-50"
+      >
+        Cerrar sesiones de {{ selectedUser()!.name }}
+      </button>
+    }
+
+    <select
+      [ngModel]="filterDeviceType()"
+      (ngModelChange)="filterDeviceType.set($event); applyFilters()"
+      class="w-full sm:w-44 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+    >
+      <option value="">Todos los dispositivos</option>
+      <option value="desktop">Desktop</option>
+      <option value="mobile">Mobile</option>
+      <option value="tablet">Tablet</option>
+    </select>
+
+    <input
+      [ngModel]="filterIpAddress()"
+      (ngModelChange)="filterIpAddress.set($event)"
+      (keyup.enter)="applyFilters()"
+      (blur)="applyFilters()"
+      type="text"
+      placeholder="Buscar por IP..."
+      class="w-full sm:w-56 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+    />
+  </div>
+
+  <app-spinner [show]="loading()" />
+
+  @if (!loading()) {
+    @if (sessions().length === 0) {
+      <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p class="text-sm text-gray-400">No hay sesiones activas.</p>
+      </div>
+    } @else {
+      <ol class="space-y-3">
+        @for (session of sessions(); track session.id) {
+          <li class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+            <div class="flex items-start gap-3">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-gray-800">
+                  <span class="font-semibold">{{
+                    session.user?.name ?? 'Usuario desconocido'
+                  }}</span>
+                  <span class="text-gray-400"> · {{ session.device_type ?? 'Desconocido' }}</span>
+                  @if (session.os) {
+                    <span class="text-gray-400">
+                      · {{ session.os.name }} {{ session.os.version }}</span
+                    >
+                  }
+                </p>
+                <p class="mt-0.5 text-xs text-gray-400">
+                  IP: {{ session.ip_address ?? '—' }}
+                  @if (session.last_used_at) {
+                    · Última actividad {{ session.last_used_at | date: 'd MMM y, h:mm a' }}
+                  }
+                </p>
+              </div>
+
+              <button (click)="revoke(session)" appBtn="table-danger" title="Revocar esta sesión">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          </li>
+        }
+      </ol>
+
+      @if (hasMore()) {
+        <div class="mt-4 text-center">
+          <button (click)="loadMore()" [disabled]="loadingMore()" appBtn="secondary">
+            {{ loadingMore() ? 'Cargando...' : 'Cargar más' }}
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

@@ -2,7 +2,7 @@
   <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-gray-900">Accesos</h1>
-      <p class="mt-0.5 text-sm text-gray-400">
+      <p class="mt-0.5 text-sm text-gray-500">
         Registro de inicios de sesión.
         @if (meta(); as m) {
           <span class="text-gray-300">·</span> {{ m.total }} registro{{ m.total === 1 ? '' : 's' }}
@@ -21,7 +21,7 @@
         <button
           (click)="setStatus($any(opt[0]))"
           class="rounded-md px-3 py-1.5 font-medium transition-colors"
-          [class.bg-slate-900]="status() === opt[0]"
+          [class.bg-brand-900]="status() === opt[0]"
           [class.text-white]="status() === opt[0]"
           [class.text-gray-500]="status() !== opt[0]"
         >
@@ -84,7 +84,7 @@
                       [href]="url"
                       target="_blank"
                       rel="noopener"
-                      class="text-slate-600 hover:text-slate-900 underline"
+                      class="text-brand-600 hover:text-brand-900 underline"
                       >Ubicación</a
                     >
                   }

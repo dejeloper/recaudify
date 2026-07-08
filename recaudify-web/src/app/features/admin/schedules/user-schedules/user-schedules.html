@@ -8,7 +8,7 @@
         {{ user()?.name ?? '...' }}
       </p>
       <h1 class="text-xl font-semibold text-gray-900">Horarios de {{ user()?.name ?? '...' }}</h1>
-      <p class="mt-0.5 text-sm text-gray-400">
+      <p class="mt-0.5 text-sm text-gray-500">
         Define en qué días y horarios puede acceder al sistema.
       </p>
     </div>
@@ -28,7 +28,7 @@
             @if (canCreate() && addingDay() !== day.id && schedulesForDay(day.id).length === 0) {
               <button
                 (click)="openAdd(day.id)"
-                class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-brand-600 hover:bg-brand-50 hover:text-brand-900 transition-colors"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -47,18 +47,18 @@
             <!-- Existing entries -->
             @for (entry of schedulesForDay(day.id); track entry.id) {
               @if (editingId() === entry.id) {
-                <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
+                <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-gray-50">
                   <div class="flex items-center gap-2">
                     <input
                       type="time"
                       [(ngModel)]="editStart"
-                      class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+                      class="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
                     />
                     <span class="text-gray-400 text-sm">—</span>
                     <input
                       type="time"
                       [(ngModel)]="editEnd"
-                      class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+                      class="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
                     />
                   </div>
                   @if (showStatusEnabled()) {
@@ -68,7 +68,7 @@
                       <input
                         type="checkbox"
                         [(ngModel)]="editShowStatus"
-                        class="rounded border-gray-300 text-slate-600 focus:ring-slate-500/20"
+                        class="rounded border-gray-300 text-brand-600 focus:ring-brand-500/20"
                       />
                       Visible
                     </label>
@@ -179,18 +179,18 @@
 
             <!-- Add form -->
             @if (addingDay() === day.id) {
-              <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-slate-50">
+              <div class="px-5 py-3 flex flex-wrap items-center gap-3 bg-gray-50">
                 <div class="flex items-center gap-2">
                   <input
                     type="time"
                     [(ngModel)]="addStart"
-                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+                    class="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
                   />
                   <span class="text-gray-400 text-sm">—</span>
                   <input
                     type="time"
                     [(ngModel)]="addEnd"
-                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-shadow"
+                    class="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
                   />
                 </div>
                 @if (showStatusEnabled()) {
@@ -200,7 +200,7 @@
                     <input
                       type="checkbox"
                       [(ngModel)]="addShowStatus"
-                      class="rounded border-gray-300 text-slate-600 focus:ring-slate-500/20"
+                      class="rounded border-gray-300 text-brand-600 focus:ring-brand-500/20"
                     />
                     Visible
                   </label>

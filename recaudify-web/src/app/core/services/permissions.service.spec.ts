@@ -10,8 +10,12 @@ function permission(id: number, name: string): Permission {
   return { id, name, guard_name: 'api' };
 }
 
+function page(items: Permission[]) {
+  return { items, meta: { total: items.length, page: 1, perPage: 10, lastPage: 1 } };
+}
+
 function setup() {
-  const api = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
+  const api = { get: vi.fn(), getPaginated: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
   const toast = { success: vi.fn(), error: vi.fn() };
 
   TestBed.configureTestingModule({
@@ -29,7 +33,7 @@ function setup() {
 describe('PermissionsService', () => {
   it('load populates items', () => {
     const { service, api } = setup();
-    api.get.mockReturnValue(of([permission(1, 'clientes.ver')]));
+    api.getPaginated.mockReturnValue(of(page([permission(1, 'clientes.ver')])));
 
     service.load();
 
@@ -39,7 +43,7 @@ describe('PermissionsService', () => {
 
   it('toggleTrashed fetches trashed once', () => {
     const { service, api } = setup();
-    api.get.mockReturnValueOnce(of([]));
+    api.getPaginated.mockReturnValueOnce(of(page([])));
     service.load();
     api.get.mockReturnValueOnce(of([permission(2, 'clientes.crear')]));
 
@@ -51,7 +55,7 @@ describe('PermissionsService', () => {
 
   it('remove moves the permission to trashed and toasts', () => {
     const { service, api, toast } = setup();
-    api.get.mockReturnValue(of([permission(1, 'clientes.ver')]));
+    api.getPaginated.mockReturnValue(of(page([permission(1, 'clientes.ver')])));
     service.load();
     api.delete.mockReturnValue(of(undefined));
 
@@ -74,12 +78,14 @@ describe('PermissionsService', () => {
 
   it('grouped computes permissions grouped by module', () => {
     const { service, api } = setup();
-    api.get.mockReturnValue(
-      of([
-        permission(1, 'clientes.ver'),
-        permission(2, 'ventas.crear'),
-        permission(3, 'clientes.crear'),
-      ]),
+    api.getPaginated.mockReturnValue(
+      of(
+        page([
+          permission(1, 'clientes.ver'),
+          permission(2, 'ventas.crear'),
+          permission(3, 'clientes.crear'),
+        ]),
+      ),
     );
 
     service.load();

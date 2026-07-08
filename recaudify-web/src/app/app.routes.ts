@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, authOnlyGuard, guestGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { superadminGuard } from './core/guards/superadmin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -23,6 +24,11 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: 'my-sessions',
+        loadComponent: () =>
+          import('./features/account/my-sessions/my-sessions').then((m) => m.MySessions),
       },
       {
         path: 'admin',
@@ -207,6 +213,12 @@ export const routes: Routes = [
               import('./features/admin/menu-items/menu-item-form/menu-item-form').then(
                 (m) => m.MenuItemForm,
               ),
+          },
+          {
+            path: 'sessions',
+            canActivate: [superadminGuard],
+            loadComponent: () =>
+              import('./features/admin/sessions/sessions').then((m) => m.Sessions),
           },
         ],
       },

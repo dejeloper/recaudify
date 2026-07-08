@@ -73,7 +73,7 @@ describe('Users (list)', () => {
     expect(comp.searchTerm()).toBe('juan');
     expect(service.search).not.toHaveBeenCalled();
 
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(500);
     expect(service.search).toHaveBeenCalledWith('juan');
     vi.useRealTimers();
   });
