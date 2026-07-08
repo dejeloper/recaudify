@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ParameterType;
 use App\Models\User;
 use App\Models\UserSession;
 use App\Repositories\UserSessionRepository;
@@ -17,6 +18,7 @@ class UserSessionService
     public function __construct(
         private readonly UserSessionRepository $repository,
         private readonly UserAgentParser $userAgentParser,
+        private readonly ParameterService $parameterService,
     ) {}
 
     public function create(User $user, string $sessionId, Request $request): UserSession
@@ -39,7 +41,26 @@ class UserSessionService
 
     public function findActive(string $sessionId): ?UserSession
     {
-        return $this->repository->findActiveBySessionId($sessionId);
+        $session = $this->repository->findActiveBySessionId($sessionId);
+
+        if ($session !== null && $this->isInactive($session)) {
+            $this->revoke($session);
+
+            return null;
+        }
+
+        return $session;
+    }
+
+    public function isInactive(UserSession $session): bool
+    {
+        $timeoutMinutes = (int) $this->parameterService->get(ParameterType::Security, "session_timeout_minutes");
+
+        if ($timeoutMinutes <= 0 || $session->last_used_at === null) {
+            return false;
+        }
+
+        return $session->last_used_at->diffInMinutes(now()) >= $timeoutMinutes;
     }
 
     public function find(int $id): ?UserSession

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Parameter;
 use App\Models\User;
 use App\Models\UserSession;
 use App\Services\UserSessionService;
@@ -58,6 +59,39 @@ class SessionTest extends TestCase
         app(UserSessionService::class)->revoke($session);
 
         $this->withToken($token)->getJson("/api/auth/me")->assertStatus(401);
+    }
+
+    public function test_authenticated_request_with_inactive_session_returns_401(): void
+    {
+        Parameter::create([
+            "type" => "security",
+            "key" => "session_timeout_minutes",
+            "value" => "30",
+            "cast" => "integer",
+        ]);
+
+        $token = $this->loginAndGetToken();
+
+        UserSession::where("user_id", $this->user->id)->update(["last_used_at" => now()->subMinutes(31)]);
+
+        $this->withToken($token)->getJson("/api/auth/me")->assertStatus(401);
+        $this->assertDatabaseMissing("user_sessions", ["user_id" => $this->user->id, "revoked_at" => null]);
+    }
+
+    public function test_inactivity_timeout_disabled_when_zero(): void
+    {
+        Parameter::create([
+            "type" => "security",
+            "key" => "session_timeout_minutes",
+            "value" => "0",
+            "cast" => "integer",
+        ]);
+
+        $token = $this->loginAndGetToken();
+
+        UserSession::where("user_id", $this->user->id)->update(["last_used_at" => now()->subDays(1)]);
+
+        $this->withToken($token)->getJson("/api/auth/me")->assertStatus(200);
     }
 
     public function test_refresh_preserves_session_id_claim(): void
