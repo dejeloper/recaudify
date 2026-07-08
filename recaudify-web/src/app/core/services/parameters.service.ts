@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { EMPTY, catchError, map, Observable, shareReplay, tap } from 'rxjs';
 import { Parameter } from '@core/interfaces/parameter.interface';
+import { PaginationMeta } from '@core/interfaces/pagination.interface';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 
@@ -9,25 +10,57 @@ export class ParametersService {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly cache = new Map<string, Observable<Parameter[]>>();
+  private static readonly PER_PAGE = 10;
 
   readonly items = signal<Parameter[]>([]);
+  readonly meta = signal<PaginationMeta | null>(null);
   readonly trashed = signal<Parameter[]>([]);
   readonly loading = signal(false);
   readonly loadingTrashed = signal(false);
   readonly showTrashed = signal(false);
 
-  load(type?: string): void {
+  private type?: string;
+  private search?: string;
+
+  load(type?: string, search?: string): void {
+    this.type = type;
+    this.search = search;
     this.loading.set(true);
     this.showTrashed.set(false);
     this.trashed.set([]);
-    this.cache.delete(type ?? '__all__');
-    this.getAll(type).subscribe({
-      next: (list) => {
-        this.items.set(list);
+    this.fetch(1).subscribe({
+      next: (page) => {
+        this.items.set(page.items);
+        this.meta.set(page.meta);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  goToPage(page: number): void {
+    const meta = this.meta();
+    if (!meta || page < 1 || page > meta.lastPage || page === meta.page || this.loading()) return;
+
+    this.loading.set(true);
+    this.fetch(page).subscribe({
+      next: (result) => {
+        this.items.set(result.items);
+        this.meta.set(result.meta);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  private fetch(page: number) {
+    const params: Record<string, string | number> = {
+      page,
+      per_page: ParametersService.PER_PAGE,
+    };
+    if (this.type) params['type'] = this.type;
+    if (this.search) params['search'] = this.search;
+    return this.api.getPaginated<Parameter>('parameters', undefined, params);
   }
 
   toggleTrashed(): void {

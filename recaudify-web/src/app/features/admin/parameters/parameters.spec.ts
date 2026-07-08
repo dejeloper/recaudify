@@ -22,11 +22,13 @@ const sample: Parameter = {
 async function setup() {
   const service = {
     items: signal<Parameter[]>([]),
+    meta: signal(null),
     trashed: signal<Parameter[]>([]),
     loading: signal(false),
     loadingTrashed: signal(false),
     showTrashed: signal(false),
     load: vi.fn(),
+    goToPage: vi.fn(),
     toggleTrashed: vi.fn(),
     getConfigValue: vi.fn().mockReturnValue(of(null)),
     remove: vi.fn().mockReturnValue(of(undefined)),
@@ -57,11 +59,15 @@ describe('Parameters (list)', () => {
   it('sets availableTypes when the config value resolves', async () => {
     const service = {
       items: signal<Parameter[]>([]),
+      meta: signal(null),
       trashed: signal<Parameter[]>([]),
       loading: signal(false),
+      loadingMore: signal(false),
       loadingTrashed: signal(false),
       showTrashed: signal(false),
       load: vi.fn(),
+      loadMore: vi.fn(),
+      hasMore: vi.fn().mockReturnValue(false),
       toggleTrashed: vi.fn(),
       getConfigValue: vi.fn().mockReturnValue(of(['application', 'security'])),
       remove: vi.fn().mockReturnValue(of(undefined)),
@@ -88,7 +94,7 @@ describe('Parameters (list)', () => {
     const { comp, service } = await setup();
     comp.filterByType('security');
     expect(comp.selectedType()).toBe('security');
-    expect(service.load).toHaveBeenCalledWith('security');
+    expect(service.load).toHaveBeenCalledWith('security', undefined);
   });
 
   it('toggleTrashed delegates to the service', async () => {
