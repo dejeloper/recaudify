@@ -9,7 +9,8 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        MenuItem::whereHas("parent", fn($q) => $q->where("label", "Auth"))->where("label", "Sesiones")->delete();
+        $authParentIds = MenuItem::where("label", "Auth")->pluck("id");
+        MenuItem::whereIn("parent_id", $authParentIds)->where("label", "Sesiones")->delete();
 
         $groups = [
             [
