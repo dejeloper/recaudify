@@ -121,6 +121,9 @@ Route::middleware(["auth:api", "track.session", "check.schedule", "force.passwor
             Route::post("/revoke-all", [SessionController::class, "revokeAllGlobal"])->middleware(
                 "permission:sessions.revoke",
             );
+            Route::post("/user/{userId}/revoke-all", [SessionController::class, "revokeAllForUser"])->middleware(
+                "permission:sessions.revoke",
+            );
             Route::post("/{id}/revoke", [SessionController::class, "revoke"])->middleware("permission:sessions.revoke");
         });
 });

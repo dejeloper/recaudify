@@ -96,6 +96,23 @@ class SessionController extends ApiController
         return ApiResult::empty("Todas las sesiones fueron cerradas correctamente.")->toResponse();
     }
 
+    public function revokeAllForUser(int $userId): JsonResponse
+    {
+        $user = User::find($userId);
+
+        if (!$user) {
+            return ApiResult::notFound("Usuario no encontrado.")->toResponse();
+        }
+
+        /** @var User $currentUser */
+        $currentUser = $this->guard()->user();
+        $exceptSessionId = $user->id === $currentUser->id ? $this->currentSessionId() : null;
+
+        $this->userSessions->revokeAllForUser($user, $exceptSessionId);
+
+        return ApiResult::empty("Sesiones del usuario cerradas correctamente.")->toResponse();
+    }
+
     private function currentSessionId(): ?string
     {
         try {
