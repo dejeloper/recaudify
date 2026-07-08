@@ -25,6 +25,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
+        path: 'my-sessions',
+        loadComponent: () =>
+          import('./features/account/my-sessions/my-sessions').then((m) => m.MySessions),
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
         children: [
@@ -206,6 +211,18 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/admin/menu-items/menu-item-form/menu-item-form').then(
                 (m) => m.MenuItemForm,
+              ),
+          },
+          {
+            path: 'sessions',
+            loadComponent: () =>
+              import('./features/admin/sessions/sessions').then((m) => m.Sessions),
+          },
+          {
+            path: 'sessions/:userId',
+            loadComponent: () =>
+              import('./features/admin/sessions/user-sessions/user-sessions').then(
+                (m) => m.UserSessions,
               ),
           },
         ],
