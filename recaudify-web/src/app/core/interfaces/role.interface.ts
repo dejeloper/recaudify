@@ -6,3 +6,7 @@ export interface Role {
   guard_name: string;
   permissions: Permission[];
 }
+
+export interface RoleFilters {
+  search?: string;
+}

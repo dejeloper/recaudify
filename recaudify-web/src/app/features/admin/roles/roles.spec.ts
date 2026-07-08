@@ -11,11 +11,13 @@ const sample: Role = { id: 1, name: 'admin', guard_name: 'api', permissions: [] 
 async function setup() {
   const service = {
     items: signal<Role[]>([]),
+    meta: signal(null),
     trashed: signal<Role[]>([]),
     loading: signal(false),
     loadingTrashed: signal(false),
     showTrashed: signal(false),
     load: vi.fn(),
+    goToPage: vi.fn(),
     toggleTrashed: vi.fn(),
     remove: vi.fn().mockReturnValue(of(undefined)),
     restoreItem: vi.fn().mockReturnValue(of(undefined)),
