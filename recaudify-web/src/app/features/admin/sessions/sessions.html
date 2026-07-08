@@ -1,73 +1,111 @@
 <div class="p-4 sm:p-8">
-  <!-- Page header -->
-  <div class="mb-6">
-    <h1 class="text-xl font-semibold text-gray-900">Sesiones</h1>
-    <p class="mt-0.5 text-sm text-gray-500">Gestiona las sesiones activas de cada usuario.</p>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Sesiones</h1>
+      <p class="mt-0.5 text-sm text-gray-500">
+        Sesiones activas de todos los usuarios.
+        @if (meta(); as m) {
+          <span class="text-gray-300">·</span> {{ m.total }} sesión{{ m.total === 1 ? '' : 'es' }}
+        }
+      </p>
+    </div>
+    <button
+      (click)="panic()"
+      appBtn="secondary"
+      class="border-red-200 text-red-600 hover:bg-red-50"
+    >
+      Cerrar todas las sesiones
+    </button>
   </div>
 
-  <!-- Table -->
+  <div class="mb-5 flex flex-col sm:flex-row gap-3">
+    <select
+      [ngModel]="filterUserId()"
+      (ngModelChange)="filterUserId.set($event); applyFilters()"
+      class="w-full sm:w-56 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+    >
+      <option [ngValue]="null">Todos los usuarios</option>
+      @for (user of users(); track user.id) {
+        <option [ngValue]="user.id">{{ user.name }}</option>
+      }
+    </select>
+
+    <select
+      [ngModel]="filterDeviceType()"
+      (ngModelChange)="filterDeviceType.set($event); applyFilters()"
+      class="w-full sm:w-44 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+    >
+      <option value="">Todos los dispositivos</option>
+      <option value="desktop">Desktop</option>
+      <option value="mobile">Mobile</option>
+      <option value="tablet">Tablet</option>
+    </select>
+
+    <input
+      [ngModel]="filterIpAddress()"
+      (ngModelChange)="filterIpAddress.set($event)"
+      (keyup.enter)="applyFilters()"
+      (blur)="applyFilters()"
+      type="text"
+      placeholder="Buscar por IP..."
+      class="w-full sm:w-56 rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-shadow"
+    />
+  </div>
+
   <app-spinner [show]="loading()" />
 
   @if (!loading()) {
-    @if (users().length === 0) {
+    @if (sessions().length === 0) {
       <div class="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
-        <p class="text-sm text-gray-400">No hay usuarios registrados.</p>
+        <p class="text-sm text-gray-400">No hay sesiones activas.</p>
       </div>
     } @else {
-      <div appTable>
-        <div class="overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (user of users(); track user.id) {
-                <tr>
-                  <td class="px-5 py-3.5">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700 text-xs font-semibold text-white shrink-0"
-                      >
-                        {{ user.name.charAt(0).toUpperCase() }}
-                      </div>
-                      <span class="font-medium text-gray-800">{{ user.name }}</span>
-                    </div>
-                  </td>
-                  <td class="px-5 py-3.5 text-gray-500">{{ user.username }}</td>
-                  <td class="px-5 py-3.5">
-                    <span
-                      class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700"
+      <ol class="space-y-3">
+        @for (session of sessions(); track session.id) {
+          <li class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+            <div class="flex items-start gap-3">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-gray-800">
+                  <span class="font-semibold">{{
+                    session.user?.name ?? 'Usuario desconocido'
+                  }}</span>
+                  <span class="text-gray-400"> · {{ session.device_type ?? 'Desconocido' }}</span>
+                  @if (session.os) {
+                    <span class="text-gray-400">
+                      · {{ session.os.name }} {{ session.os.version }}</span
                     >
-                      {{ user.roles[0] || '—' }}
-                    </span>
-                  </td>
-                  <td class="px-5 py-3.5 text-right">
-                    <a
-                      [routerLink]="['/admin/sessions', user.id]"
-                      appBtn="table-edit"
-                      title="Ver sesiones"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </a>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+                  }
+                </p>
+                <p class="mt-0.5 text-xs text-gray-400">
+                  IP: {{ session.ip_address ?? '—' }}
+                  @if (session.last_used_at) {
+                    · Última actividad {{ session.last_used_at | date: 'd MMM y, h:mm a' }}
+                  }
+                </p>
+              </div>
+
+              <button (click)="revoke(session)" appBtn="table-danger" title="Revocar esta sesión">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          </li>
+        }
+      </ol>
+
+      @if (hasMore()) {
+        <div class="mt-4 text-center">
+          <button (click)="loadMore()" [disabled]="loadingMore()" appBtn="secondary">
+            {{ loadingMore() ? 'Cargando...' : 'Cargar más' }}
+          </button>
         </div>
-      </div>
+      }
     }
   }
 </div>

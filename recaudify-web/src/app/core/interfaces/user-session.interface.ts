@@ -9,3 +9,9 @@ export interface UserSession {
   expires_at: string;
   is_current?: boolean;
 }
+
+export interface SessionFilters {
+  user_id?: number;
+  device_type?: 'mobile' | 'tablet' | 'desktop';
+  ip_address?: string;
+}

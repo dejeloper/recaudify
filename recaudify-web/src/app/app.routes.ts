@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, authOnlyGuard, guestGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { superadminGuard } from './core/guards/superadmin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -215,15 +216,9 @@ export const routes: Routes = [
           },
           {
             path: 'sessions',
+            canActivate: [superadminGuard],
             loadComponent: () =>
               import('./features/admin/sessions/sessions').then((m) => m.Sessions),
-          },
-          {
-            path: 'sessions/:userId',
-            loadComponent: () =>
-              import('./features/admin/sessions/user-sessions/user-sessions').then(
-                (m) => m.UserSessions,
-              ),
           },
         ],
       },
