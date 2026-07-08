@@ -13,6 +13,9 @@ class ParameterService
 {
     private const CACHE_TTL = 300;
 
+    /** Memo por instancia: evita repetir la consulta a la tabla `cache` para el mismo tipo dentro de la misma ejecución. */
+    private array $resolved = [];
+
     public function __construct(private readonly ParameterRepository $repository) {}
 
     public function all(?ParameterType $type = null): Collection
@@ -58,13 +61,17 @@ class ParameterService
 
     public function getAll(ParameterType $type): Collection
     {
+        if (array_key_exists($type->value, $this->resolved)) {
+            return $this->resolved[$type->value];
+        }
+
         $data = Cache::remember(
             "parameters.{$type->value}",
             self::CACHE_TTL,
             fn() => $this->repository->allByType($type)->toArray(),
         );
 
-        return Parameter::hydrate($data);
+        return $this->resolved[$type->value] = Parameter::hydrate($data);
     }
 
     public function get(ParameterType $type, string $key): mixed
@@ -91,6 +98,7 @@ class ParameterService
     public function flushCache(ParameterType $type): void
     {
         Cache::forget("parameters.{$type->value}");
+        unset($this->resolved[$type->value]);
     }
 
     public function resolveValue(string $value, ParameterCast $cast): mixed
