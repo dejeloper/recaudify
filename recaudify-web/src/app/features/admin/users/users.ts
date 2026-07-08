@@ -8,7 +8,8 @@ import { User } from '@core/interfaces/user.interface';
 import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@core/services/toast.service';
 import { UsersService } from '@core/services/users.service';
-import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
+import { createDebouncedSearch } from '@core/utils/debounced-search';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -40,18 +41,17 @@ export class Users implements OnInit {
     this.authService.hasPermission('users.reset-password'),
   );
 
-  private readonly search$ = new Subject<string>();
+  private readonly emitSearch = createDebouncedSearch(this.destroyRef, (term) =>
+    this.service.search(term),
+  );
 
   ngOnInit() {
     this.service.load();
-    this.search$
-      .pipe(debounceTime(500), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe((term) => this.service.search(term));
   }
 
   protected onSearch(term: string) {
     this.searchTerm.set(term);
-    this.search$.next(term);
+    this.emitSearch(term);
   }
 
   protected toggleDisabled() {
