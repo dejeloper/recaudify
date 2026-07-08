@@ -45,7 +45,7 @@ class ParameterSeeder extends Seeder
                 "value" => "fixed",
                 "cast" => "string",
                 "description" =>
-                "Modo de contraseña al resetear un usuario: fixed (valor fijo) o random (auto-generada)",
+                    "Modo de contraseña al resetear un usuario: fixed (valor fijo) o random (auto-generada)",
             ],
             [
                 "type" => "authentication",
@@ -53,7 +53,7 @@ class ParameterSeeder extends Seeder
                 "value" => "Cobranza123",
                 "cast" => "string",
                 "description" =>
-                "Valor fijo usado al resetear contraseña cuando reset_password_mode=fixed. Si está vacío, se genera una contraseña aleatoria como salvaguarda",
+                    "Valor fijo usado al resetear contraseña cuando reset_password_mode=fixed. Si está vacío, se genera una contraseña aleatoria como salvaguarda",
             ],
 
             //  Application ─
@@ -102,7 +102,7 @@ class ParameterSeeder extends Seeder
                 "value" => "true",
                 "cast" => "boolean",
                 "description" =>
-                "Habilita el bloqueo temporal de usuario e IP tras superar los intentos fallidos de login",
+                    "Habilita el bloqueo temporal de usuario e IP tras superar los intentos fallidos de login",
             ],
             [
                 "type" => "security",

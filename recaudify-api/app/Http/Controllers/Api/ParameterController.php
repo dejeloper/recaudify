@@ -23,7 +23,24 @@ class ParameterController extends ApiController
     {
         $type = $request->filled("type") ? ParameterType::tryFrom($request->type) : null;
 
-        return ApiResult::success(ParameterResource::collection($this->parameterService->all($type)))->toResponse();
+        if (!$request->filled("page")) {
+            return ApiResult::success(ParameterResource::collection($this->parameterService->all($type)))->toResponse();
+        }
+
+        $search = $request->filled("search") ? $request->string("search")->toString() : null;
+
+        $defaultPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_per_page");
+        $maxPerPage = (int) $this->parameterService->get(ParameterType::Application, "pagination_max_per_page");
+
+        $perPage = (int) $request->query("per_page", (string) $defaultPerPage);
+        $perPage = max(1, min($perPage, $maxPerPage));
+
+        $paginator = $this->parameterService->paginate($type, $search, $perPage);
+
+        return ApiResult::paginated(
+            $paginator,
+            ParameterResource::collection($paginator->getCollection()),
+        )->toResponse();
     }
 
     public function show(int $id): JsonResponse

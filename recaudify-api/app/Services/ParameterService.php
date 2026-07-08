@@ -7,6 +7,7 @@ use App\Enums\ParameterType;
 use App\Models\Parameter;
 use App\Repositories\ParameterRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class ParameterService
@@ -41,6 +42,11 @@ class ParameterService
     public function trashed(): Collection
     {
         return $this->repository->trashed();
+    }
+
+    public function paginate(?ParameterType $type, ?string $search, int $perPage): LengthAwarePaginator
+    {
+        return $this->repository->paginate($type, $search, $perPage);
     }
 
     public function restore(Parameter $parameter): Parameter
