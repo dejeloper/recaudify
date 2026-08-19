@@ -43,3 +43,164 @@ Se separa el contacto real —la Interacción, una sola fila sin importar cuánt
 ## Sin Docker, despliegue manual sobre VPS único
 
 El backend corre en un único VPS de Hostinger (Ubuntu 24.04, Nginx + PHP-FPM + MySQL + Certbot), desplegado por SSH vía GitHub Actions al hacer push a `develop` o `main`; el frontend se despliega en Vercel. Esto no está documentado explícitamente en ningún lugar, pero es el estado real de `.github/workflows/` y `vps_deploy_guide.md`, y contradice al `README.md` de `recaudify-api`, que menciona Docker y Redis (ver `errores-conocidos.md`). Se descartaron los contenedores y Redis: cache, cola y sesión usan el driver `database`. Es la infraestructura vigente en producción.
+
+---
+
+## Convención de borrado y estado (detalle)
+
+Se fija **antes** de construir los módulos de negocio, para no repetir el error del legacy de mezclar
+"ocultar", "estado de negocio" y "auditoría" en una sola columna (`Habilitado smallint`).
+
+**1. `SoftDeletes`** — cuando "eliminar" significa solo "dejar de aparecer en listados activos, y es
+recuperable". Aplica a: Cliente, Producto, Tarifa y todos los catálogos genéricos (tipos de
+documento, tipo de contrato, motivos de gestión, vendedores, eventos, tipo de producto, tipo de
+evento, cobradores, métodos de pago, sucursales, días de cambio de estado). Es el equivalente
+mejorado del `Habilitado` del legacy.
+
+> **Gotcha:** `unique` + `SoftDeletes` chocan. Si se borra "Efectivo" y se vuelve a crear, el índice
+> único falla. Se resuelve con índice compuesto que incluya `deleted_at`, o validando en el Service
+> solo contra registros no borrados. Aplica igual al `documento` del Cliente.
+
+**2. Estado explícito, no `SoftDeletes`** — el Contrato usa un ciclo de vida propio
+(borrador/activo/suspendido/cancelado/finalizado). `SoftDeletes` queda solo como salvavidas para "se
+creó por error y nunca debió existir", jamás para representar cancelación o finalización.
+
+**3. Sin borrado de ningún tipo** — Pago, Pago Programado, Devolución, Gestión y Compromiso son
+**eventos de historial**: no se ocultan ni se marcan como borrados. Un reverso o un descarte se
+modela como un evento propio vinculado al original, que sigue visible en los listados. Se corrigen
+con otro evento, nunca borrando.
+
+**4. Borrado físico permitido** — solo para datos que nunca llegaron a ser un hecho de negocio:
+borradores de contrato jamás activados, filas de una importación fallida. No contradice la regla de
+"nada se elimina", que aplica a información que sí existió.
+
+**5. Log de auditoría** — inmutable a nivel de registro: no hay borrado individual ni edición. La
+única forma de eliminar es la **purga por retención**, que borra por antigüedad, pasa por la API y
+queda ella misma registrada.
+
+---
+
+## Auditoría técnica vs historia de negocio
+
+Son **dos cosas distintas** y el legacy las mezcló en una sola tabla `Log`, lo que obligó a
+reconstruir el timeline del cliente con un `WHERE Tabla IN (...) AND Llave = cliente`.
+
+- **Auditoría técnica** (`activity_log`, spatie/activitylog): automática, inmutable, responde "quién
+  cambió qué campo y cuándo". Es infraestructura.
+- **Historia de negocio** (tabla propia): eventos con significado — contrato creado, gestión,
+  compromiso, pago, cambio de estado de cartera, devolución, autorización. Alimenta la ficha 360° y
+  es una **funcionalidad del producto**, no un log.
+
+Reglas asociadas:
+
+- **No se auditan lecturas**, solo escrituras. Auditar consultas multiplicaría el volumen sin un caso
+  de uso que lo pida.
+- **El autor va congelado**: cada registro guarda id, username y nombre del usuario en el momento del
+  hecho. Sobrevive a que el usuario se borre o se renombre. Una FK viva perdería el nombre.
+- **Motivo obligatorio** en toda acción que pase por el módulo de autorizaciones.
+- **La purga solo por API** (endpoint y comando comparten Service), nunca por SQL suelto, y queda
+  registrada con autor y cantidad eliminada.
+
+---
+
+## Motor de estados genérico
+
+En vez de un enum por entidad, dos tablas: `states` (entidad, clave, nombre, inicial, final, color) y
+`state_transitions` (de → a, permiso, si es automática, si exige autorización, si exige motivo).
+
+El motivo es concreto: en el legacy agregar un estado obliga a tocar el flujo del código en varios
+sitios. Con esto es un INSERT. El legacy ya tenía un catálogo (`Estados` + `TiposEstados`) pero **sin
+transiciones**: qué puede pasar a qué vivía en el código.
+
+Reglas que protegen el grafo: un solo estado inicial por entidad, no se borra el estado inicial ni
+uno usado por una transición, un estado final no tiene transiciones de salida, ambos extremos deben
+pertenecer a la misma entidad, y no hay duplicados ni transiciones a sí mismo.
+
+El cambio de estado y su registro de auditoría van **en la misma transacción**: si falla el log, el
+estado no se mueve.
+
+---
+
+## Catálogos: una tabla por catálogo, una sola implementación de CRUD
+
+Cada catálogo tiene su tabla y su modelo (los campos no son iguales: motivos necesita color, "días de
+cambio de estado" necesita rango de días), pero comparten **una sola implementación** de
+Controller/Service/Repository. Dos permisos para todos (`catalogs.view` y `catalogs.manage`), no uno
+por catálogo.
+
+En frontend, un componente de listado/formulario que se dibuja según metadata del modelo, agrupado en
+una pantalla con selector — no una pantalla por catálogo.
+
+**Fuera de alcance:** "Tipos de vivienda" (no aporta valor; su controlador en el legacy está vacío) y
+"Resultados de gestión" (se cubre con Motivos de gestión). Canal/Organización y Zona no son catálogos
+propios: son campos de Eventos, y barrio/zona es texto libre.
+
+> **Aparcado (2026-08-19).** El diseño se va a reformar. Del análisis: el CRUD genérico cubre bien
+> unos 8 catálogos simples, pero **Tarifa, Producto y "Días de cambio de estado" no encajan** — tienen
+> FK, dinero y versionado. Forzarlos dentro del genérico lo convierte en un framework. Las 4 pantallas
+> existentes (productos, tarifas, vendedores, motivos) siguen sin backend y devuelven 404.
+
+---
+
+## Notificaciones: por ahora solo toasts
+
+No se implementa un sistema de notificaciones. Cuando haga falta avisar algo se usa el `ToastService`
+que ya existe en el frontend.
+
+**Requisito para cuando se implemente:** que el punto de emisión sea **uno solo** (una fachada o
+servicio `Notifier`), para que pasar de toast a campana in-app, correo o WhatsApp sea cambiar la
+implementación y no recorrer todas las pantallas.
+
+---
+
+## Infraestructura de Jobs: se omite hasta tener consumidor
+
+No se construye `app/Jobs` por ahora. Su primer consumidor real es el recálculo de mora del Motor
+Financiero. El scheduler ya está montado y funcionando, así que agregar jobs después es enchufar, no
+cimentar.
+
+---
+
+## Transacciones en el Service
+
+Todo método de Service que escriba en **más de una tabla** va envuelto en `DB::transaction()`. La
+transacción vive en el **Service**, nunca en el Controller ni en el Repository: el Service es quien
+conoce la unidad de negocio ("crear cliente con sus direcciones" es un solo hecho, aunque sean cuatro
+inserts).
+
+El legacy tiene exactamente este bug: `Clientes.php` inserta cliente, dirección, referencias y pedido
+uno por uno, sin rollback. Si falla el tercero quedan datos huérfanos.
+
+Los jobs se despachan con `after_commit` (activado en `config/queue.php`) para que nunca corran
+contra datos sin commitear.
+
+---
+
+## Dinero en enteros
+
+Todo monto es un entero de pesos colombianos, sin centavos, con redondeo al millar. Columnas
+`bigInteger`, cast `integer` — nunca `decimal` ni `float`. El redondeo, el parseo de montos que
+llegan de fuera y el reparto de un total entre cuotas pasan por `App\Support\Money`.
+
+El legacy ya usa enteros (`Valor int`, `Saldo int`), así que la convención coincide con los datos
+reales que se van a migrar.
+
+---
+
+## Modo mantenimiento propio, además del de Laravel
+
+`php artisan down` apaga la aplicación entera para desplegar y se controla por SSH. El modo
+mantenimiento propio se activa desde la pantalla de Parámetros, permite que un administrador siga
+trabajando, tiene alcance configurable (`all` bloquea todo, `writes` deja consultar) y mensaje
+editable.
+
+Decisiones asociadas:
+
+- **Falla abierto:** si los parámetros no se pueden leer, deja pasar. Lo contrario dejaría a todos
+  afuera por un fallo de caché, sin forma de entrar a apagarlo.
+- **`/api/health` y `/api/auth/*` siguen respondiendo:** el monitor debe distinguir "en mantenimiento"
+  de "caído", y alguien debe poder entrar a ver el aviso en vez de chocar con un login que rechaza
+  credenciales correctas.
+- **Las tareas programadas se pausan:** si se activa mantenimiento para corregir saldos a mano y el
+  cron recalcula encima, el mantenimiento no sirvió de nada.
+

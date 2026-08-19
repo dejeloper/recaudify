@@ -11,20 +11,29 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 #### Backend
 
 - [x] Estructura Laravel, PHP 8.3, MySQL, migraciones
+- [x] Convención de transacciones: `DB::transaction()` en el Service para toda escritura multi-tabla
+- [x] Aplicar transacciones a `UserService::create/update` y `RoleService::create/update/delete`
+- [x] `after_commit` activado en `config/queue.php`
+- [x] Formateo PHP: hooks `PostToolUse` y `Stop` apuntan a Prettier, no a Pint
+- [x] Convención de dinero: enteros COP (sin centavos), columnas `bigInteger`, helper `App\Support\Money`
+- [x] `Money`: redondeo al millar, parseo de montos con formato y reparto exacto entre cuotas
 - [x] JWT + Refresh Tokens
-- [x] CORS, Policies, Gates
+- [x] CORS + bypass de superadmin por Gate (autorización real por permisos Spatie, sin Policies)
 - [x] Swagger
 - [x] Form Requests
 - [x] Soft Deletes
 - [x] Formato estándar de respuestas + paginación
-- [x] Auditoría genérica (spatie/activitylog) — inmutable por diseño, sin ningún mecanismo de borrado (ver "Convención de borrado y estado", punto 3)
+- [x] Auditoría genérica con spatie/activitylog
 - [x] Seeders iniciales
 - [x] Usuarios: crear, editar, desactivar, restaurar
-- [x] Roles: administrador, supervisor, verificador, cobrador, vendedor, auxiliar
+- [ ] Roles: administrador, supervisor, verificador, cobrador, vendedor, auxiliar
 - [x] Permisos: CRUD
 - [x] Login, Logout, Refresh
 - [x] Auditoría de accesos, cambios, eliminaciones, acciones críticas
-- [x] Parámetros de negocio: días de mora, consecutivos
+- [ ] Parámetros de negocio: días de mora, consecutivos
+- [x] Seeder: roles operativos gestor, recaudador, vendedor, cerrador
+- [ ] Tabla `sucursales` + `sucursal_id` (nullable) en clientes, contratos, pagos, gestiones y usuarios
+- [ ] Permiso "ver todas las sucursales" (scoping, no multi-tenancy)
 
 #### Frontend
 
@@ -38,208 +47,239 @@ Si se pide hacer alguna acción de este listado y está destinado a este directo
 
 #### Autenticación y parámetros de acceso
 
-- [x] Método de login configurable (username o correo): Un parámetro  decide con qué campo se autentica el usuario, sin tocar código si el negocio cambia de preferencia.
-- [x] Password de reseteo fija o auto-generada: Un parámetro elige el  modo; si es fija, su valor vive en Parameters -otro parámetro- (nunca hardcodeada como el legacy con  "Cobranza123").
-- [x] Política de contraseñas configurable: longitud mínima, si exige mayúsculas/números/símbolos,  y expiración periódica (forzar cambio cada N días). Hoy no hay ninguna regla explícita más  allá de lo que valide el Form Request a mano.
-- [ ] Delegación temporal de permisos / suplencias: que un supervisor pueda asignar temporalmente su rol o un permiso puntual a otro usuario (ej. cobrador de vacaciones), con fecha de inicio y fin, sin tener que editar roles manualmente y no olvidarse de revertir.
-- [ ] Envío de password de reseteo por correo: si el tenant tiene correo/SMTP habilitado y el modo
-      de reseteo (ver sección base) es auto-generada, enviar la contraseña generada al correo del
-      usuario en vez de (o además de) mostrarla en pantalla.
+- [x] Método de login configurable (username o correo)
+- [x] Password de reseteo fija o auto-generada
+- [x] Política de contraseñas configurable
+- [ ] Delegación temporal de permisos / suplencias
+- [x] `email_notifications_enabled` marcado como no editable mientras no exista SMTP
+- [ ] Envío de password de reseteo por correo
 
 #### Menús y navegación
 
-- [x] Menú dinámico por permisos: el menú lateral/superior se arma en base a los permisos reales del usuario logueado (`AuthService.hasPermission()`), no con ítems ocultos a mano por rol — si mañana se crea un permiso nuevo, el ítem aparece solo con asignarlo, sin tocar el componente de menú.
-- [x] Menú configurable desde Settings (builder de menú): una pantalla de administración donde se define qué ítems existen, en qué orden, con qué ícono y bajo qué permiso, guardado en BD en vez de hardcodeado en el `routes.ts`/componente Angular — útil si el negocio quiere reordenar o renombrar secciones sin pedir un deploy.
-- [ ] Favoritos / accesos rápidos personalizados: que cada usuario pueda marcar sus pantallas más usadas (ej. un cobrador que vive en "Agenda" y "Pagos programados") y tenerlas arriba de todo, sin afectar el menú de los demás usuarios.
-- [ ] Menú con contadores/badges en vivo: mostrar en el ítem del menú un número (ej. "Pagos programados por vencer hoy: 12", "Importaciones fallidas: 2") para que el usuario sepa que hay algo pendiente sin tener que entrar a mirar.
-- [ ] Búsqueda global / paleta de comandos (Ctrl+K): buscador que salta directo a cualquier pantalla, cliente o contrato por nombre, sin navegar el árbol de menú — muy útil una vez haya muchos módulos (Clientes, Contratos, Cobranza, Reportes, Catálogos, etc.).
-- [x] Breadcrumbs dinámicos: mostrar la ruta de navegación actual (ej. "Clientes > Juan Pérez > Contratos > #123") derivada de la ruta activa, para ubicarse rápido en pantallas anidadas.
-- [ ] Historial de navegación reciente: lista de "últimas 5 pantallas/clientes visitados" por usuario, para volver rápido a lo que se estaba revisando sin repetir la búsqueda.
-- [ ] Menú distinto por rol/perfil (layout): que el cobrador vea un menú simple centrado en Agenda y Pagos, mientras que administrador ve el menú completo — evita que roles operativos se pierdan entre opciones que nunca van a usar.
-- [ ] Atajos de teclado configurables: acciones rápidas (nuevo cliente, nuevo pago, buscar) vía teclado, documentadas en un modal de ayuda (`?`), pensado para usuarios de alto volumen (cobradores/cajeros) que ganan tiempo real no usando mouse.
-- [x] Menú colapsable / modo compacto: opción de colapsar el menú lateral a solo íconos, preferencia guardada por usuario (localStorage o perfil), para pantallas chicas o usuarios que prefieren más espacio de contenido.
+- [x] Menú dinámico por permisos
+- [x] Menú configurable desde Settings (builder de menú)
+- [ ] Favoritos / accesos rápidos personalizados
+- [ ] Menú con contadores/badges en vivo
+- [ ] Búsqueda global / paleta de comandos (Ctrl+K)
+- [x] Breadcrumbs dinámicos
+- [ ] Historial de navegación reciente
+- [ ] Menú distinto por rol/perfil (layout)
+- [ ] Atajos de teclado configurables
+- [x] Menú colapsable / modo compacto
 
 #### Logs y auditoría
 
-- [x] Registro de accesos (IP, dispositivo, fecha) por login exitoso y fallido: complementa la auditoría de acciones (`spatie/activitylog`) con auditoría de acceso, que hoy no está cubierta explícitamente en planning.md.
-- [ ] Visor de logs de sistema en UI: hoy `business`/`app-errors`/`security`/`http` solo existen como archivos planos en `storage/logs/`. Una pantalla de admin que los liste/filtre (por canal, fecha, usuario, nivel) evita tener que entrar por SSH a leer un archivo cada vez que algo falla en producción.
-- [ ] Correlación de intentos fallidos → alerta automática in-app: ya se captura `LoginAudit` y existe el canal `security`, pero nadie los cruza. Detectar "N intentos fallidos del mismo usuario/IP en X minutos" y notificar al administrador (in-app) en vez de que quede solo como registro pasivo que hay que ir a mirar (la variante por correo queda en la sección final).
-- [ ] Comando programado de purga de logs vencidos: `config/activitylog.php` ya define `clean_after_days` (365) pero no hay ningún comando agendado en `routes/console.php` que ejecute la limpieza — hoy crecería indefinidamente.
-- [ ] Exportar logs filtrados a CSV/Excel: para pasarle un rango de fechas a soporte o auditoría externa sin acceso al servidor.
-- [ ] Nivel de verbosidad por canal configurable desde Parameters: poder subir/bajar detalle de `app-errors`/`http` en caliente (ej. modo debug temporal) sin cambiar `config/logging.php` y redesplegar.
-- [ ] Trazabilidad por request-id: propagar un ID único de request en cabecera de respuesta y en cada línea de log de ese request, para poder seguir un problema puntual del usuario a través de los 4 canales sin adivinar por timestamp.
-- [ ] Alerta de intentos fallidos de login por correo: variante por correo de la "Correlación de
-      intentos fallidos → alerta automática" de esta misma sección — hoy esa idea ya se puede
-      construir en su versión in-app; el envío por correo se agrega cuando haya SMTP.
-- [x] Diff visual de cambios en el feed de actividad: `activitylog` ya guarda `old`/`attributes`, pero la pantalla actual los lista crudo; mostrar "campo X: valor A → valor B" en vez de JSON crudo hace el feed realmente legible para un no-técnico.
+> Detalle: `docs/contexto/decisiones.md` → Auditoría técnica vs historia de negocio
+
+- [x] Registro de accesos (IP, dispositivo, fecha) por login exitoso y fallido
+- [ ] Visor de logs de sistema en UI (sin prioridad)
+- [ ] Correlación de intentos fallidos → alerta automática in-app
+- [x] Comando programado de purga de logs vencidos
+- [ ] Exportar logs filtrados a CSV/Excel
+- [ ] Nivel de verbosidad por canal configurable desde Parameters
+- [x] **Trazabilidad por request-id:** middleware `AssignRequestId` que genera
+- [x] El id que llega de afuera se valida antes de usarse
+- [ ] Frontend: enviar `X-Request-Id` propio y mostrarlo en los mensajes de error
+- [ ] Alerta de intentos fallidos de login por correo
+- [x] Diff visual de cambios en el feed de actividad
+- [ ] Separar auditoría técnica (`activity_log`) de la historia de negocio (tabla propia)
+- [x] Congelar el causer en `activity_log`: guardar id, username y nombre como snapshot, no solo la FK
+- [x] El causer congelado sobrevive al borrado o renombrado del usuario
+- [ ] Motivo obligatorio y registrado en toda acción que pase por autorización
+- [x] API: filtro por rango de fechas en el listado de actividad
+- [x] Índice en `created_at` de `activity_log`
+- [x] Endpoint de API para purgar logs vencidos (única vía de borrado)
+- [x] Corregir el trait de auditoría: importaba namespaces inexistentes del paquete
+- [x] Corregir `dontLogEmptyChanges()` → `dontSubmitEmptyLogs()` (método inexistente en la v5)
+- [x] Corregir `RoleService`: `activity()->withChanges()` → `withProperties()` (método inexistente)
+- [x] Alinear la tabla `activity_log` con el paquete: quitar `attribute_changes`, agregar `batch_uuid`
+- [ ] Interfaz: filtro por rango de fechas en la pantalla de actividad
+- [ ] Interfaz: acción de purga (con confirmación y vista previa de cuántos registros elimina)
+- [x] Cron diario que ejecuta el comando de purga
+- [x] Alcance: la **lectura** del log es global
 
 #### Dashboard y métricas
 
-- [ ] Health check / endpoint de estado: un endpoint simple que reporte estado de BD, cola y colas de jobs (relevante una vez exista el job programado del Motor Financiero) para monitoreo básico en el VPS.
-- [ ] Dashboard con KPIs reales de plataforma: usuarios activos hoy, logins exitosos/fallidos, accesos denegados por horario, jobs fallidos — antes de tener negocio, ya hay datos suficientes (`LoginAudit`, `activity_log`, `UserSchedule`) para un dashboard operativo real.
-- [ ] Incorporar una librería de gráficas (ej. ngx-charts o Chart.js): hoy no existe ninguna en el proyecto; es prerequisito de cualquier gráfica antes de llegar a los reportes de negocio de `NEGOCIO.md` §12.
-- [ ] Gráfica de logins por hora/día de la semana: usa `LoginAudit` que ya existe, ayuda a detectar patrones de uso normal (para luego notar anomalías).
-- [ ] Mapa de accesos geográfico: `LoginAudit` ya captura lat/long/accuracy — un mapa simple de "desde dónde se conecta el equipo" es casi gratis con el dato que ya se guarda.
-- [ ] Widget "usuarios conectados ahora": requiere primero tener noción de sesión activa (ver sección Seguridad), pero es un indicador simple y muy visual para el dashboard.
-- [ ] Tablero de salud del sistema: estado de BD, cola, caché, espacio en disco — ver "Health check" más abajo, este sería su representación visual en el dashboard.
-- [ ] Métricas de uso de API por endpoint: el canal `http` ya registra método/path/status/duración por request — agregarlas (percentiles de tiempo de respuesta, endpoints más lentos, tasa de error por ruta) da visibilidad de performance antes de que el negocio genere volumen real.
-- [ ] Health check / endpoint de estado: un `/api/health` que reporte estado de BD, cola, caché y espacio en disco, pensado para monitoreo externo (uptime checks) en el VPS — no existe hoy ningún endpoint de este tipo.
+- [x] Health check / endpoint de estado
+- [ ] Dashboard con KPIs reales de plataforma
+- [ ] Incorporar una librería de gráficas (ej. ngx-charts o Chart.js)
+- [ ] Gráfica de logins por hora/día de la semana
+- [ ] Mapa de accesos geográfico
+- [ ] Widget "usuarios conectados ahora"
+- [ ] Tablero de salud del sistema
+- [ ] Métricas de uso de API por endpoint
+- [x] `/api/health` público, con estados ok/degraded/down, 503 solo si falla BD, caché o almacenamiento
+- [x] `/api/health` y `/up` excluidos del canal de log `http`
+- [ ] Configurar el chequeo de uptime externo contra `/api/health` en el VPS
 
 #### Sesiones y seguridad
 
-- [x] Bloqueo por intentos fallidos de login (rate limiting / lockout): tras N (paramétrico) intentos fallidos,  bloquear temporalmente el usuario y la IP. El legacy no tenía ningún control de este tipo;  es una brecha real de seguridad a cerrar antes de tener datos de negocio sensibles.
-- [x] Gestión de sesiones activas: ver qué dispositivos/tokens tiene activos un usuario y poder  revocar uno o todos remotamente (útil si se pierde un dispositivo o se sospecha de un acceso  indebido). Se apoya en el JWT + refresh token ya existente. (Paramétrico si se quiere o no, por defecto true)
-- [x] Expiración de sesión por inactividad configurable: además del TTL fijo del JWT (15 min), un parámetro de "cerrar sesión tras X(parametrizable) minutos sin actividad" a nivel de frontend/UX.
-- [x] Deslogueo proactivo por inactividad en el frontend: `InactivityService` escucha mousemove/keydown/scroll/touchstart mientras hay sesión activa (arrancado/detenido desde `AppShell`) y desloguea al usuario sin esperar el próximo request, usando el mismo parámetro `session_timeout_minutes` (ahora expuesto en `/auth/login` y `/auth/me`).
-- [x] Listado de sesiones/tokens activos + revocación remota: hoy solo hay login/logout/refresh del JWT, sin ningún lugar donde ver "qué dispositivos tienen sesión abierta ahora mismo" ni forma de cerrar una sesión ajena (útil si se pierde un celular o hay sospecha de acceso indebido).
-- [x] Revocar todas las sesiones de un usuario específico desde el panel admin: además de "todas las mías" (self-service) y "todas las globales", el admin puede buscar un usuario por nombre/username (input con debounce, sin `<select>` precargado) y cerrar únicamente las sesiones de ese usuario.
-- [x] Bloqueo tras intentos fallidos (rate limit + lockout): actualmente el único throttle encontrado es `throttle:10,1` hardcodeado en el refresh; no hay bloqueo de cuenta ni de IP tras varios intentos fallidos de login.
-- [ ] Panel de administración de rate limiting: en vez de límites fijos en el código de rutas, poder ajustar los límites por endpoint sensible desde Parameters/Settings.
-- [ ] Detección de acceso desde ubicación/IP inusual: dado que `LoginAudit` ya guarda IP y geolocalización, comparar contra el histórico del usuario y marcar/alertar accesos atípicos (otro país, otro dispositivo nunca visto) es una extensión natural de un dato que ya existe.
-- [ ] Modo "vista previa como otro usuario" (impersonar) para administrador/soporte: para reproducir un problema que reporta un cobrador sin pedirle contraseña, dejando registro en auditoría de cuándo y quién impersonó a quién (nunca silencioso).
-- [ ] Confirmación por correo de acceso desde dispositivo nuevo: enviar un aviso "se inició sesión
-      desde un dispositivo nuevo", reutilizando `LoginAudit` — depende de tener correo saliente
-      configurado.
+- [x] Bloqueo por intentos fallidos de login (rate limiting / lockout)
+- [x] Gestión de sesiones activas
+- [x] Expiración de sesión por inactividad configurable
+- [x] Deslogueo proactivo por inactividad en el frontend
+- [x] Listado de sesiones/tokens activos + revocación remota
+- [x] Revocar todas las sesiones de un usuario específico desde el panel admin
+- [x] Bloqueo tras intentos fallidos (rate limit + lockout)
+- [ ] Panel de administración de rate limiting
+- [ ] Detección de acceso desde ubicación/IP inusual
+- [ ] Modo "vista previa como otro usuario" (impersonar) para administrador/soporte
+- [ ] Confirmación por correo de acceso desde dispositivo nuevo
 
 #### Notificaciones
 
-- [ ] Sistema de notificaciones in-app (campana con contador): el modelo `User` ya puede usar el trait `Notifiable` de Laravel pero no hay ninguna clase `Notification` implementada todavía; es la base para "recordatorio de reseteo enviado", "job falló", "acceso desde dispositivo nuevo", etc., sin tener que inventar un canal nuevo para cada aviso.
-- [ ] Centro de notificaciones (histórico): que el usuario pueda ver notificaciones pasadas ya leídas/no leídas, no solo un toast que desaparece a los 5s como hoy (`ToastService`).
-- [ ] Plantillas de correo / Mailables editables: los mensajes que el sistema envía (reseteo de
-      password, alertas) deberían salir de una plantilla configurable, no de texto fijo en el
-      código. Requiere primero tener SMTP configurado y al menos un `Mailable` implementado (hoy no
-      hay ninguno; el mailer por defecto es `log`).
-- [ ] WhatsApp como canal de aviso: mismo concepto que las anteriores (alertas de seguridad, avisos
-      de jobs, confirmaciones) pero por WhatsApp en vez de correo — requiere contratar un proveedor
-      de WhatsApp Business API; no hay ninguna integración ni credencial hoy. Se anota como canal a
-      futuro, sin ideas específicas más allá de las ya listadas por correo (aplican igual a
-      WhatsApp una vez haya proveedor).
+> Detalle: `docs/contexto/decisiones.md` → Notificaciones
+
+- [ ] Sistema de notificaciones in-app (campana con contador)
+- [ ] Centro de notificaciones (histórico)
+- [ ] Plantillas de correo / Mailables editables
+- [ ] WhatsApp como canal de aviso
 
 #### Configuración y ajustes
 
-- [ ] Panel de configuración general (Settings) unificado: hoy los "Parameters" ya existen pero conviene una pantalla única de configuración de plataforma (nombre de empresa, logo, zona horaria, moneda, SMTP, límites) en vez de que cada feature invente su propio lugar.
-- [ ] Exportación genérica a CSV/Excel: un mecanismo reusable de exportación (igual que se plantea un CRUD genérico para catálogos) para no reimplementar "exportar a Excel" en cada módulo de reportes cuando llegue esa fase.
-- [ ] Panel de feature flags: activar/desactivar módulos en construcción (ej. mostrar/ocultar "Cobranza" mientras se termina) sin necesidad de un deploy, apoyado en la infraestructura de `Parameters` que ya existe.
-- [ ] Modo mantenimiento con aviso configurable: bloquear escritura o todo acceso salvo administrador, con un mensaje editable, para migraciones delicadas sin apagar el servidor.
-- [ ] Backups automatizados con notificación de resultado: programar dump de BD (usa la infraestructura de scheduling de la sección anterior) y avisar éxito/fallo, en vez de depender de un backup manual como el legacy (`Mantenimiento/Backup`).
-- [ ] Panel de ajustes generales de plataforma: nombre de empresa, logo, zona horaria, moneda, SMTP — hoy `Parameters` es genérico pero no hay una pantalla que agrupe "la configuración de la empresa" como una unidad clara para el administrador.
+- [ ] Panel de configuración general (Settings) unificado
+- [ ] ~~Exportación genérica a CSV/Excel~~
+- [ ] Panel de feature flags
+- [x] Modo mantenimiento con aviso configurable
+- [x] Middleware `CheckMaintenanceMode` con permiso `maintenance.bypass` y parámetros de alcance y mensaje
+- [x] Las tareas programadas se saltan mientras el mantenimiento está activo
+- [x] `/api/health` y `/api/auth/*` siguen respondiendo en mantenimiento
+- [ ] Frontend: pantalla de aviso cuando la API responde 503 con `data.maintenance`
+- [ ] Backups automatizados con notificación de resultado
+- [ ] Panel de ajustes generales de plataforma
 
 #### Experiencia de usuario y observabilidad
 
-- [ ] Internacionalización (i18n) de textos de UI: aunque el negocio sea local, tenerlo resuelto desde el inicio evita reescribir strings hardcodeados si en el futuro se necesita otro idioma o simplemente estandarizar textos en un solo lugar.
-- [ ] Theming claro/oscuro: no está implementado en el frontend hoy (no hay ningún mecanismo de tema); dado que ya se usan `ChangeDetectionStrategy.OnPush` + signals en todo el proyecto, es buen momento de dejarlo resuelto con una señal global antes de que crezcan más pantallas.
-- [ ] Auditoría de accesibilidad (a11y) básica: contraste, `aria-label`, navegación por teclado en los componentes compartidos (`Spinner`, `ToastContainer`) — más fácil de corregir ahora que hay pocos componentes que después con decenas de pantallas de negocio.
+- [ ] Internacionalización (i18n) de textos de UI
+- [ ] Theming claro/oscuro
+- [ ] Auditoría de accesibilidad (a11y) básica
 
 ### Infraestructura de jobs y colas
 
+> Detalle: `docs/contexto/decisiones.md` → Infraestructura de Jobs
+
 #### Jobs
 
-- [ ] Panel de "failed jobs": listar, ver el error y poder reintentar/descartar jobs fallidos desde
-      la UI en vez de por consola (`php artisan queue:failed`).
-- [ ] Reintentos automáticos configurables por tipo de job: cuántas veces reintentar y con qué
-      backoff antes de marcarlo como fallido definitivo, en vez del valor por defecto de Laravel.
-- [ ] Notificación cuando un job falla repetidamente: aviso in-app en vez de descubrirlo días
-      después revisando `failed_jobs` manualmente (la variante por correo queda en la sección
-      final).
-- [ ] Notificación por correo cuando un job falla repetidamente: variante por correo de la
-      notificación anterior (hoy construible como aviso in-app).
+- [ ] Panel de jobs fallidos: listar, ver error, reintentar o descartar (sin prioridad)
+- [ ] Reintentos automáticos configurables por tipo de job
+- [ ] Notificación cuando un job falla repetidamente
+- [ ] Notificación por correo cuando un job falla repetidamente
 
 #### Schedule
 
-- [ ] Programación de comandos (`schedule`) desde el día uno: dejar el mecanismo de cron de Laravel
-      ya armado (aunque el primer comando real sea trivial, como la purga de logs) para que cuando
-      llegue el job del Motor Financiero (`NEGOCIO.md` §7) solo haya que agregar el comando, no
-      montar la infraestructura de scheduling.
+- [x] Programación de comandos (`schedule`) desde el día uno
+- [x] Comando `activity:purge` (con `--days` y `--dry-run`), programado a diario
+- [x] Parámetro `activity_log_purge_time` (HH:MM) para cambiar la hora del cron sin redesplegar
+- [x] Validación por clave en el módulo de Parámetros
+- [x] Usuario `sistema` (inactivo, rol `sistema` con solo `audit.purge`) que firma las tareas automáticas
+- [ ] Documentar en `vps_deploy_guide.md` la entrada de cron `* * * * * php artisan schedule:run`
 
 ### Convención de borrado y estado
 
-Fijar esto antes de construir el resto de módulos — evita repetir el error del legacy de mezclar
+> Detalle completo: `docs/contexto/decisiones.md` → Convención de borrado y estado
 "ocultar", "estado de negocio" y "auditoría" en una sola columna (`Habilitado`).
 
 #### SoftDeletes (cuando "eliminar" es solo "dejar de aparecer en listados activos, recuperable")
 
-- [ ] Aplicar `SoftDeletes` a: Cliente, Producto, Tarifa y todos los catálogos genéricos de la Fase
-      "Catálogos base y parametrización" (Tipos de documento, Tipo de contrato, Motivos de gestión,
-      Vendedores, Eventos, Tipo de producto, Tipo de eventos, Cobradores, Métodos de pago,
-      Sucursales, Días de cambio de estado) — es el equivalente mejorado del `Habilitado` del legacy
-- [ ] Resolver el gotcha de `unique` + `SoftDeletes` en Cliente (`documento`): índice único
-      compuesto con `deleted_at`, o validación en el Service contra solo registros no borrados
+- [ ] Aplicar `SoftDeletes` a Cliente, Producto, Tarifa y catálogos genéricos
+- [ ] Resolver el gotcha de `unique` + `SoftDeletes` en Cliente (`documento`)
 
 #### Cuando NO aplica SoftDeletes — usar estado explícito o no borrar nunca
 
-- [ ] Punto 1 — Contrato: campo de estado explícito (borrador/activo/suspendido/cancelado/
-      finalizado) como mecanismo principal; `SoftDeletes` solo como salvavidas para el caso de
-      "se creó por error y nunca debió existir", nunca para representar cancelación/finalización
-- [ ] Punto 2 — Pago, Pago Programado: sin borrado lógico ni booleano; reverso/descarte se modelan
-      como evento propio vinculado al registro original, que nunca se oculta de los listados
-- [ ] Punto 2 — Devolución, Gestión/Llamada, Compromiso: sin borrado lógico; son eventos de
-      historial, se corrigen con otro evento (no se ocultan ni se marcan como borrados)
-- [x] Punto 3 — Log de auditoría (`spatie/activitylog`): inmutable por diseño, sin ningún mecanismo
-      de borrado (ni `SoftDeletes` ni booleano) bajo ninguna circunstancia
+- [ ] Contrato: ciclo de vida explícito como mecanismo principal, no `SoftDeletes`
+- [ ] Pago y Pago Programado: sin borrado lógico; el reverso es un evento vinculado
+- [ ] Devolución, Gestión y Compromiso: sin borrado lógico; se corrigen con otro evento
+- [x] Log de auditoría inmutable por registro: sin borrado individual, solo purga por retención
 
 #### Cuando SÍ se puede borrar físico (datos sin realidad de negocio todavía)
 
-- [ ] Punto 4 — Definir política de limpieza para datos verdaderamente transitorios que nunca
-      llegaron a confirmarse como hecho de negocio: borradores de contrato nunca activados, archivos
-      o filas de importación fallidas. Estos sí aceptan DELETE físico porque no hay nada que auditar
-      todavía (no contradice la regla de "nada se elimina", que aplica a información que ya existió)
+- [ ] Definir política de borrado físico para datos transitorios (borradores, importaciones fallidas)
+
+### Ciclo de vida y estados
+
+> Detalle: `docs/contexto/decisiones.md` → Motor de estados genérico
+
+- [x] Tabla `states` (entidad, clave, nombre, inicial, final, color, ícono)
+- [x] Tabla `state_transitions` (de → a, permiso, automática, exige autorización, exige motivo)
+- [x] Service que ejecuta y valida las transiciones
+- [x] Registrar cada cambio de estado en auditoría (quién, cuándo, por qué)
+- [ ] Aplicar el motor a Cliente, Contrato, Pago, Gestión y Compromiso (bloqueado: los modelos no existen)
+- [x] Seeders de estados y transiciones por entidad
+- [x] Trait `HasState` para entidades con ciclo de vida
+- [x] Permisos `states.{view,create,edit,delete,restore}`
+- [ ] Aplicar `HasState` a Cliente, Contrato, Pago y Compromiso cuando existan esos modelos
+- [ ] Enganchar `requires_authorization` con el módulo de Autorizaciones (hoy se recibe como parámetro)
+- [x] Endpoints REST de estados
+- [x] Reglas de integridad del catálogo
+- [x] Documentación OpenAPI de estados y transiciones
+- [ ] Pantalla de administración de estados y transiciones (frontend)
+- [ ] Pantalla de administración de estados y transiciones
+
+### Autorizaciones
+
+> Detalle: `docs/contexto/decisiones-negocio.md` → Autorizaciones
+
+- [ ] Tabla `autorizaciones`
+- [ ] Tipos de solicitud como catálogo (quién puede aprobar cada uno)
+- [ ] Tipo: reverso de pago
+- [ ] Tipo: descuento / condonación / rebaja (con su efecto sobre el saldo del contrato)
+- [ ] Tipo: cambio manual de estado
+- [ ] Tipo: venta a cliente con deuda
+- [ ] Tipo: uso de tarifa histórica
+- [ ] Bandeja de solicitudes pendientes para admin/coordinador
 
 ### Catálogos base y parametrización
 
+> ⏸️ APARCADO. Detalle: `docs/contexto/decisiones.md` → Catálogos
+
 #### Catálogos
 
-> Una tabla/modelo por catálogo (los campos no son iguales entre todos: Motivos necesita color,
-> "Días de cambio de estado" necesita rango de días + color/ícono), pero **una sola implementación de CRUD
-> compartida** para todos — no repetir Controller/Service/Repository por catálogo. Dos permisos
-> para todos: `catalogos.ver` y `catalogos.gestionar` (implica crear/editar/eliminar/restaurar), no
-> uno por catálogo. Frontend: **un componente de listado/formulario que se dibuja según el
-> modelo** (metadata: qué columnas, qué campos y de qué tipo — texto, color, etc.), no una pantalla
-> por catálogo; agrupados en una sola pantalla `/admin/catalogos` con selector.
->
-> "Tipos de vivienda" queda fuera de alcance (no aporta valor real). Canal/Organización y Zona **no**
-> son catálogos propios: quedan absorbidos como campos del catálogo/entidad Eventos (barrio/zona es
-> un string libre, no una jerarquía con catálogo detrás). "Resultados de gestión" queda fuera de
-> alcance por ahora — todo lo que el legacy distinguía como "resultado" se cubre con Motivos de
-> gestión.
->
-> Ver `catalogos-schema-demo.sql` en la raíz del repo para un esquema ilustrativo (no DDL de
-> producción) de estos catálogos y cómo se conectan al núcleo de negocio (Cliente, Contrato, Pagos,
-> Gestiones).
+> Detalle: `docs/contexto/decisiones.md` → Catálogos
 
-- [ ] CRUD genérico compartido (base Repository/Service/Controller reutilizable por los catálogos) (`SoftDeletes`)
+- [ ] CRUD genérico compartido
 - [ ] Catálogo: Tipos de documento
 - [ ] Catálogo: Tipo de contrato
 - [ ] Catálogo: Motivos de gestión (con campo color)
-- [ ] Catálogo: Vendedores (CRUD básico vía el motor genérico; la vinculación con Evento de venta vive en la Fase de Contratos)
-- [ ] Catálogo: Eventos (registro de Vendedor + Canal/Organización + Zona/Barrio (string libre) + Tipo de evento + Fecha — ver Fase "Evento de venta y Contratos")
+- [ ] Catálogo: Vendedores
+- [ ] Catálogo: Eventos
 - [ ] Catálogo: Tipo de producto
 - [ ] Catálogo: Tipo de eventos
-- [ ] Catálogo: Cobradores (CRUD básico vía el motor genérico; la asignación Usuario↔Cobrador y Cliente↔Cobrador vive en la Fase de Cartera/Cobranza)
+- [ ] Catálogo: Cobradores
 - [ ] Catálogo: Métodos de pago
-- [ ] Catálogo: Clasificación de clientes — **bajo revisión, no confirmado**: riesgo de solaparse con la clasificación de cartera que calcula el Motor Financiero; no construir hasta tener un caso de uso concreto que no sea redundante
-- [ ] Catálogo: Sucursales (una sola empresa con varias sedes físicas — no confundir con Multi Tenancy, que sigue fuera de este documento)
-- [ ] Catálogo: Días de cambio de estado (reglas de mora 15/30/45/90 días → estado de cartera; reemplaza el punto de "Umbrales de mora" que antes estaba pensado como Parámetro suelto). Cada regla: `día_desde`/`día_hasta` (rango explícito, no un solo umbral ambiguo), `estado_resultante`, `color` e `icono` (sin campo `orden` — se deriva de `día_desde`). El color/ícono de la regla vigente es lo que pinta el estado de cartera en listados y en la Vista 360° del cliente sin mapear el nombre del estado a un color a mano en cada pantalla
+- [ ] Catálogo: Tipos de observación (contacto, acuerdo, incidencia, interna…)
+- [ ] Catálogo: Fórmulas de pago mínimo (8 registros, solo 2 implementadas)
+- [ ] Catálogo: Canales de gestión (llamada, SMS, WhatsApp, correo)
+- [ ] Catálogo: Clasificación de clientes
+- [ ] Catálogo: Sucursales (una sola empresa con varias sedes físicas
+- [ ] Catálogo: Días de cambio de estado
 
 #### Parámetros nuevos
 
-> Los umbrales de mora ya no van acá — son el catálogo "Días de cambio de estado" de arriba (una
-> lista de reglas relacionadas, no un valor escalar suelto).
+> Los umbrales de mora son el catálogo "Días de cambio de estado", no un parámetro suelto.
 
-- [ ] Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy: 60 días fijos)
-- [ ] Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy: 1–8 días según motivo, fijo)
+- [ ] Días de vencimiento de un pago programado antes de descartarse automáticamente (legacy
+- [ ] Ventana de validez de una gestión de llamada antes de inhabilitarse (legacy
 - [ ] Redondeo del pago mínimo por mora (legacy: al millar, fijo)
-- [x] Password por defecto al resetear contraseña, parametrizable (solo si se implementa esa función; legacy usa `Cobranza123` hardcodeado)
+- [ ] Interés de mora: activo/inactivo, porcentaje y periodicidad (fijo/diario/semanal/mensual)
+- [ ] Fórmula de pago mínimo a usar (elige del catálogo de fórmulas)
+- [ ] Cadencia de gestión: fija o por estado de mora (por defecto: por estado de mora)
+- [ ] Consecutivo de recibos: global, con o sin rastreo por sucursal, automático o manual
+- [ ] Reverso de pago: si exige autorización, ventana de tiempo permitida y rol autorizado
+- [ ] Reparto de un pago entre varios contratos: más viejo / más vencido / lo elige el cobrador
+- [ ] Permitir vender con tarifa histórica (por defecto sí, siempre con autorización)
+- [ ] Validación de contrato obligatoria u opcional
+- [x] Password por defecto al resetear contraseña, parametrizable
 
 ### Vendedores, Productos y Tarifas
 
 #### Vendedores
 
-- [ ] Ya cubierto por el catálogo genérico (ver "Catálogos base y parametrización") — acá no hay tarea adicional de CRUD, solo la vinculación con Evento de venta más abajo
+- [ ] Ya cubierto por el catálogo genérico (ver "Catálogos base y parametrización")
 
 #### Productos
 
 - [ ] Crear producto
-- [ ] Editar/actualizar producto (el legacy nunca tuvo `update`, solo alta y lookup por código — no repetir ese hueco)
+- [ ] Editar/actualizar producto (el legacy nunca tuvo `update`, solo alta y lookup por código
 - [ ] Listar productos
 - [ ] Activar/desactivar producto (`SoftDeletes`)
 - [ ] Categoría de producto (catálogo Tipo de producto, Fase 1)
@@ -248,19 +288,25 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 - [ ] CRUD Tarifas por producto (cuotas, valor, descuento) (`SoftDeletes`)
 - [ ] Historial de cambios de tarifa (el legacy solo sobreescribe, acá se versiona)
+- [ ] Versionado de tarifa: editar crea versión nueva, nunca sobrescribe
+- [ ] Snapshot de tarifa en la línea de contrato (precio, cuotas y valor de cuota congelados)
+- [ ] Seleccionar una versión histórica de tarifa al armar el contrato (requiere autorización)
 
 ### Clientes
 
 #### CRUD Cliente
 
-- [ ] `SoftDeletes` con índice único compuesto (`documento` + `deleted_at`) para no bloquear alta de un cliente nuevo con el mismo documento de uno ya desactivado
+- [ ] `SoftDeletes` con índice único compuesto
 - [ ] Documento único por tenant
 - [ ] Nombre, tipo de documento
 - [ ] Observaciones versionadas (historial, no concatenar un string como el legacy)
+- [ ] Observaciones con categoría (`tipo_observacion_id`) y visibilidad (todos / solo coordinación)
+- [ ] Observaciones append-only: no se editan ni se borran
+- [ ] Campos compatibles con Factus: tipo de documento DIAN, régimen, email, municipio y departamento
 
 #### Sub-recursos de Cliente
 
-- [ ] Direcciones (relación 1\:N real — el legacy fuerza 1 sola; barrio/zona es un campo de texto libre, no un catálogo)
+- [ ] Direcciones (relación 1\:N real
 - [ ] Teléfonos (relación 1\:N real — el legacy fuerza 3 campos fijos)
 - [ ] Referencias (relación 1\:N real — el legacy limita a 3)
 
@@ -268,25 +314,33 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 - [ ] Detección de duplicados (no existe en el legacy)
 - [ ] Fusión de duplicados
-- [ ] Búsqueda unificada por nombre/documento/teléfono/dirección/estado (un único endpoint, no las 3 variantes del legacy)
-- [ ] Vista 360° / Timeline de solo lectura (contratos, pagos, Interacciones con el detalle de Gestión por contrato adentro, documentos, cambios de estado)
-- [ ] Indicador agregado de estado de cartera (valor calculado de lectura, no columna propia): gana el peor estado entre los contratos activos del cliente — no un promedio, no exige que todos estén al día
+- [ ] Búsqueda unificada por nombre/documento/teléfono/dirección/estado
+- [ ] Vista 360° / Timeline de solo lectura
+- [ ] Tabla de eventos de negocio que alimenta la Vista 360° (independiente de `activity_log`)
+- [ ] Registrar como evento de negocio
+- [ ] Indicador agregado de estado de cartera (valor calculado de lectura, no columna propia)
 - [ ] Asignación Cliente↔Cobrador (no Cliente↔Usuario directo — ver módulo Cartera/Cobranza)
 
 ### Evento de venta y Contratos
 
 #### Evento de venta
 
-- [ ] Entidad Evento de venta (catálogo "Eventos" — ver Fase 1) = Vendedor + Canal/Organización (campo propio) + Zona/Barrio (string libre) + Tipo de evento (catálogo Fase 1) + Fecha, vinculada al Contrato (no al Cliente)
+- [ ] Entidad Evento de venta (catálogo "Eventos"
 
 #### Contratos
 
-- [ ] CRUD Contratos, N por cliente — incluye Tipo de contrato (catálogo Fase 1); elimina el 1:1 cliente/pedido del legacy; un cliente puede tener 0, 1 o varios contratos simultáneos
-- [ ] Nunca fusionar una compra nueva dentro de un contrato existente con saldo (regla confirmada): aunque el cliente ya tenga deuda, cada compra nueva es siempre un Contrato nuevo. La consolidación del cobro entre varios contratos del mismo cliente se resuelve en Cobranza, no fusionando contratos
-- [ ] Ciclo de vida explícito: borrador / activo / suspendido / cancelado / finalizado — NO usar `SoftDeletes` como mecanismo de estado (ver "Convención de borrado y estado", punto 1); `SoftDeletes` solo aplica como salvavidas si el contrato se creó por error y nunca debió existir
+- [ ] CRUD Contratos, N por cliente
+- [ ] Nunca fusionar una compra nueva dentro de un contrato existente con saldo (regla confirmada)
+- [ ] Ciclo de vida explícito
 - [ ] Cambiar tarifa (dispara recálculo en el Motor Financiero)
 - [ ] Cambiar fecha de cobro
 - [ ] Agregar/quitar producto del contrato (recalcula total vía Motor Financiero, no a mano)
+- [ ] Campos `periodicidad_dias` y `dia_de_cobro` en el contrato
+- [ ] Generar plan de cuotas explícito al crear el contrato (una fila por cuota)
+- [ ] Regenerar cuotas futuras si cambia la periodicidad, con trazabilidad
+- [ ] Alerta al crear contrato si el cliente ya tiene deuda + autorización para continuar
+- [ ] Estado `pendiente_validación` con checklist manual
+- [ ] Campos `vendedor_id` y `cerrador_id` (nullable) en el contrato
 
 ### Motor Financiero
 
@@ -294,51 +348,62 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 - [ ] Calcular saldo, cuota, capital, interés, descuento y mora de un contrato
 - [ ] Recalcular saldo tras pago, reverso, cambio de tarifa o devolución
-- [ ] Clasificar estado de cartera de cada contrato según las reglas del catálogo "Días de cambio de estado" (Fase 1) — no umbrales sueltos en Parámetros
+- [ ] Clasificar estado de cartera según el catálogo "Días de cambio de estado"
+- [ ] 5 estados de cartera fijos
+- [ ] Implementar fórmula `CUOTAS_VENCIDAS`
+- [ ] Implementar fórmula `MINIMO_CONTRACTUAL` (fórmula legacy, redondeo al millar)
+- [ ] Cálculo de interés de mora, apagado por defecto
+- [ ] Guardar saldo negativo (sobrepago) sin procesarlo
 
 #### Automatización
 
-- [ ] Job programado en background que recalcula cartera y cambia estados (reemplaza el side-effect de `Deuda()` en cada request del legacy)
+- [ ] Job programado en background que recalcula cartera y cambia estados
 - [ ] DataCrédito como transición de estado más del Motor
 - [ ] Cálculo de pago mínimo por mora (vive acá, no en Pagos)
+- [ ] Endpoint de API que dispara el recálculo de cartera
+- [ ] Cron que llama a ese endpoint
+- [ ] Botón en UI para ejecutar el recálculo manualmente
 
 ### Cartera / Cobranza
 
 #### Cobrador (entidad independiente del Usuario)
 
-- [ ] CRUD básico de Cobrador ya cubierto por el catálogo genérico (ver "Catálogos base y parametrización") — acá vive la lógica de asignación:
+- [ ] CRUD básico de Cobrador ya cubierto por el catálogo genérico
 - [ ] Asignación Usuario↔Cobrador con historial (permite reasignar personal sin tocar cliente por cliente)
 - [ ] Asignación Cliente↔Cobrador
 - [ ] Mantener el Role Spatie "cobrador" solo como permiso de sistema, separado de la identidad operativa
-- [ ] **Invariante confirmada, sin excepción**: todos los contratos de un mismo cliente viven siempre en la misma cartera (mismo Cobrador) — nunca se reparten entre carteras distintas, ni siquiera si un contrato llega a estado jurídico/castigado (ese caso se gestiona distinto por el propio estado de cartera del contrato, no moviendo al cliente de cobrador). Se valida en el Service al asignar, no hace falta constraint de base de datos
+- [ ] **Invariante confirmada, sin excepción**
 
 #### Gestión
 
-> Sin borrado lógico (ver "Convención de borrado y estado", punto 2): Interacciones, Gestiones y
-> Compromisos son eventos de historial, se corrigen con otro evento, nunca se ocultan.
+> Sin borrado lógico: son eventos de historial. Detalle: `docs/contexto/decisiones.md`
 
-- [ ] **Interacción** (el contacto real): Cliente, Usuario, medio (llamada/visita/correo/WhatsApp/SMS), fecha, observación general — una sola fila por contacto real, sin importar cuántos contratos toque
-- [ ] **Gestión por contrato** (el efecto de la Interacción sobre un Contrato puntual): motivo, resultado, referencia a la Interacción y al Contrato — necesaria como fila separada porque el cliente puede responder distinto por cada deuda en la misma llamada (promete pagar el contrato A, rechaza el B)
+- [ ] **Interacción** (el contacto real)
+- [ ] **Gestión por contrato** (el efecto de la Interacción sobre un Contrato puntual)
 - [ ] Listado de Gestiones por cliente/contrato/usuario
-- [ ] Compromisos (promesa de pago, acuerdo, reprogramación) como entidad propia vinculada a la Gestión (por contrato, no a la Interacción), no inferida del motivo — una sola Interacción puede generar varios Compromisos a la vez
-- [ ] Cadencia de cobro consolidada por Cliente: una Interacción por mes por cliente como ciclo regular, sin importar cuántos contratos tenga — no una llamada por contrato
+- [ ] Compromisos como entidad propia vinculada a la Gestión, no inferidos del motivo
+- [ ] Cadencia de cobro consolidada por Cliente
+- [ ] Cadencia alternativa por estado de mora
+- [ ] La cadencia nunca bloquea al gestor: solo alimenta agenda y reporte
+- [ ] Registrar canal de la gestión (llamada/SMS/WhatsApp/correo) y su resultado
+- [ ] Compromiso vencido sin confirmar → `incumplido` y vuelve a la agenda
 
 #### Agenda
 
-- [ ] Bandeja diaria/semanal del cobrador, agrupada **por Cliente** (no por Contrato): un cliente con 3 contratos vencidos aparece como una sola tarea, con el detalle de los 3 contratos adentro
+- [ ] Bandeja diaria/semanal del cobrador, agrupada **por Cliente** (no por Contrato)
 - [ ] Clientes prioritarios
 - [ ] Promesas por vencer / vencidas
 
 ### Pagos
 
-> Sin borrado lógico en ningún sub-módulo (ver "Convención de borrado y estado", punto 2): un pago
-> nunca se oculta, se corrige con un evento de reverso/descarte que queda vinculado y visible junto
-> al original.
+> Sin borrado lógico: un pago nunca se oculta. Detalle: `docs/contexto/decisiones.md`
 
 #### Registro
 
 - [ ] CRUD Pago: crear, listar, consultar — incluye Método de pago (catálogo Fase 1)
 - [ ] Filtrar pagos por usuario/cobrador/rango de fechas
+- [ ] Separar `gestor_id` (quien gestiona), `recaudador_id` (quien recoge la plata) y `metodo_pago_id`
+- [ ] Estado del pago: `pendiente` → `confirmado` (define quién puede confirmar)
 
 #### Pagos programados
 
@@ -355,17 +420,17 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 - [ ] Generación/impresión individual de recibo
 - [ ] Generación/impresión por lote
 - [ ] Control de copias impresas
+- [ ] Recibo HTML imprimible en media carta
 
 #### Consultas
 
-- [ ] Listado "cobro del día" — agrupado **por Cliente** (ver Cartera/Cobranza, Agenda), no una fila por Contrato
+- [ ] Listado "cobro del día"
 - [ ] Listado "sin llamar"
 - [ ] Listado "volver a llamar"
 
 ### Devoluciones
 
-> Sin borrado lógico (ver "Convención de borrado y estado", punto 2): es un evento de historial, no
-> se oculta ni se marca como borrado.
+> Sin borrado lógico: es un evento de historial. Detalle: `docs/contexto/decisiones.md`
 
 - [ ] CRUD Devolución: registrar
 - [ ] Aprobar/rechazar devolución (nuevo respecto al legacy, que genera directo)
@@ -375,10 +440,12 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 ### Reportes
 
-- [ ] Conteo de clientes por estado — cuenta personas, usa el indicador agregado por Cliente (peor estado entre sus contratos activos)
+- [ ] Conteo de clientes por estado
 - [ ] Conteo de pagos por estado (programados/confirmados/descartados)
 - [ ] Cartera por usuario/cobrador (pagos, programados, descartados, totales)
-- [ ] Totales de cartera por estado — suma valores, siempre por Contrato, nunca por Cliente. "Clientes en mora" (personas) y "cartera en mora" (dinero) son dos métricas distintas, no mezclarlas en un solo número
+- [ ] Totales de cartera por estado
+- [ ] Listado de clientes en estado jurídico para proceso externo (DataCrédito)
+- [ ] Reporte por gestor: gestiones, promesas hechas, promesas cumplidas, % de efectividad
 
 ### Importación
 
@@ -392,12 +459,14 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 #### Catálogos
 
 - [ ] Pantallas de catálogos (componente genérico reutilizable)
+- [ ] Pantalla de estados y transiciones
+- [ ] Pantalla de sucursales
 
 #### Vendedores, Productos, Tarifas
 
-- [x] Pantalla Vendedores
-- [x] Pantalla Productos (con edición)
-- [x] Pantalla Tarifas (con historial)
+- [x] Pantalla Vendedores (sin backend: 404)
+- [x] Pantalla Productos (sin backend: 404)
+- [x] Pantalla Tarifas (sin backend: 404)
 
 #### Clientes
 
@@ -415,8 +484,7 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 #### Cartera / Cobranza
 
 - [ ] Administración de Cobradores (CRUD + asignación Usuario↔Cobrador)
-- [ ] Asignación Cliente↔Cobrador
-- [ ] Bandeja de gestión/cobranza — registro de Interacción (contacto) con el detalle de Gestión por cada contrato del cliente adentro del mismo formulario
+- [ ] Bandeja de gestión/cobranza
 - [ ] Agenda del cobrador (agrupada por Cliente)
 
 #### Pagos
@@ -425,6 +493,11 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 - [ ] Pagos programados (programar/confirmar/descartar)
 - [ ] Reverso
 - [ ] Recibos
+
+#### Autorizaciones
+
+- [ ] Bandeja de solicitudes pendientes
+- [ ] Modal de solicitud de autorización reutilizable
 
 #### Devoluciones
 
@@ -444,4 +517,4 @@ Fijar esto antes de construir el resto de módulos — evita repetir el error de
 
 ## Actualizado
 
-2026-07-07
+2026-08-19
