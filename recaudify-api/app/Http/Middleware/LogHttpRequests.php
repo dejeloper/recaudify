@@ -11,6 +11,9 @@ class LogHttpRequests
 {
     private const STARTED_AT_ATTRIBUTE = "_log_http_started_at";
 
+    /** Rutas de alta frecuencia y bajo valor informativo. Si fallan (5xx) sí se registran. */
+    private const UNLOGGED_PATHS = ["api/health", "up"];
+
     public function __construct(private readonly LoggingService $logging) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -22,6 +25,11 @@ class LogHttpRequests
 
     public function terminate(Request $request, Response $response): void
     {
+        // El monitor de uptime pega cada minuto: registrarlo solo entierra lo que sí importa.
+        if ($request->is(...self::UNLOGGED_PATHS) && $response->getStatusCode() < 500) {
+            return;
+        }
+
         $status = $response->getStatusCode();
         $startedAt = $request->attributes->get(self::STARTED_AT_ATTRIBUTE, microtime(true));
         $context = [

@@ -54,6 +54,12 @@ class ApiResult
         return new self(false, $message, $statusCode, null);
     }
 
+    /** Fallo que además necesita devolver datos (ej. el detalle de un health check caído). */
+    public static function failureWith(mixed $data, string $message, int $statusCode = 400): self
+    {
+        return new self(false, $message, $statusCode, $data);
+    }
+
     public static function notFound(string $message = "No encontrado."): self
     {
         return new self(false, $message, 404, null);

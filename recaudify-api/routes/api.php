@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LoginAuditController;
 use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\ParameterController;
@@ -13,6 +14,9 @@ use App\Http\Controllers\Api\StateTransitionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
+
+// Público: un chequeo de uptime debe funcionar sin credenciales, incluso con la base caída.
+Route::get("health", [HealthController::class, "index"]);
 
 Route::prefix("auth")->group(function () {
     Route::post("register", [AuthController::class, "register"]);
