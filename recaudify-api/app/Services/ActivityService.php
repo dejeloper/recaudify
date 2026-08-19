@@ -2,18 +2,49 @@
 
 namespace App\Services;
 
+use App\Enums\ParameterType;
 use App\Repositories\ActivityRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class ActivityService
 {
+    private const RETENTION_KEY = "activity_log_retention_days";
+
     public function __construct(
         private readonly ActivityRepository $repository,
         private readonly UserService $userService,
+        private readonly ParameterService $parameterService,
     ) {}
+
+    public function purge(?int $days = null): array
+    {
+        $days = $days ?? (int) $this->parameterService->get(ParameterType::Application, self::RETENTION_KEY);
+        $cutoff = Carbon::now()->subDays($days)->toDateTimeString();
+
+        $deleted = $this->repository->deleteOlderThan($cutoff);
+
+        activity("audit")
+            ->withProperties(["deleted" => $deleted, "cutoff" => $cutoff, "retention_days" => $days])
+            ->log("purgó el log de actividad");
+
+        return ["deleted" => $deleted, "cutoff" => $cutoff, "retention_days" => $days];
+    }
+
+    public function previewPurge(?int $days = null): array
+    {
+        $days = $days ?? (int) $this->parameterService->get(ParameterType::Application, self::RETENTION_KEY);
+        $cutoff = Carbon::now()->subDays($days)->toDateTimeString();
+
+        return [
+            "deleted" => $this->repository->countOlderThan($cutoff),
+            "cutoff" => $cutoff,
+            "retention_days" => $days,
+        ];
+    }
 
     public function getAll(array $filters = [], int $perPage = 25): LengthAwarePaginator
     {

@@ -108,6 +108,8 @@ Route::middleware(["auth:api", "track.session", "check.schedule", "force.passwor
 
     Route::prefix("activities")->group(function () {
         Route::get("/", [ActivityController::class, "index"])->middleware("permission:audit.view");
+        Route::get("/purge/preview", [ActivityController::class, "purgePreview"])->middleware("permission:audit.purge");
+        Route::post("/purge", [ActivityController::class, "purge"])->middleware("permission:audit.purge");
     });
 
     Route::prefix("login-audits")->group(function () {

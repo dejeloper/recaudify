@@ -88,7 +88,7 @@ class RoleService
             ->causedBy(Auth::user())
             ->performedOn($role)
             ->event("updated")
-            ->withChanges([
+            ->withProperties([
                 "attributes" => ["permissions" => $after],
                 "old" => ["permissions" => $before],
             ])

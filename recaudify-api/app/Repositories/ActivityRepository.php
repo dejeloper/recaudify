@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Activity;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Spatie\Activitylog\Models\Activity;
 
 class ActivityRepository
 {
@@ -20,7 +20,19 @@ class ActivityRepository
             )
             ->when($subjectType, fn($q, $v) => $q->where("subject_type", $v))
             ->when($filters["subject_id"] ?? null, fn($q, $v) => $q->where("subject_id", $v))
+            ->when($filters["from"] ?? null, fn($q, $v) => $q->where("created_at", ">=", $v))
+            ->when($filters["to"] ?? null, fn($q, $v) => $q->where("created_at", "<=", $v))
             ->orderByDesc("id")
             ->paginate($perPage);
+    }
+
+    public function countOlderThan(string $cutoff): int
+    {
+        return Activity::query()->where("created_at", "<", $cutoff)->count();
+    }
+
+    public function deleteOlderThan(string $cutoff): int
+    {
+        return Activity::query()->where("created_at", "<", $cutoff)->delete();
     }
 }

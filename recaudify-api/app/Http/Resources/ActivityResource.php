@@ -30,15 +30,34 @@ class ActivityResource extends JsonResource
                 "id" => $this->subject_id,
                 "label" => $this->subject_label,
             ],
-            "causer" => $this->causer ? ["id" => $this->causer->id, "name" => $this->causer->name] : null,
+            "causer" => $this->buildCauser(),
             "changes" => $this->buildChanges(),
             "created_at" => $this->created_at,
         ];
     }
 
+    /**
+     * El nombre viene del snapshot congelado en el registro, no de la relación viva: si el usuario
+     * se borró o se renombró, la historia sigue diciendo quién fue.
+     */
+    private function buildCauser(): ?array
+    {
+        if (!$this->causer_id && !$this->causer_username) {
+            return null;
+        }
+
+        return [
+            "id" => $this->causer_id,
+            "name" => $this->causer_name ?? $this->causer?->name,
+            "username" => $this->causer_username ?? $this->causer?->username,
+            "exists" => $this->causer !== null,
+        ];
+    }
+
     private function buildChanges(): array
     {
-        $data = $this->attribute_changes ?? collect();
+        // El paquete guarda old/attributes dentro de properties; changes() los expone ya filtrados.
+        $data = $this->resource->changes();
         $attributes = $data->get("attributes", []);
         $old = $data->get("old", []);
 

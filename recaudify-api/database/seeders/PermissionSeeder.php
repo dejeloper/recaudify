@@ -48,6 +48,7 @@ class PermissionSeeder extends Seeder
 
             // Activity model log (Spatie)
             "audit.view",
+            "audit.purge",
 
             // Login audit
             "access.view",

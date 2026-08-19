@@ -14,9 +14,12 @@ return new class extends Migration {
             $table->nullableMorphs("subject", "subject");
             $table->string("event")->nullable();
             $table->nullableMorphs("causer", "causer");
-            $table->json("attribute_changes")->nullable();
+            $table->string("causer_username")->nullable();
+            $table->string("causer_name")->nullable();
             $table->json("properties")->nullable();
+            $table->uuid("batch_uuid")->nullable();
             $table->timestamps();
+            $table->index("created_at");
         });
     }
 };

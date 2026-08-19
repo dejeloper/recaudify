@@ -2,8 +2,8 @@
 
 namespace App\Models\Concerns;
 
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 trait LogsModelActivity
 {
@@ -19,7 +19,7 @@ trait LogsModelActivity
             ->useLogName($this->logName())
             ->logOnly($this->activitylogFields())
             ->logOnlyDirty()
-            ->dontLogEmptyChanges()
+            ->dontSubmitEmptyLogs()
             ->setDescriptionForEvent(
                 fn(string $event) => match ($event) {
                     "created" => "creó",

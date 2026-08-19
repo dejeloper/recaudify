@@ -95,6 +95,24 @@ class ParameterSeeder extends Seeder
                 "description" => "Formato de fecha para la interfaz",
             ],
 
+            [
+                "type" => "application",
+                "key" => "activity_log_retention_days",
+                "value" => "365",
+                "cast" => "integer",
+                "description" => "Días que se conserva el log de auditoría antes de que la purga pueda eliminarlo",
+            ],
+
+            //  Business
+            [
+                "type" => "business",
+                "key" => "manage_own_clients_only",
+                "value" => "true",
+                "cast" => "boolean",
+                "description" =>
+                    "Un gestor solo puede gestionar los clientes de su cartera. La consulta siempre es global",
+            ],
+
             //  Security
             [
                 "type" => "security",
