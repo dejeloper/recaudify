@@ -103,6 +103,15 @@ class ParameterSeeder extends Seeder
                 "description" => "Días que se conserva el log de auditoría antes de que la purga pueda eliminarlo",
             ],
 
+            [
+                "type" => "application",
+                "key" => "activity_log_purge_time",
+                "value" => "03:00",
+                "cast" => "string",
+                "description" =>
+                    "Hora diaria (HH:MM, 24h) a la que corre la purga del log de auditoría. Requiere el cron del servidor",
+            ],
+
             //  Business
             [
                 "type" => "business",

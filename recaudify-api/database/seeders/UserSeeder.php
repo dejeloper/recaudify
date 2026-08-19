@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -40,6 +41,12 @@ class UserSeeder extends Seeder
             ],
         ];
 
+        $this->seedUsers($users);
+        $this->seedSystemUser();
+    }
+
+    private function seedUsers(array $users): void
+    {
         foreach ($users as $data) {
             $role = $data["role"];
             unset($data["role"]);
@@ -48,5 +55,26 @@ class UserSeeder extends Seeder
 
             $user->assignRole($role);
         }
+    }
+
+    /**
+     * Autor de las tareas automáticas.
+     *
+     * Nace inactivo y con una contraseña aleatoria que nadie conoce: no está pensado para que una
+     * persona entre con él, sino para firmar lo que hace el cron.
+     */
+    private function seedSystemUser(): void
+    {
+        $user = User::firstOrCreate(
+            ["username" => User::SYSTEM_USERNAME],
+            [
+                "name" => "Sistema",
+                "email" => null,
+                "password" => Str::random(64),
+                "active" => false,
+            ],
+        );
+
+        $user->assignRole("sistema");
     }
 }

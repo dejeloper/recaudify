@@ -15,6 +15,14 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, HasRoles, LogsModelActivity, Notifiable, SoftDeletes;
 
+    /**
+     * Usuario bajo el que corren las tareas automáticas (cron, jobs).
+     *
+     * No puede iniciar sesión: existe para que toda acción del sistema tenga un autor con nombre
+     * en la auditoría, en vez de aparecer como "sistema" a secas.
+     */
+    public const SYSTEM_USERNAME = "sistema";
+
     protected string $guard_name = "api";
 
     protected $fillable = ["name", "username", "email", "password", "active", "password_changed_at"];
