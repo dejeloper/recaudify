@@ -52,8 +52,18 @@ php artisan migrate:fresh --seed         # Reset DB and reseed
 php artisan test                         # Run PHPUnit tests
 php artisan test --filter=TestName       # Run a single test
 composer run dev                         # Start server + queue + logs + vite concurrently
-vendor/bin/pint                          # Fix code style (Laravel Pint)
 php artisan l5-swagger:generate          # Regenerate Swagger docs
+```
+
+**Code style — do NOT run `vendor/bin/pint`.** PHP in this repo is formatted with Prettier
+(`@prettier/plugin-php`), not with Pint. Pint is installed as a Laravel dependency but its default
+preset disagrees with the committed style (single vs. double quotes, among others): running it
+reformats ~120 files and buries any real change in noise. Format only the files you touched:
+
+```bash
+npx prettier --write <paths...>   # Format specific files (preferred)
+pnpm format:php                   # Format all PHP (slow: several minutes)
+pnpm check:php                    # Check without writing
 ```
 
 ### Frontend (`recaudify-web/`)
@@ -71,6 +81,8 @@ pnpm add <pkg>      # Install a dependency
 pnpm prettier --write .
 ```
 
+Formats both subprojects (PHP included). This — not Pint — is the source of truth for PHP style.
+
 ## Backend Architecture
 
 **Auth:** JWT via `php-open-source-saver/jwt-auth`. TTL 15 min, refresh 4h, HS256. Guard name is `api`. All routes except `POST /api/auth/login` and `POST /api/auth/register` require `auth:api` middleware.
@@ -81,8 +93,10 @@ pnpm prettier --write .
 
 - Form Requests in `App\Http\Requests\{Module}\` for all validation.
 - JWT custom claims include the user's primary role (`getJWTCustomClaims()`).
-- Controllers extend `App\Http\Controllers\Api\ApiController` (holds OpenAPI metadata).
-- All endpoints documented with `#[OA\...]` PHP attributes (swagger-php).
+- Controllers extend `App\Http\Controllers\Api\ApiController`.
+- OpenAPI lives in **dedicated doc classes** under `app/OpenApi/{Module}/{Module}Docs.php`, never as
+  attributes on the controllers themselves. Each endpoint is an empty method carrying its `#[OA\...]`
+  attribute. When you add an endpoint, add its method to the matching `*Docs.php` class.
 
 ## Frontend Architecture
 
