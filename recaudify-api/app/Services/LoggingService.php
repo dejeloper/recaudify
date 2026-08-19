@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Http\Middleware\AssignRequestId;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
 
 class LoggingService
@@ -23,28 +25,43 @@ class LoggingService
 
     public function logBusiness(string $event, array $context = []): void
     {
-        Log::channel("business")->info($event, $context);
+        Log::channel("business")->info($event, $this->withRequestId($context));
     }
 
     public function logRequest(array $context): void
     {
-        Log::channel("http")->info("HTTP request", $context);
+        Log::channel("http")->info("HTTP request", $this->withRequestId($context));
     }
 
     public function logError(\Throwable $e, array $context = []): void
     {
-        Log::channel("app-errors")->error($e->getMessage(), [
-            ...$context,
-            "exception" => get_class($e),
-            "file" => $e->getFile(),
-            "line" => $e->getLine(),
-            "trace" => $e->getTraceAsString(),
-        ]);
+        Log::channel("app-errors")->error(
+            $e->getMessage(),
+            $this->withRequestId([
+                ...$context,
+                "exception" => get_class($e),
+                "file" => $e->getFile(),
+                "line" => $e->getLine(),
+                "trace" => $e->getTraceAsString(),
+            ]),
+        );
     }
 
     public function logSecurity(string $event, array $context = []): void
     {
-        Log::channel("security")->warning($event, $context);
+        Log::channel("security")->warning($event, $this->withRequestId($context));
+    }
+
+    /**
+     * Sella cada línea con el id de la petición.
+     *
+     * Es lo que permite juntar después lo que quedó repartido en cuatro archivos distintos.
+     */
+    private function withRequestId(array $context): array
+    {
+        $requestId = Context::get(AssignRequestId::CONTEXT_KEY);
+
+        return $requestId ? [AssignRequestId::CONTEXT_KEY => $requestId, ...$context] : $context;
     }
 
     public function maskSensitive(array $data): array
