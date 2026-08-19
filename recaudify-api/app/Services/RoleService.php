@@ -7,6 +7,7 @@ use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RoleService
 {
@@ -39,32 +40,41 @@ class RoleService
 
     public function create(string $name, array $permissions = []): Role
     {
-        $role = $this->repository->create(["name" => $name, "guard_name" => "api"]);
+        // Rol y permisos son un solo hecho: un rol a medio permisar es peor que ningún rol.
+        $role = DB::transaction(function () use ($name, $permissions) {
+            $role = $this->repository->create(["name" => $name, "guard_name" => "api"]);
 
-        if ($permissions) {
-            $this->syncPermissionsWithLog($role, $permissions);
-        }
+            if ($permissions) {
+                $this->syncPermissionsWithLog($role, $permissions);
+            }
+
+            return $role;
+        });
 
         return $role->load("permissions");
     }
 
     public function update(Role $role, ?string $name, ?array $permissions): Role
     {
-        if ($name !== null) {
-            $role->update(["name" => $name]);
-        }
+        DB::transaction(function () use ($role, $name, $permissions) {
+            if ($name !== null) {
+                $role->update(["name" => $name]);
+            }
 
-        if ($permissions !== null) {
-            $this->syncPermissionsWithLog($role, $permissions);
-        }
+            if ($permissions !== null) {
+                $this->syncPermissionsWithLog($role, $permissions);
+            }
+        });
 
         return $role->load("permissions");
     }
 
     public function delete(Role $role): void
     {
-        $role->syncPermissions([]);
-        $role->delete();
+        DB::transaction(function () use ($role) {
+            $role->syncPermissions([]);
+            $role->delete();
+        });
     }
 
     public function restore(Role $role): void

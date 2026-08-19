@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection as SupportCollection;
 
 class UserService
@@ -52,11 +53,16 @@ class UserService
             $data["password_changed_at"] = now();
         }
 
-        $user = $this->repository->create($data);
+        // Usuario y rol son un solo hecho: un usuario sin rol no debe llegar a existir.
+        $user = DB::transaction(function () use ($data, $role) {
+            $user = $this->repository->create($data);
 
-        if ($role) {
-            $user->syncRoles([$role]);
-        }
+            if ($role) {
+                $user->syncRoles([$role]);
+            }
+
+            return $user;
+        });
 
         return $user->load("roles", "permissions");
     }
@@ -69,11 +75,13 @@ class UserService
             $filtered["password_changed_at"] = now();
         }
 
-        $user->update($filtered);
+        DB::transaction(function () use ($user, $filtered, $syncRole, $role) {
+            $user->update($filtered);
 
-        if ($syncRole) {
-            $user->syncRoles(array_filter([$role]));
-        }
+            if ($syncRole) {
+                $user->syncRoles(array_filter([$role]));
+            }
+        });
 
         return $user->load("roles", "permissions");
     }
