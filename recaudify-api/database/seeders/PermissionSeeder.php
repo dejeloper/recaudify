@@ -60,6 +60,9 @@ class PermissionSeeder extends Seeder
             // Catalogs
             "catalogs.view",
 
+            // Maintenance mode
+            "maintenance.bypass",
+
             // States (ciclo de vida)
             "states.view",
             "states.create",

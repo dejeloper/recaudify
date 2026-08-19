@@ -194,7 +194,23 @@ class ParameterSeeder extends Seeder
                 "key" => "maintenance_mode",
                 "value" => "false",
                 "cast" => "boolean",
-                "description" => "Activa el modo mantenimiento (bloquea acceso a usuarios)",
+                "description" =>
+                    "Activa el modo mantenimiento. Los usuarios con el permiso maintenance.bypass siguen trabajando",
+            ],
+            [
+                "type" => "configuration",
+                "key" => "maintenance_scope",
+                "value" => "all",
+                "cast" => "string",
+                "description" =>
+                    "Alcance del mantenimiento: all (bloquea todo) o writes (deja consultar, bloquea guardar)",
+            ],
+            [
+                "type" => "configuration",
+                "key" => "maintenance_message",
+                "value" => "El sistema está en mantenimiento. Intente de nuevo en unos minutos.",
+                "cast" => "string",
+                "description" => "Mensaje que ven los usuarios mientras el mantenimiento está activo",
             ],
             [
                 "type" => "configuration",
