@@ -45,7 +45,7 @@ class ParameterSeeder extends Seeder
                 "value" => "fixed",
                 "cast" => "string",
                 "description" =>
-                    "Modo de contraseña al resetear un usuario: fixed (valor fijo) o random (auto-generada)",
+                "Modo de contraseña al resetear un usuario: fixed (valor fijo) o random (auto-generada)",
             ],
             [
                 "type" => "authentication",
@@ -53,7 +53,7 @@ class ParameterSeeder extends Seeder
                 "value" => "Cobranza123",
                 "cast" => "string",
                 "description" =>
-                    "Valor fijo usado al resetear contraseña cuando reset_password_mode=fixed. Si está vacío, se genera una contraseña aleatoria como salvaguarda",
+                "Valor fijo usado al resetear contraseña cuando reset_password_mode=fixed. Si está vacío, se genera una contraseña aleatoria como salvaguarda",
             ],
 
             //  Application ─
@@ -109,7 +109,7 @@ class ParameterSeeder extends Seeder
                 "value" => "03:00",
                 "cast" => "string",
                 "description" =>
-                    "Hora diaria (HH:MM, 24h) a la que corre la purga del log de auditoría. Requiere el cron del servidor",
+                "Hora diaria (HH:MM, 24h) a la que corre la purga del log de auditoría. Requiere el cron del servidor",
             ],
 
             //  Business
@@ -119,7 +119,7 @@ class ParameterSeeder extends Seeder
                 "value" => "true",
                 "cast" => "boolean",
                 "description" =>
-                    "Un gestor solo puede gestionar los clientes de su cartera. La consulta siempre es global",
+                "Un gestor solo puede gestionar los clientes de su cartera. La consulta siempre es global",
             ],
 
             //  Security
@@ -129,7 +129,7 @@ class ParameterSeeder extends Seeder
                 "value" => "true",
                 "cast" => "boolean",
                 "description" =>
-                    "Habilita el bloqueo temporal de usuario e IP tras superar los intentos fallidos de login",
+                "Habilita el bloqueo temporal de usuario e IP tras superar los intentos fallidos de login",
             ],
             [
                 "type" => "security",
@@ -195,7 +195,7 @@ class ParameterSeeder extends Seeder
                 "value" => "false",
                 "cast" => "boolean",
                 "description" =>
-                    "Activa el modo mantenimiento. Los usuarios con el permiso maintenance.bypass siguen trabajando",
+                "Activa el modo mantenimiento. Los usuarios con el permiso maintenance.bypass siguen trabajando",
             ],
             [
                 "type" => "configuration",
@@ -203,7 +203,7 @@ class ParameterSeeder extends Seeder
                 "value" => "all",
                 "cast" => "string",
                 "description" =>
-                    "Alcance del mantenimiento: all (bloquea todo) o writes (deja consultar, bloquea guardar)",
+                "Alcance del mantenimiento: all (bloquea todo) o writes (deja consultar, bloquea guardar)",
             ],
             [
                 "type" => "configuration",
@@ -235,7 +235,8 @@ class ParameterSeeder extends Seeder
                 "key" => "email_notifications_enabled",
                 "value" => "false",
                 "cast" => "boolean",
-                "description" => "Habilita el envío de notificaciones por correo",
+                "description" => "Habilita el envío de notificaciones por correo (inactivo: falta configurar SMTP)",
+                "is_editable" => false,
             ],
             [
                 "type" => "notification",
@@ -251,6 +252,27 @@ class ParameterSeeder extends Seeder
                 ["type" => $param["type"], "key" => $param["key"]],
                 array_merge(["is_editable" => true], $param),
             );
+        }
+
+        $this->syncEditableFlags($parameters);
+    }
+
+    /**
+     * Corrige `is_editable` en bases ya sembradas.
+     *
+     * `firstOrCreate` no toca los registros existentes, así que sin esto un parámetro que pasa a ser
+     * no editable seguiría editable donde ya estaba creado. Solo se sincroniza el flag: el valor
+     * elegido por el usuario nunca se sobrescribe.
+     */
+    private function syncEditableFlags(array $parameters): void
+    {
+        foreach ($parameters as $param) {
+            $editable = $param["is_editable"] ?? true;
+
+            Parameter::where("type", $param["type"])
+                ->where("key", $param["key"])
+                ->where("is_editable", "!=", $editable)
+                ->update(["is_editable" => $editable]);
         }
     }
 }
