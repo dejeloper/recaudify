@@ -59,6 +59,37 @@
                         }
                     },
                     {
+                        "name": "user",
+                        "in": "query",
+                        "description": "Filtra por username del autor. El valor \"sistema\" trae la actividad sin autor",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha inicial del rango (inclusive)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha final del rango (inclusive). No puede ser anterior a from",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-31 23:59:59"
+                        }
+                    },
+                    {
                         "name": "per_page",
                         "in": "query",
                         "description": "Elementos por página (1–100, por defecto 25)",
@@ -87,6 +118,92 @@
                     },
                     "403": {
                         "description": "Sin permisos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/activities/purge/preview": {
+            "get": {
+                "tags": [
+                    "Auditoría"
+                ],
+                "summary": "Vista previa de la purga del log",
+                "description": "Cuántos registros eliminaría la purga con el periodo de retención vigente, sin borrar nada.",
+                "operationId": "b9aea22f6ac6f91356fa19c0fa7d1387",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "description": "Días de retención a simular. Por defecto usa el parámetro activity_log_retention_days",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 365,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conteo, fecha de corte y días de retención"
+                    },
+                    "403": {
+                        "description": "Sin permisos (requiere audit.purge)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/activities/purge": {
+            "post": {
+                "tags": [
+                    "Auditoría"
+                ],
+                "summary": "Purgar el log de actividad vencido",
+                "description": "Única vía de borrado del log: no existe borrado individual ni edición. Elimina la actividad\nanterior al periodo de retención y **deja registro de la propia purga** (quién la ejecutó,\ncuántos registros eliminó y con qué fecha de corte).",
+                "operationId": "bb6bdf7dcbb887a60fd671f8f379bd97",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "days": {
+                                        "description": "Días de retención. Por defecto usa el parámetro activity_log_retention_days",
+                                        "type": "integer",
+                                        "example": 365,
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registros eliminados, fecha de corte y retención aplicada"
+                    },
+                    "403": {
+                        "description": "Sin permisos (requiere audit.purge)"
+                    },
+                    "422": {
+                        "description": "days inválido"
                     }
                 },
                 "security": [

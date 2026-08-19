@@ -92,6 +92,14 @@ Formats both subprojects (PHP included). This — not Pint — is the source of 
 **Conventions:**
 
 - Form Requests in `App\Http\Requests\{Module}\` for all validation.
+- **Money:** every monetary amount is a whole-peso integer (COP). No cents. Columns are
+  `bigInteger`, models cast to `integer` — never `decimal`, never `float`. Rounding, parsing of
+  user/CSV input, and splitting an amount across installments go through `App\Support\Money`.
+- **Transactions:** any Service method that writes to more than one table must be wrapped in
+  `DB::transaction()`. The transaction belongs in the **Service** — never in the Controller or the
+  Repository — because the Service is what knows the unit of business ("create a client with its
+  addresses" is one fact, even if it's four inserts). Queue jobs dispatch `after_commit` (already
+  enabled in `config/queue.php`) so they never run against data that isn't committed yet.
 - JWT custom claims include the user's primary role (`getJWTCustomClaims()`).
 - Controllers extend `App\Http\Controllers\Api\ApiController`.
 - OpenAPI lives in **dedicated doc classes** under `app/OpenApi/{Module}/{Module}Docs.php`, never as

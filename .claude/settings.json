@@ -1,6 +1,6 @@
 {
   "enableAllProjectMcpServers": true,
-    "permissions": {
+  "permissions": {
     "allow": [
       "Read",
       "Edit",
@@ -56,7 +56,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "$changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $webFiles = $changed | Where-Object { $_ -match '^recaudify-web/.*\\.(ts|html|scss|css)$' } | ForEach-Object { $_ -replace '^recaudify-web/', '' }; if ($webFiles.Count -gt 0) { pnpm --prefix recaudify-web exec prettier --write @($webFiles) --ignore-unknown 2>$null }; exit 0",
+            "command": "$changed = @(git diff --name-only HEAD 2>$null) + @(git ls-files --others --exclude-standard 2>$null) | Select-Object -Unique; $webFiles = $changed | Where-Object { $_ -match '^recaudify-web/.*\\.(ts|html|scss|css)$' } | ForEach-Object { $_ -replace '^recaudify-web/', '' }; if ($webFiles.Count -gt 0) { pnpm --prefix recaudify-web exec prettier --write @($webFiles) --ignore-unknown 2>$null }; $phpFiles = $changed | Where-Object { $_ -match '\\.php$' }; if ($phpFiles.Count -gt 0) { pnpm exec prettier --write @($phpFiles) --ignore-unknown 2>$null }; exit 0",
             "statusMessage": "Running Prettier on modified files...",
             "timeout": 60
           },
@@ -91,7 +91,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $file = $json.tool_input.file_path; if (-not $file) { exit 0 }; if ($file -match '\\.php$') { php recaudify-api/vendor/bin/pint \"$file\" 2>$null } elseif ($file -match '\\.(ts|html|scss|css)$') { pnpm --prefix recaudify-web exec prettier --write \"$file\" --ignore-unknown 2>$null }; exit 0",
+            "command": "$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $file = $json.tool_input.file_path; if (-not $file) { exit 0 }; if ($file -match '\\.php$') { pnpm exec prettier --write \"$file\" --ignore-unknown 2>$null } elseif ($file -match '\\.(ts|html|scss|css)$') { pnpm --prefix recaudify-web exec prettier --write \"$file\" --ignore-unknown 2>$null }; exit 0",
             "statusMessage": "Formateando archivo...",
             "timeout": 30
           }
