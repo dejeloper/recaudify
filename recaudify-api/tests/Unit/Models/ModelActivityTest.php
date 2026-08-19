@@ -8,8 +8,8 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UserSchedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Support\LogOptions;
+use App\Models\Activity;
+use Spatie\Activitylog\LogOptions;
 use Tests\TestCase;
 
 class ModelActivityTest extends TestCase
@@ -75,8 +75,7 @@ class ModelActivityTest extends TestCase
 
         $this->assertEquals("actualizó", $activity->description);
 
-        $changes = $activity->attribute_changes;
-        $this->assertNotNull($changes);
+        $changes = $activity->changes();
         $this->assertArrayHasKey("old", $changes->toArray());
         $this->assertArrayHasKey("attributes", $changes->toArray());
         $this->assertEquals("Original", $changes["old"]["name"]);
@@ -97,8 +96,7 @@ class ModelActivityTest extends TestCase
         );
 
         $activity = $activities->last();
-        $changes = $activity->attribute_changes;
-        $this->assertNotNull($changes);
+        $changes = $activity->changes();
         $this->assertArrayHasKey("attributes", $changes->toArray());
         $attributes = $changes["attributes"];
 

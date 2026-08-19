@@ -45,3 +45,39 @@ Archivo fuente: `app/Http/Controllers/Api/AuthController.php` · `app/Http/Reque
 | `test_me_returns_authenticated_user_data`     | Verifica que `GET /api/auth/me` devuelve 200 y el username del usuario autenticado en el body                                          |
 | `test_me_requires_authentication`             | Verifica que `GET /api/auth/me` sin autenticación devuelve 401                                                                         |
 | `test_logout_closes_session_successfully`     | Verifica que `POST /api/auth/logout` de un usuario autenticado devuelve 200 con `success=true`                                         |
+
+---
+
+## `tests/Unit/Support/MoneyTest.php`
+
+Archivo fuente: `app/Support/Money.php`
+
+| Prueba | Descripción |
+| --- | --- |
+| `test_rounds_up_to_thousand` | Verifica el redondeo al millar **hacia arriba** (regla del legacy `calcularSaldoMinimo`): 12.001 y 12.999 dan 13.000, y un múltiplo exacto no se altera |
+| `test_rounds_to_nearest_thousand` | Verifica el redondeo al millar más cercano, usado solo en montos informativos |
+| `test_from_input_accepts_formatted_strings` | Verifica que un monto con separadores de miles y símbolo (`$ 1.250.000`) se convierte a entero de pesos |
+| `test_from_input_rejects_garbage` | Verifica que un texto no numérico lanza `InvalidArgumentException` en vez de truncar a 0 en silencio |
+| `test_from_input_rejects_empty_string` | Verifica que una cadena vacía o de espacios lanza `InvalidArgumentException` |
+| `test_split_never_loses_or_invents_pesos` | Verifica que repartir 100.000 en 3 cuotas da `[33334, 33333, 33333]`: la suma cuadra exactamente con el total |
+| `test_split_with_exact_division` | Verifica el reparto cuando la división es exacta |
+| `test_split_rejects_zero_parts` | Verifica que repartir en 0 partes lanza `InvalidArgumentException` |
+
+---
+
+## `tests/Feature/Activity/ActivityTest.php` (casos agregados)
+
+Archivo fuente: `app/Http/Controllers/Api/ActivityController.php`, `app/Services/ActivityService.php`, `app/Models/Activity.php`
+
+| Prueba | Descripción |
+| --- | --- |
+| `test_index_filters_by_date_range` | Verifica que `from`/`to` acotan el feed al rango pedido |
+| `test_index_rejects_inverted_date_range` | Verifica que un rango con `to` anterior a `from` devuelve 422 |
+| `test_causer_snapshot_survives_user_deletion` | Verifica que tras `forceDelete()` del autor, el registro conserva su nombre y username, y expone `causer.exists=false` |
+| `test_causer_snapshot_survives_user_rename` | Verifica que renombrar al autor no reescribe la historia: el registro guarda el nombre que tenía al momento del hecho |
+| `test_purge_requires_permission` | Verifica que sin `audit.purge` la purga devuelve 403, mientras la consulta con `audit.view` sigue en 200 |
+| `test_purge_deletes_only_expired_activities` | Verifica que la purga elimina lo anterior al periodo de retención y respeta lo reciente |
+| `test_purge_accepts_explicit_days` | Verifica que `days` en el body sobreescribe el parámetro `activity_log_retention_days` |
+| `test_purge_is_itself_audited` | Verifica que la purga deja su propio registro con autor y cantidad de registros eliminados |
+| `test_purge_preview_does_not_delete` | Verifica que la vista previa informa el conteo sin borrar nada |
+
