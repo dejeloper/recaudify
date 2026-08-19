@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SessionController;
+use App\Http\Controllers\Api\StateController;
+use App\Http\Controllers\Api\StateTransitionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserScheduleController;
 use Illuminate\Support\Facades\Route;
@@ -82,6 +84,29 @@ Route::middleware(["auth:api", "track.session", "check.schedule", "force.passwor
         Route::put("/{id}", [MenuItemController::class, "update"])->middleware("permission:menu.edit");
         Route::delete("/{id}", [MenuItemController::class, "destroy"])->middleware("permission:menu.delete");
         Route::post("/{id}/restore", [MenuItemController::class, "restore"])->middleware("permission:menu.restore");
+    });
+
+    Route::prefix("states")->group(function () {
+        Route::get("/", [StateController::class, "index"])->middleware("permission:states.view");
+        Route::get("/entities", [StateController::class, "entities"])->middleware("permission:states.view");
+        Route::get("/trashed", [StateController::class, "trashed"])->middleware("permission:states.view");
+        Route::get("/{id}", [StateController::class, "show"])->middleware("permission:states.view");
+        Route::post("/", [StateController::class, "store"])->middleware("permission:states.create");
+        Route::put("/{id}", [StateController::class, "update"])->middleware("permission:states.edit");
+        Route::delete("/{id}", [StateController::class, "destroy"])->middleware("permission:states.delete");
+        Route::post("/{id}/restore", [StateController::class, "restore"])->middleware("permission:states.restore");
+    });
+
+    Route::prefix("state-transitions")->group(function () {
+        Route::get("/", [StateTransitionController::class, "index"])->middleware("permission:states.view");
+        Route::get("/trashed", [StateTransitionController::class, "trashed"])->middleware("permission:states.view");
+        Route::get("/{id}", [StateTransitionController::class, "show"])->middleware("permission:states.view");
+        Route::post("/", [StateTransitionController::class, "store"])->middleware("permission:states.create");
+        Route::put("/{id}", [StateTransitionController::class, "update"])->middleware("permission:states.edit");
+        Route::delete("/{id}", [StateTransitionController::class, "destroy"])->middleware("permission:states.delete");
+        Route::post("/{id}/restore", [StateTransitionController::class, "restore"])->middleware(
+            "permission:states.restore",
+        );
     });
 
     Route::prefix("users/{userId}/schedules")->group(function () {
