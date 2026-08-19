@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CheckUserSchedule;
 use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\LogHttpRequests;
@@ -24,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn() => null);
 
-        $middleware->api(prepend: [HandleCors::class, SetJwtFromCookie::class]);
+        $middleware->api(prepend: [HandleCors::class, SetJwtFromCookie::class, CheckMaintenanceMode::class]);
         $middleware->api(append: [LogHttpRequests::class]);
 
         $middleware->alias([

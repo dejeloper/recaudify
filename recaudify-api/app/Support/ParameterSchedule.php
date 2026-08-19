@@ -28,6 +28,21 @@ final class ParameterSchedule
         return self::isValidTime($value) ? (string) $value : $default;
     }
 
+    /**
+     * Si el mantenimiento está activo, las tareas programadas no corren.
+     *
+     * Es la mitad que se olvida: parar a los usuarios pero dejar el cron escribiendo encima del
+     * trabajo manual del administrador hace que el mantenimiento no sirva de nada.
+     */
+    public static function maintenanceModeIsActive(): bool
+    {
+        try {
+            return (bool) app(ParameterService::class)->get(ParameterType::Configuration, "maintenance_mode");
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
     private static function isValidTime(mixed $value): bool
     {
         return is_string($value) && preg_match(self::TIME_FORMAT, $value) === 1;

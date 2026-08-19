@@ -24,5 +24,6 @@ Artisan::command("inspire", function () {
 // nadie está trabajando: el borrado bloquea filas del log.
 Schedule::command("activity:purge")
     ->dailyAt(ParameterSchedule::time("activity_log_purge_time"))
+    ->skip(fn() => ParameterSchedule::maintenanceModeIsActive())
     ->withoutOverlapping()
     ->runInBackground();
