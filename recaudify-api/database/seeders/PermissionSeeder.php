@@ -60,6 +60,13 @@ class PermissionSeeder extends Seeder
             // Catalogs
             "catalogs.view",
 
+            // States (ciclo de vida)
+            "states.view",
+            "states.create",
+            "states.edit",
+            "states.delete",
+            "states.restore",
+
             // Menu builder
             "menu.view",
             "menu.create",

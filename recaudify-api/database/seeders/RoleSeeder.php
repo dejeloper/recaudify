@@ -29,6 +29,13 @@ class RoleSeeder extends Seeder
             ],
 
             "auxiliar" => ["users.view", "roles.view", "permissions.view", "schedules.view", "parameters.view"],
+
+            // Roles operativos del negocio. Sus permisos se completan cuando exista cada módulo;
+            // se crean desde ya porque el modelo de datos y las transiciones ya los referencian.
+            "gestor" => ["catalogs.view"],
+            "recaudador" => ["catalogs.view"],
+            "vendedor" => ["catalogs.view"],
+            "cerrador" => ["catalogs.view"],
         ];
 
         foreach ($roles as $roleName => $permissions) {

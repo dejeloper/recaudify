@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             UserScheduleSeeder::class,
             ParameterSeeder::class,
             MenuItemSeeder::class,
+            StateSeeder::class,
         ]);
 
         Cache::flush();
