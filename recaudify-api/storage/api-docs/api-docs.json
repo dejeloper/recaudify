@@ -456,6 +456,93 @@
                 ]
             }
         },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Sistema"
+                ],
+                "summary": "Estado de la aplicación y sus dependencias",
+                "description": "Endpoint **público**, pensado para chequeos de uptime externos: exigir token lo volvería\ninútil justo cuando la base está caída.\n\nComprueba base de datos, caché, almacenamiento y cola. Devuelve **200** si todo responde\n(`ok`) o si hay señales de alerta sin caída (`degraded`, ej. jobs fallidos acumulados), y\n**503** si falla alguna dependencia crítica (base de datos, caché o almacenamiento).\n\nNo expone mensajes de error ni versiones: el detalle del fallo va al canal `app-errors`.",
+                "operationId": "a7ac77cf240cc6e3a526d1307e6db194",
+                "responses": {
+                    "200": {
+                        "description": "Servicio operativo (ok o degraded)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "ok",
+                                                        "degraded",
+                                                        "down"
+                                                    ]
+                                                },
+                                                "timestamp": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "checks": {
+                                                    "properties": {
+                                                        "database": {
+                                                            "properties": {
+                                                                "status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "duration_ms": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "cache": {
+                                                            "type": "object"
+                                                        },
+                                                        "storage": {
+                                                            "type": "object"
+                                                        },
+                                                        "queue": {
+                                                            "properties": {
+                                                                "status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "driver": {
+                                                                    "type": "string"
+                                                                },
+                                                                "pending": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "failed": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Alguna dependencia crítica está caída"
+                    }
+                }
+            }
+        },
         "/api/login-audits": {
             "get": {
                 "tags": [
@@ -2644,6 +2731,10 @@
         {
             "name": "Accesos",
             "description": "Auditoría de **inicios de sesión** (exitosos y fallidos), con metadata autoritativa del servidor\n(IP, user-agent, SO, dispositivo) y la geolocalización del cliente en los exitosos.\n\nSolo lectura. Requiere el permiso `access.view`."
+        },
+        {
+            "name": "Sistema",
+            "description": "Sistema"
         },
         {
             "name": "Estados",
