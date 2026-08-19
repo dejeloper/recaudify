@@ -1314,6 +1314,580 @@
                 ]
             }
         },
+        "/api/states": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Listar estados del ciclo de vida",
+                "description": "Catálogo de estados por entidad de negocio (client, contract, payment, commitment).\nAgregar un estado es un registro más acá, no un cambio de código.",
+                "operationId": "5286829bc80eba3323ef01071774c05a",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "query",
+                        "description": "Filtra por entidad",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "contract"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de estados"
+                    },
+                    "403": {
+                        "description": "Sin permisos (requiere states.view)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Crear un estado",
+                "description": "Marcar el estado como inicial desmarca automáticamente al anterior: cada entidad tiene un\nsolo estado inicial, que es con el que nacen sus registros.",
+                "operationId": "4a424bde8ff8f848270553dae0cfffae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "entity",
+                                    "key",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "entity": {
+                                        "type": "string",
+                                        "example": "contract"
+                                    },
+                                    "key": {
+                                        "description": "Minúsculas, números y guion bajo, empezando por letra",
+                                        "type": "string",
+                                        "example": "pending_validation"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Pendiente de validación"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "#eab308"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "is_initial": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "is_final": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "default": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Estado creado"
+                    },
+                    "422": {
+                        "description": "Clave duplicada o formato inválido"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states/entities": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Entidades con ciclo de vida configurado",
+                "operationId": "f6975667029a283daf85a1c1e0b5b1de",
+                "responses": {
+                    "200": {
+                        "description": "Lista de claves de entidad"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states/trashed": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Listar estados eliminados",
+                "operationId": "f06b9b1200ca332d1431b443010e69b3",
+                "responses": {
+                    "200": {
+                        "description": "Listado de estados eliminados"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states/{id}": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Consultar un estado",
+                "operationId": "c9d376d01bb45cb094aeba3129665c78",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Actualizar un estado",
+                "operationId": "1b355a489d7cae9f1cb3c8aa3a8a0661",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado"
+                    },
+                    "422": {
+                        "description": "No se puede marcar como final un estado con transiciones de salida"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Eliminar un estado",
+                "description": "Borrado lógico. Se rechaza si el estado es el inicial de su entidad o si alguna transición\nlo usa: primero hay que reconfigurar el ciclo de vida.",
+                "operationId": "6b84e13c6500dd8d03382538d75dff0d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado eliminado"
+                    },
+                    "422": {
+                        "description": "Es el estado inicial o está en uso"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/states/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Restaurar un estado eliminado",
+                "operationId": "1e1044adcea456a96cdcbff6b892c1e9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado restaurado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/state-transitions": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Listar transiciones permitidas",
+                "description": "El grafo del ciclo de vida: lo que no está declarado acá, el motor no lo deja ocurrir.",
+                "operationId": "1d951020bcdaf90a82248712164c669d",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "query",
+                        "description": "Filtra por entidad",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "contract"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de transiciones"
+                    },
+                    "403": {
+                        "description": "Sin permisos (requiere states.view)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Crear una transición",
+                "description": "`from_state_id` en null declara la **transición de creación**: el estado con el que nace el\nregistro. Se rechaza si ambos estados no son de la misma entidad, si la transición ya\nexiste, si va a su mismo estado, o si sale de un estado final.",
+                "operationId": "b11e79b0d5bfdd563bb04a12c826cfba",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "entity",
+                                    "to_state_id"
+                                ],
+                                "properties": {
+                                    "entity": {
+                                        "type": "string",
+                                        "example": "contract"
+                                    },
+                                    "from_state_id": {
+                                        "description": "Null = transición de creación",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "to_state_id": {
+                                        "type": "integer"
+                                    },
+                                    "permission": {
+                                        "description": "Permiso exigido para ejecutarla a mano",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "is_automatic": {
+                                        "description": "La ejecuta el motor; una persona no puede",
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "requires_authorization": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "requires_reason": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transición creada"
+                    },
+                    "422": {
+                        "description": "Transición inválida o duplicada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/state-transitions/trashed": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Listar transiciones eliminadas",
+                "operationId": "956098873b41aae89efdc2ef6386b892",
+                "responses": {
+                    "200": {
+                        "description": "Listado de transiciones eliminadas"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/state-transitions/{id}": {
+            "get": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Consultar una transición",
+                "operationId": "ccbe208d57f2008c3c94c46ccf320747",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transición"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Actualizar las condiciones de una transición",
+                "description": "Los estados de origen y destino no se cambian: se elimina y se crea otra.",
+                "operationId": "691b69f6bdfb88fd1e4d9185a6f9b9fc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transición actualizada"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Eliminar una transición",
+                "operationId": "98e03cfc64e31417e2495b41b2a579fa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transición eliminada"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/state-transitions/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Estados"
+                ],
+                "summary": "Restaurar una transición eliminada",
+                "operationId": "42375669b3c7d4261ca26e9555d62ddd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transición restaurada"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
         "/api/users/{userId}/schedules": {
             "get": {
                 "tags": [
@@ -2070,6 +2644,10 @@
         {
             "name": "Accesos",
             "description": "Auditoría de **inicios de sesión** (exitosos y fallidos), con metadata autoritativa del servidor\n(IP, user-agent, SO, dispositivo) y la geolocalización del cliente en los exitosos.\n\nSolo lectura. Requiere el permiso `access.view`."
+        },
+        {
+            "name": "Estados",
+            "description": "Estados"
         }
     ]
 }
