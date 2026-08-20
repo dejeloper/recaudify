@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LoginAuditController;
 use App\Http\Controllers\Api\MenuItemController;
@@ -88,6 +89,17 @@ Route::middleware(["auth:api", "track.session", "check.schedule", "force.passwor
         Route::put("/{id}", [MenuItemController::class, "update"])->middleware("permission:menu.edit");
         Route::delete("/{id}", [MenuItemController::class, "destroy"])->middleware("permission:menu.delete");
         Route::post("/{id}/restore", [MenuItemController::class, "restore"])->middleware("permission:menu.restore");
+    });
+
+    Route::prefix("branches")->group(function () {
+        Route::get("/", [BranchController::class, "index"])->middleware("permission:branches.view");
+        Route::get("/main", [BranchController::class, "main"])->middleware("permission:branches.view");
+        Route::get("/trashed", [BranchController::class, "trashed"])->middleware("permission:branches.view");
+        Route::get("/{id}", [BranchController::class, "show"])->middleware("permission:branches.view");
+        Route::post("/", [BranchController::class, "store"])->middleware("permission:branches.create");
+        Route::put("/{id}", [BranchController::class, "update"])->middleware("permission:branches.edit");
+        Route::delete("/{id}", [BranchController::class, "destroy"])->middleware("permission:branches.delete");
+        Route::post("/{id}/restore", [BranchController::class, "restore"])->middleware("permission:branches.restore");
     });
 
     Route::prefix("states")->group(function () {

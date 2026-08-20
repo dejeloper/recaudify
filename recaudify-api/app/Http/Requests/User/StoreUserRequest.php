@@ -21,6 +21,7 @@ class StoreUserRequest extends FormRequest
             "password" => ["required", "string", $passwordPolicy->rule(), "confirmed"],
             "role" => ["nullable", "string", "exists:roles,name"],
             "active" => ["boolean"],
+            "branch_id" => ["nullable", "integer", "exists:branches,id"],
         ];
     }
 

@@ -30,6 +30,7 @@ class UpdateUserRequest extends FormRequest
             "password" => ["sometimes", "nullable", "string", $passwordPolicy->rule(), "confirmed"],
             "role" => ["nullable", "string", "exists:roles,name"],
             "active" => ["sometimes", "boolean"],
+            "branch_id" => ["nullable", "integer", "exists:branches,id"],
         ];
     }
 

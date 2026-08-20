@@ -15,22 +15,24 @@ class UserRepository
 
     public function all(): Collection
     {
-        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))->get();
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions", "branch"))->get();
     }
 
     public function allDisabled(): Collection
     {
-        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions"))->get();
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions", "branch"))->get();
     }
 
     public function find(int $id): ?User
     {
-        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))->find($id);
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions", "branch"))->find($id);
     }
 
     public function findTrashed(int $id): ?User
     {
-        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions"))->find($id);
+        return $this->excludeSuperadmin(User::onlyTrashed()->with("roles.permissions", "permissions", "branch"))->find(
+            $id,
+        );
     }
 
     public function findByUsername(string $username): ?User
@@ -45,7 +47,7 @@ class UserRepository
 
     public function search(string $term): Collection
     {
-        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions"))
+        return $this->excludeSuperadmin(User::with("roles.permissions", "permissions", "branch"))
             ->where(fn($q) => $q->where("name", "like", "%{$term}%")->orWhere("username", "like", "%{$term}%"))
             ->get();
     }

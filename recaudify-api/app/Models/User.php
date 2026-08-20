@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\LogsModelActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected string $guard_name = "api";
 
-    protected $fillable = ["name", "username", "email", "password", "active", "password_changed_at"];
+    protected $fillable = ["name", "username", "email", "password", "active", "password_changed_at", "branch_id"];
 
     protected $hidden = ["password"];
 
@@ -50,7 +51,12 @@ class User extends Authenticatable implements JWTSubject
 
     protected function activitylogFields(): array
     {
-        return ["name", "username", "email", "active"];
+        return ["name", "username", "email", "active", "branch_id"];
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function schedules(): HasMany

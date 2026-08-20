@@ -15,6 +15,8 @@ class UserResource extends JsonResource
             "username" => $this->username,
             "email" => $this->email,
             "active" => $this->active,
+            "branch_id" => $this->branch_id,
+            "branch" => $this->whenLoaded("branch", fn() => new BranchResource($this->branch)),
             "roles" => $this->getRoleNames(),
             "permissions" => $this->getAllPermissions()->pluck("name"),
         ];
