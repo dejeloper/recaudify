@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -47,9 +48,13 @@ class UserSeeder extends Seeder
 
     private function seedUsers(array $users): void
     {
+        $mainBranchId = Branch::where("is_main", true)->value("id");
+
         foreach ($users as $data) {
             $role = $data["role"];
             unset($data["role"]);
+
+            $data["branch_id"] = $role === "superadmin" ? null : $mainBranchId;
 
             $user = User::firstOrCreate(["username" => $data["username"]], $data);
 

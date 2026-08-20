@@ -63,6 +63,13 @@ class PermissionSeeder extends Seeder
             // Maintenance mode
             "maintenance.bypass",
 
+            "branches.view",
+            "branches.create",
+            "branches.edit",
+            "branches.delete",
+            "branches.restore",
+            "branches.view-all",
+
             // States (ciclo de vida)
             "states.view",
             "states.create",

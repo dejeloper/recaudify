@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string("password");
             $table->timestamp("password_changed_at")->nullable();
             $table->boolean("active")->default(true);
+            $table->foreignId("branch_id")->nullable()->constrained("branches")->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
