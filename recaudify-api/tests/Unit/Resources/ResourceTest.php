@@ -29,7 +29,10 @@ class ResourceTest extends TestCase
 
         $data = (new UserResource($user))->toArray(Request::create("/"));
 
-        $this->assertSame(["id", "name", "username", "email", "active", "roles", "permissions"], array_keys($data));
+        $this->assertSame(
+            ["id", "name", "username", "email", "active", "branch_id", "branch", "roles", "permissions"],
+            array_keys($data),
+        );
         $this->assertSame("juan", $data["username"]);
         $this->assertContains("cobrador", $data["roles"]->all());
         $this->assertContains("clientes.ver", $data["permissions"]->all());

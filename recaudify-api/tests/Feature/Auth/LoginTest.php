@@ -236,4 +236,112 @@ class LoginTest extends TestCase
 
         $response->assertStatus(200)->assertJsonPath("success", true);
     }
+
+    public function test_config_returns_public_data(): void
+    {
+        $response = $this->getJson("/api/auth/config")->assertStatus(200);
+
+        $response->assertJsonPath("success", true);
+        $response->assertJsonStructure([
+            "data" => ["geolocalization_login", "login_field", "password_policy"],
+        ]);
+        $response->assertJsonPath("data.login_field", "username");
+    }
+
+    public function test_config_is_public(): void
+    {
+        $this->getJson("/api/auth/config")->assertStatus(200);
+    }
+
+    public function test_change_password_success(): void
+    {
+        $response = $this->actingAs($this->user, "api")->postJson("/api/auth/change-password", [
+            "current_password" => "password",
+            "password" => "NewSecret123!",
+            "password_confirmation" => "NewSecret123!",
+        ]);
+
+        $response->assertStatus(200)->assertJsonPath("success", true);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check("NewSecret123!", $this->user->fresh()->password));
+    }
+
+    public function test_change_password_rejects_wrong_current_password(): void
+    {
+        $response = $this->actingAs($this->user, "api")->postJson("/api/auth/change-password", [
+            "current_password" => "wrong_password",
+            "password" => "NewSecret123!",
+            "password_confirmation" => "NewSecret123!",
+        ]);
+
+        $response->assertStatus(422)->assertJsonStructure(["data" => ["current_password"]]);
+    }
+
+    public function test_change_password_requires_confirmation(): void
+    {
+        $response = $this->actingAs($this->user, "api")->postJson("/api/auth/change-password", [
+            "current_password" => "password",
+            "password" => "NewSecret123!",
+        ]);
+
+        $response->assertStatus(422)->assertJsonStructure(["data" => ["password"]]);
+    }
+
+    public function test_change_password_requires_authentication(): void
+    {
+        $this->postJson("/api/auth/change-password", [
+            "current_password" => "password",
+            "password" => "NewSecret123!",
+            "password_confirmation" => "NewSecret123!",
+        ])->assertStatus(401);
+    }
+
+    public function test_login_rejects_missing_credentials(): void
+    {
+        $this->postJson("/api/auth/login", [])->assertStatus(422);
+    }
+
+    public function test_me_returns_user_with_shift_data(): void
+    {
+        $response = $this->actingAs($this->user, "api")->getJson("/api/auth/me")->assertStatus(200);
+
+        $response->assertJsonStructure([
+            "data" => [
+                "username",
+                "current_shift",
+                "shift_status_enabled",
+                "password_expired",
+                "session_timeout_minutes",
+            ],
+        ]);
+    }
+
+    public function test_refresh_returns_new_token(): void
+    {
+        $loginResponse = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ]);
+
+        $token = $loginResponse->json("data.token");
+
+        $response = $this->withToken($token)->postJson("/api/auth/refresh")->assertStatus(200);
+
+        $response->assertJsonStructure(["data" => ["token", "token_type", "expires_in"]]);
+        $this->assertNotEquals($token, $response->json("data.token"));
+    }
+
+    public function test_refresh_requires_authentication(): void
+    {
+        $this->postJson("/api/auth/refresh")->assertStatus(401);
+    }
+
+    public function test_login_returns_session_timeout_minutes(): void
+    {
+        $response = $this->postJson("/api/auth/login", [
+            "username" => "testuser",
+            "password" => "password",
+        ])->assertStatus(200);
+
+        $response->assertJsonStructure(["data" => ["user" => ["session_timeout_minutes"]]]);
+    }
 }

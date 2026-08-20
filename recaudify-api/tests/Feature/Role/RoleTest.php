@@ -106,4 +106,84 @@ class RoleTest extends TestCase
     {
         $this->getJson("/api/roles")->assertStatus(401);
     }
+
+    public function test_store_validates_permissions_exist(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $response = $this->postJson("/api/roles", [
+            "name" => "cobrador",
+            "permissions" => ["no.existe.permiso"],
+        ]);
+
+        $response->assertStatus(422);
+        $data = $response->json("data");
+        $this->assertNotEmpty($data);
+    }
+
+    public function test_update_modifies_permissions(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $role = Role::create(["name" => "cobrador", "guard_name" => "api"]);
+        Permission::firstOrCreate(["name" => "clientes.ver", "guard_name" => "api"]);
+        Permission::firstOrCreate(["name" => "clientes.editar", "guard_name" => "api"]);
+
+        $this->putJson("/api/roles/{$role->id}", [
+            "permissions" => ["clientes.ver", "clientes.editar"],
+        ])->assertStatus(200);
+
+        $role->refresh();
+        $this->assertTrue($role->hasPermissionTo("clientes.ver"));
+        $this->assertTrue($role->hasPermissionTo("clientes.editar"));
+    }
+
+    public function test_store_validates_required_name(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/roles", [])->assertStatus(422)
+            ->assertJsonStructure(["data" => ["name"]]);
+    }
+
+    public function test_trashed_lists_deleted_roles(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $role = Role::create(["name" => "cobrador", "guard_name" => "api"]);
+        $this->deleteJson("/api/roles/{$role->id}")->assertStatus(200);
+        Role::create(["name" => "vendedor", "guard_name" => "api"]);
+
+        $response = $this->getJson("/api/roles/trashed")->assertStatus(200);
+        $names = collect($response->json("data"))->pluck("name")->values()->all();
+        $this->assertContains("cobrador", $names);
+        $this->assertNotContains("vendedor", $names);
+    }
+
+    public function test_restore_returns_404_for_unknown(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/roles/999/restore")->assertStatus(404);
+    }
+
+    public function test_restore_returns_404_for_non_trashed(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $role = Role::create(["name" => "cobrador", "guard_name" => "api"]);
+
+        $this->postJson("/api/roles/{$role->id}/restore")->assertStatus(404);
+    }
+
+    public function test_update_returns_404_for_unknown_role(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->putJson("/api/roles/999", ["name" => "test"])->assertStatus(404);
+    }
+
+    public function test_delete_returns_404_for_unknown_role(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->deleteJson("/api/roles/999")->assertStatus(404);
+    }
 }

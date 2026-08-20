@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Enums\ParameterType;
+use App\Models\Branch;
 use App\Models\Parameter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -175,5 +176,134 @@ class UserTest extends TestCase
         $this->authenticateWith(self::PERMISSIONS);
 
         $this->postJson("/api/users/99999/reset-password")->assertStatus(404);
+    }
+
+    public function test_store_assigns_branch_id(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $branch = Branch::create(["code" => "BOG", "name" => "Bogotá", "is_main" => true]);
+        Role::firstOrCreate(["name" => "cobrador", "guard_name" => "api"]);
+
+        $response = $this->postJson("/api/users", [
+            "name" => "Juan Pérez",
+            "username" => "jperez",
+            "password" => "secret1234",
+            "password_confirmation" => "secret1234",
+            "role" => "cobrador",
+            "branch_id" => $branch->id,
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas("users", ["username" => "jperez", "branch_id" => $branch->id]);
+    }
+
+    public function test_store_rejects_unknown_branch(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/users", [
+            "name" => "Juan Pérez",
+            "username" => "jperez",
+            "password" => "secret1234",
+            "password_confirmation" => "secret1234",
+            "branch_id" => 999,
+        ])->assertStatus(422)->assertJsonStructure(["data" => ["branch_id"]]);
+    }
+
+    public function test_update_modifies_branch(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $branch = Branch::create(["code" => "BOG", "name" => "Bogotá", "is_main" => true]);
+        $user = User::factory()->create();
+
+        $this->putJson("/api/users/{$user->id}", ["branch_id" => $branch->id])->assertStatus(200);
+        $this->assertDatabaseHas("users", ["id" => $user->id, "branch_id" => $branch->id]);
+    }
+
+    public function test_update_rejects_unknown_branch(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $user = User::factory()->create();
+
+        $this->putJson("/api/users/{$user->id}", ["branch_id" => 999])
+            ->assertStatus(422)
+            ->assertJsonStructure(["data" => ["branch_id"]]);
+    }
+
+    public function test_show_includes_branch_data(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $branch = Branch::create(["code" => "BOG", "name" => "Bogotá", "is_main" => true]);
+        $user = User::factory()->create(["branch_id" => $branch->id]);
+
+        $response = $this->getJson("/api/users/{$user->id}")->assertStatus(200);
+
+        $response->assertJsonPath("data.branch_id", $branch->id);
+        $response->assertJsonPath("data.branch.code", "BOG");
+    }
+
+    public function test_store_rejects_duplicate_username(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        User::factory()->create(["username" => "jperez"]);
+
+        $this->postJson("/api/users", [
+            "name" => "Otro Juan",
+            "username" => "jperez",
+            "password" => "secret1234",
+            "password_confirmation" => "secret1234",
+        ])->assertStatus(422)->assertJsonStructure(["data" => ["username"]]);
+    }
+
+    public function test_store_rejects_missing_password_confirmation(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/users", [
+            "name" => "Juan",
+            "username" => "jperez",
+            "password" => "secret1234",
+        ])->assertStatus(422)->assertJsonStructure(["data" => ["password"]]);
+    }
+
+    public function test_update_does_not_require_password(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $user = User::factory()->create(["name" => "Viejo"]);
+
+        $this->putJson("/api/users/{$user->id}", ["name" => "Nuevo"])->assertStatus(200);
+        $this->assertDatabaseHas("users", ["id" => $user->id, "name" => "Nuevo"]);
+    }
+
+    public function test_destroy_returns_404_for_unknown_user(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->deleteJson("/api/users/99999")->assertStatus(404);
+    }
+
+    public function test_restore_returns_404_for_unknown_user(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/users/99999/restore")->assertStatus(404);
+    }
+
+    public function test_trashed_returns_404_for_unknown_user(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->getJson("/api/users/trashed/99999")->assertStatus(404);
+    }
+
+    public function test_sync_permissions_returns_404_for_unknown_user(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Permission::firstOrCreate(["name" => "test.perm", "guard_name" => "api"]);
+
+        $this->postJson("/api/users/99999/permissions", [
+            "permissions" => ["test.perm"],
+            "assign" => true,
+        ])->assertStatus(404);
     }
 }

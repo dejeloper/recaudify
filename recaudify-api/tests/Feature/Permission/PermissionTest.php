@@ -104,4 +104,99 @@ class PermissionTest extends TestCase
     {
         $this->getJson("/api/permissions")->assertStatus(401);
     }
+
+    public function test_store_validates_unique_name(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+
+        $this->postJson("/api/permissions", ["name" => "clientes.ver"])
+            ->assertStatus(422)
+            ->assertJsonStructure(["data" => ["name"]]);
+    }
+
+    public function test_store_validates_required_name(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/permissions", [])->assertStatus(422);
+    }
+
+    public function test_store_validates_name_max_length(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/permissions", ["name" => str_repeat("a", 101) . ".ver"])
+            ->assertStatus(422);
+    }
+
+    public function test_update_validates_unique_name(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $perm = Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+        Permission::create(["name" => "clientes.editar", "guard_name" => "api"]);
+
+        $this->putJson("/api/permissions/{$perm->id}", ["name" => "clientes.editar"])
+            ->assertStatus(422);
+    }
+
+    public function test_update_allows_same_name_for_self(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $perm = Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+
+        $this->putJson("/api/permissions/{$perm->id}", ["name" => "clientes.ver"])
+            ->assertStatus(200);
+    }
+
+    public function test_update_validates_name_format(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $perm = Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+
+        $this->putJson("/api/permissions/{$perm->id}", ["name" => "InvalidFormat"])
+            ->assertStatus(422);
+    }
+
+    public function test_update_returns_404_for_unknown_permission(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->putJson("/api/permissions/999", ["name" => "test.ok"])->assertStatus(404);
+    }
+
+    public function test_destroy_returns_404_for_unknown_permission(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->deleteJson("/api/permissions/999")->assertStatus(404);
+    }
+
+    public function test_restore_returns_404_for_unknown_permission(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+
+        $this->postJson("/api/permissions/999/restore")->assertStatus(404);
+    }
+
+    public function test_restore_returns_404_for_non_trashed_permission(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $perm = Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+
+        $this->postJson("/api/permissions/{$perm->id}/restore")->assertStatus(404);
+    }
+
+    public function test_trashed_lists_deleted_permissions(): void
+    {
+        $this->authenticateWith(self::PERMISSIONS);
+        $perm = Permission::create(["name" => "clientes.ver", "guard_name" => "api"]);
+        $this->deleteJson("/api/permissions/{$perm->id}")->assertStatus(200);
+        Permission::create(["name" => "clientes.editar", "guard_name" => "api"]);
+
+        $response = $this->getJson("/api/permissions/trashed")->assertStatus(200);
+        $names = collect($response->json("data"))->pluck("name")->values()->all();
+        $this->assertContains("clientes.ver", $names);
+        $this->assertNotContains("clientes.editar", $names);
+    }
 }
